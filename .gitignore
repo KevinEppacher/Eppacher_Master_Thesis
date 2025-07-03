@@ -26,6 +26,7 @@
 *.vrb
 *.lol
 *.xml
+*.bcf
 
 # Output PDFs (falls du die nicht versionieren willst)
 *.pdf
