@@ -25,6 +25,8 @@ RUN apt-get update && \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+RUN code --install-extension James-Yu.latex-workshop
+
 # Locales
 RUN locale-gen en_US.UTF-8
 ENV LANG=en_US.UTF-8
