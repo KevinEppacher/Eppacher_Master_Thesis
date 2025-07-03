@@ -1,13 +1,11 @@
 DOC?=Thesis
-BASE=$(wildcard BASE/*.bst BASE/*.cls)
-PICs=$(wildcard PICs/*.pdf PICs/*.png)
+TEXDIR=tex
 
-$(DOC).pdf : $(DOC).tex $(BIB) $(BASE) $(PICS)
-	pdflatex -shell-escape $(DOC)
-	biber $(DOC)
-	pdflatex -shell-escape  $(DOC)
-	pdflatex -shell-escape  $(DOC)
-	
-clean : 
-	rm -f *.aux *.log *.bbl *.lol *.blg *.run.xml *.lof *.bcf *.toc *.lot
-	rm -rf _minted*
+all: build/$(DOC).pdf
+
+build/$(DOC).pdf: $(TEXDIR)/$(DOC).tex
+	latexmk -shell-escape -pdf -outdir=build $(TEXDIR)/$(DOC)
+
+clean:
+	latexmk -C -outdir=build $(TEXDIR)/$(DOC)
+	rm -rf build/_minted-$(DOC)

@@ -40,3 +40,6 @@
 *.swo
 
 build/
+
+# minted Temp-Folder
+_minted-*/
