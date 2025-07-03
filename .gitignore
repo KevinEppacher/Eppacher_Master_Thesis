@@ -1,0 +1,39 @@
+# LaTeX auxiliary and intermediate files
+*.aux
+*.bbl
+*.blg
+*.brf
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.nav
+*.snm
+*.vrb
+*.lol
+*.xml
+
+# Output PDFs (falls du die nicht versionieren willst)
+*.pdf
+
+# Backup files
+*~
+*.bak
+
+# Editor swap/lock files
+*.swp
+*.swo
