@@ -724,12 +724,12 @@ urlcolor=TWblue, urlbordercolor=white}
     {\"O}kotoxikologie}
   {
     \begin{minipage}{0.72\linewidth}
-      \Ifstr{\sprache}{german}{\Ifstr{\doctype}{MASTERARBEIT}{zur Erlangung des akademischen Grades\\\glqq{}Master of Science in Engineering\grqq{}\\im Studiengang }{\Ifstr{\doctype}{BACHELORARBEIT}{zur Erlangung des akademischen Grades\\\glqq{}Bachelor of Science in Engineering\grqq{}\\im Studiengang }{Im Studiengang}}}{\Ifstr{\doctype}{MASTERTHESIS}{Thesis submitted in fulfillment of the requirements for the degree of Master of Science in Engineering at the University of Applied Sciences Technikum Wien - Degree Program }{\Ifstr{\doctype}{BACHELORTHESIS}{Thesis submitted in fulfillment of the requirements for the degree of Bachelor of Science in Engineering at the University of Applied Sciences Technikum Wien - Degree Program }{In}}}
+      \Ifstr{\sprache}{german}{\Ifstr{\doctype}{MASTERARBEIT}{zur Erlangung des akademischen Grades\\\glqq{}Master of Science in Engineering\grqq{}\\im Studiengang}{\Ifstr{\doctype}{BACHELORARBEIT}{zur Erlangung des akademischen Grades\\\glqq{}Bachelor of Science in Engineering\grqq{}\\im Studiengang }{Im Studiengang}}}{\Ifstr{\doctype}{MASTERTHESIS}{Thesis submitted in fulfillment of the requirements for the degree of Master of Science in Engineering at the University of Applied Sciences Technikum Wien - Degree Program }{\Ifstr{\doctype}{BACHELORTHESIS}{Thesis submitted in fulfillment of the requirements for the degree of Bachelor of Science in Engineering at the University of Applied Sciences Technikum Wien - Degree Program }{In}}}
       \degreecourse
     \end{minipage}\vspace{5pt}}
   {
     \begin{minipage}{0.72\linewidth}
-      \Ifstr{\sprache}{german}{\Ifstr{\doctype}{MASTERARBEIT}{zur Erlangung des akademischen Grades\\\glqq{}Master of Science in Engineering\grqq{}\\im Studiengang }{\Ifstr{\doctype}{BACHELORARBEIT}{zur Erlangung des akademischen Grades\\\glqq{}Bachelor of Science in Engineering\grqq{}\\im Studiengang }{Im Studiengang}}}{\Ifstr{\doctype}{MASTERTHESIS}{Thesis submitted in fulfillment of the requirements for the degree of Master of Science in Engineering at the University of Applied Sciences Technikum Wien - Degree Program }{\Ifstr{\doctype}{BACHELORTHESIS}{Thesis submitted in fulfillment of the requirements for the degree of Bachelor of Science in Engineering at the University of Applied Sciences Technikum Wien - Degree Program }{In}}}
+      \Ifstr{\sprache}{german}{\Ifstr{\doctype}{MASTERARBEIT}{zur Erlangung des akademischen Grades\\\glqq{}Master of Science in Engineering\grqq{}\\im Studiengang}{\Ifstr{\doctype}{BACHELORARBEIT}{zur Erlangung des akademischen Grades\\\glqq{}Bachelor of Science in Engineering\grqq{}\\im Studiengang }{Im Studiengang}}}{\Ifstr{\doctype}{MASTERTHESIS}{Thesis submitted in fulfillment of the requirements for the degree of Master of Science in Engineering at the University of Applied Sciences Technikum Wien - Degree Program }{\Ifstr{\doctype}{BACHELORTHESIS}{Thesis submitted in fulfillment of the requirements for the degree of Bachelor of Science in Engineering at the University of Applied Sciences Technikum Wien - Degree Program }{In}}}
       \degreecourse\vspace{5pt}
     \end{minipage}}}
 
@@ -793,6 +793,30 @@ urlcolor=TWblue, urlbordercolor=white}
 \@place%
 \Ifstr{\sprache}{german}{, den~}{,~}\today%
 
+%\vfill%
+\begin{picture}(0,0)
+\put(-5,-35) {
+\hspace*{-34pt}%
+\begin{minipage}[t]{1.1\textwidth}
+\vspace{7em}
+\normalsize
+\Ifstr{\sprache}{german}{
+Diese Arbeit wurde im Kontext des Projekts \glqq Stadt Wien Kompetenzteam für Drohnentechnik in der Fachhochschulausbildung\grqq
+~(Projektnummer MA23 35-02, finanziert über das Magistrat MA23 für Wirtschaft, Arbeit und Statistik der Stadt Wien) durchgeführt.
+}{
+This work was conducted in the context of the project ``Stadt Wien Kompetenzteam für Drohnentechnik in der Fachhochschulausbildung''
+~(project number MA23 35-02, financed by the Department MA23 for Economic Affairs, Labour and Statistics of the City of Vienna).
+}\\[2em]
+\Ifstr{\sprache}{german}{
+\includegraphics[height=2.5cm]{PICs/ma23_foerder.png}
+}{
+\includegraphics[height=2.5cm]{PICs/ma23_funded.png}
+}%
+\hfill%
+\includegraphics[height=2.5cm]{PICs/drohnfh.pdf}
+\end{minipage}
+}
+\end{picture}
 \clearpage
 \color{black}\normalsize\mdseries
 
