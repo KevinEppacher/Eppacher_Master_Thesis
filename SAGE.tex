@@ -1,86 +1,31 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Klasse Festlegen
-\documentclass[Master,BMR,english]{BASE/twbook} 
-%\documentclass[Bachelor,BMR,english,fhCitStyle,IEEE]{BASE/twbook} % FH definierte Zitierstandards verwenden 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Verwendete Packages
-\usepackage[utf8]{inputenc} % Zeichen-Enkodierung (evtl. Abweichungen für Apple)
-\usepackage[T1]{fontenc}    % Zeichen-Enkodierung
-\usepackage{blindtext}      % Platzhaltertexte
-\usepackage{minted}         % Darstellung von Code
-\usepackage{comment}        % Auskommentieren von ganzen Passagen
-\usepackage{csquotes}
-\usepackage{algorithm}      % Umgebung f Algorithmen
-\usepackage[noend]{algpseudocode}
-                            % Wenn Sie während Ihrer Arbeit
-                            % merken, dass Sie zusätzliche Funktionen
-                            % benötigen ist hier ein guter Platz um
-                            % weitere Packages zu laden
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Zitierstil zum selbst definieren
-\usepackage[backend=biber, style=ieee]{biblatex}            % LaTeX definierter IEEE- Standard
-%\usepackage[backend=biber, style=authoryear]{biblatex}      % LaTeX definierter Harvard-Standard
-\addbibresource{Literatur.bib}                              % Literatur-File definieren
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Einträge für Deckblatt
-\title{Arbeitstitel\\Arbeitstitel}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Document Class
+\documentclass[Master,BMR,english]{BASE/twbook}
 
-\author{Kevin Eppacher, Titel}
-\studentnumber{XXXXXXXXXXXXXXX}
-%\author{Titel Vorname Name, Titel\and{}Titel Vorname Name, Titel}
-%\studentnumber{XXXXXXXXXXXXXXX\and{}XXXXXXXXXXXXXXX}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Packages
+\input{Utils/packages}
 
-\supervisor{Titel Vorname Name, Titel}
-%\supervisor[Begutachter]{Titel Vorname Name, Titel}
-%\supervisor[Begutachterin]{Titel Vorname Name, Titel}
-%\secondsupervisor{Titel Vorname Name, Titel}
-%\secondsupervisor[Begutachter]{Titel Vorname Name, Titel}
-%\secondsupervisor[Begutachterinnen]{Titel Vorname Name, Titel}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cover Page
+\input{Utils/cover}
 
-\place{Wien}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Danksagung/Kurzfassung/Schlagworte
-\kurzfassung{\blindtext}
-\schlagworte{Schlagwort1, Schlagwort2, Schlagwort3, Schlagwort4}
-\outline{\blindtext}
-\keywords{Keyword1, Keyword2, Keyword3, Keyword4}
-\acknowledgements{\blindtext}
-\setListingsAndAcronyms % Definition der Namen für Quellcodeverzeichnis 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ende des Headers
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Beginn des Dokuments
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Document Start
 \begin{document}
-
-
 \maketitle
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Beginn des Inhalts
+
+\input{Sections/1_introduction}
+
+\input{Sections/2_state_of_the_art}
+
+\input{Sections/3_materials_and_methods}
+
+\input{Sections/4_experimental_results}
+
+\input{Sections/5_summary_and_outlook}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bibliography and Lists
+\input{Utils/bibliography}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Appendix
+\input{Utils/appendix}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnen die Verzeichnisse.
-\clearpage                                                       % Beginne neue Seite
-
-\printbib                                                        % Literaturverzeichnis LaTeX-Zitier-Standard
-%\printbib{Literatur}                                             % Literaturverzeichnis FH-Zitier-Standard
-\clearpage
-
-\listoffigures                                                   % Abbildungsverzeichnis
-\clearpage
-
-\listoftables                                                    % Tabellenverzeichnis
-\clearpage
-
-\listoflistings                                                  % Quellcodeverzeichnis
-\clearpage
-
-\phantomsection
-\addcontentsline{toc}{chapter}{\listacroname}
-\chapter*{\listacroname}
-\begin{acronym}[XXXXX]
-    \acro{ABC}[ABC]{Alphabet}
-    \acro{WWW}[WWW]{world wide web}
-    \acro{ROFL}[ROFL]{Rolling on floor laughing}
-\end{acronym}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnt der Anhang.
-\clearpage
-\appendix
-\chapter{Anhang A}
-\clearpage
-\chapter{Anhang B}
 \end{document}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ende des Inhalts
