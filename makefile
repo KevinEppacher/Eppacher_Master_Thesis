@@ -1,5 +1,5 @@
-DOC?=Thesis
-TEXDIR=tex
+DOC?=SAGE
+TEXDIR=.
 
 all: build/$(DOC).pdf
 
