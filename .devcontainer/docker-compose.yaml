@@ -5,6 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: eppacher_master_thesis_dev
+    privileged: true
+    network_mode: host
     volumes:
-      - ..:/workspace:cached
+      - ..:/Eppacher_Master_Thesis:cached
     command: sleep infinity

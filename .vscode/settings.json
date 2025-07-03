@@ -17,5 +17,6 @@
       "name": "latexmk",
       "tools": ["latexmk"]
     }
-  ]
+  ],
+  "makefile.configureOnOpen": false
 }
