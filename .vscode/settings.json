@@ -14,9 +14,10 @@
   ],
   "latex-workshop.latex.recipes": [
     {
-      "name": "latexmk",
+      "name": "latexmk (default)",
       "tools": ["latexmk"]
     }
   ],
+  "latex-workshop.latex.recipe.default": "latexmk (default)",
   "makefile.configureOnOpen": false
 }
