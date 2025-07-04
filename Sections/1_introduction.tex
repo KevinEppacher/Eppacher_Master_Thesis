@@ -36,10 +36,11 @@
     \end{enumerate}
     \item Scientific Contribution:
     \begin{itemize}
-        \item Development of a hybrid approach that combines \ac{VLFM} \cite{yokoyama2024vlfm} and Open-Fusion \cite{kashu2023openfusion} to increase overall \ac{SR} and specifically enhance multi-object \ac{SR} compared to state-of-the-art methods such as \ac{OneMap}, \ac{VLMaps}, and \ac{GeFF}.
-        \item Investigation of whether integrating fast frontier exploration (\ac{VLFM}) with explicitly segmented nodes (Open-Fusion) enables shorter and more efficient navigation paths, leading to improved path efficiency measured by the \ac{SPL} metric.
-        \item Design of a sensor-based fusion strategy leveraging spatially weighted score combination, where \ac{SEEM} \cite{zou2023seem} detections and OpenFusion \cite{kashu2023openfusion} relevance fields are merged using Gaussian-based weighting to increase robustness against false positives in zero-shot detection scenarios.
-        \item Evaluation of the proposed method’s performance in real-world scenarios on a mobile robot, focusing on practical aspects such as real-time capability and robustness to sensor noise, including depth inaccuracies and varying lighting conditions.
+        \item Development of a hybrid semantic exploration framework that combines \ac{VLFM}-based \cite{yokoyama2024vlfm} frontier scoring with Open-Fusion's \cite{kashu2023openfusion} global 3D scene representation, enabling multi-object search with open-vocabulary queries (text\sout{, image, audio}) during autonomous exploration. The approach is evaluated for improvements in overall and multi-object success rate (\ac{SR}) as well as path efficiency measured by success weighted by path length (\ac{SPL}).
+        \item Implementation of a lightweight \ac{VLFM} \cite{yokoyama2024vlfm} component leveraging \ac{SEEM} \cite{zou2023seem} as a unified vision-language model, substantially reducing GPU memory requirements compared to traditional \ac{VLFM} \cite{yokoyama2024vlfm} pipelines using multiple separate models.
+        \item Design of a sensor-based fusion strategy that integrates semantic detections from \ac{SEEM} \cite{zou2023seem} with clustered relevance fields from Open-Fusion \cite{kashu2023openfusion}, applying spatial confidence weighting to enhance robustness against false positives in zero-shot object detection.
+        \item Experimental validation of the proposed system on a real mobile robot, focusing on practical aspects such as real-time performance and robustness to sensor noise including depth inaccuracies and changing lighting conditions.
     \end{itemize}
+
     \item Structure of the thesis:
 \end{enumerate}

@@ -1,2 +1,27 @@
 \chapter{Materials and Methods}
-\blindtext
+
+\section{System Overview}
+% Gesamtsystem, Architektur, Datenaustausch zwischen Modulen, Hardware/Software-Setup
+
+\section{Exploration Component: Semantic Frontier Mapping}
+\subsection{Frontier Detection and Calculation}
+% Wie Frontiers berechnet werden (z.B. 2D-Grid, Occupancy Map)
+\subsection{Value Map Generation using Vision-Language Models}
+% Nutzung von Detektoren wie SEEM, Cosine Similarity für Value Maps
+\subsection{Navigation to High-Value Frontiers}
+% Auswahl des Frontiers mit höchstem Score, Bewegung dorthin
+
+\section{Exploitation Component: Persistent 3D Semantic Mapping}
+\subsection{Global Map Construction with Open-Fusion}
+% Aufbau der globalen semantischen Punktwolke während der Exploration
+\subsection{Semantic Clustering and Graph Node Generation}
+% Clustering der semantischen Punkte und Ableitung von Knoten
+
+\section{Detection Backbone: Promptable Zero-Shot Models}
+\subsection{tbd \dots}
+% Details zu SEEM, GroundingDINO, OWL-ViT, etc. für Zero-Shot-Erkennung
+
+\section{Fusion Strategy: Confidence-Based Decision Making}
+\subsection{tbd \dots}
+% Konzept zur Fusion von Detektion (Value Map) und semantischer Karte (Open-Fusion)
+% Metriken, Gewichtung, räumliche Gewichtung, Robustheit gegenüber False Positives
