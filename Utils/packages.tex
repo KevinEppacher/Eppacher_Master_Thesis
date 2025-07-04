@@ -2,12 +2,38 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{blindtext}
-\usepackage{minted}
 \usepackage{comment}
 \usepackage{csquotes}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
+\usepackage{pifont}
+\usepackage{tabularx}
+\usepackage{rotating}
+\usepackage{graphicx}
+\usepackage{amsmath}        % Mathematische Umgebungen und Symbole
+\usepackage{xcolor}         % Farbnamen und Definition
+\usepackage{subcaption}     % Subcaption für Unterabbildungen
+\usepackage{array}
+\usepackage{geometry}
+\usepackage{url}            % For proper formatting of URLs
+
+% Use either minted OR listings, not both to avoid lol conflicts
+\usepackage{minted}
+% Alternative: \usepackage{listings}
+
+% Geometry settings
+\geometry{a4paper, margin=1in}
+
+% Only include listings settings if using listings package
+% \lstset{
+%   basicstyle=\ttfamily,
+%   breaklines=true,     % Enables automatic line breaking
+%   linewidth=\linewidth % Limits the width to the current line width
+% }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Citation Style
-\usepackage[backend=biber, style=ieee]{biblatex}
+\usepackage[backend=biber, style=ieee, citestyle=numeric-comp, bibstyle=ieee]{biblatex}
 \addbibresource{Literature.bib}
+
+\newcommand{\cmark}{\ding{51}} % ✓
+\newcommand{\xmark}{\ding{55}} % ✗
