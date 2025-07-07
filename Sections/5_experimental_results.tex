@@ -1,40 +1,80 @@
-\chapter{Experimental Results}
-This chapter presents the evaluation results of the proposed hybrid semantic exploration framework. The experiments are designed to address the defined research contributions by quantitatively and qualitatively assessing system performance in both simulated and real-world scenarios.
+\chapter{Discussion and Results}
+This chapter presents the experimental evaluation of the proposed hybrid semantic exploration system. Each experiment targets a specific research question and is evaluated using quantitative performance metrics.
 
 \section{Evaluation Metrics}
+This section defines the evaluation metrics used throughout the experiments and assigns them to each corresponding experiment.
+
+\subsection{Experiment 1: Success Rate (SR)}
 \begin{itemize}
-    \item \textbf{Success Rate (SR):} Ratio of successfully reached goal objects during semantic search.
-    \item \textbf{Multi-Object Success Rate:} Percentage of completed search tasks involving multiple target objects.
-    \item \textbf{Success weighted by Path Length (SPL):} Efficiency of navigation paths considering both success and path optimality.
-    \item \textbf{Semantic Precision:} Accuracy of object recognition and detection under open-vocabulary queries.
-    \item \textbf{Robustness:} Qualitative metric reflecting the system's tolerance to false positives, partial occlusions, and noisy sensor data.
-    \item \textbf{System Performance:} Real-time metrics such as CPU/GPU load, average FPS, and processing latency per cycle.
+    \item Metric: Ratio of successfully reached single goal objects.
+    \item Evaluation against: \ac{VLFM}, \ac{VLMaps}, \ac{OneMap}, \ac{GeFF}
 \end{itemize}
 
-\section{SC1: Multi-Object Search Efficiency and Success Rate}
+\subsection{Experiment 2: Path Efficiency (SPL)}
 \begin{itemize}
-    \item Evaluation of single- and multi-object search scenarios using benchmark datasets.
-    \item Comparison of success rate (SR) and multi-object SR with existing methods such as OneMap, VLMaps, and GeFF.
-    \item Assessment of path efficiency using SPL metric across identical navigation tasks.
+    \item Metric: Success weighted by path length (SPL).
+    \item Used to assess navigational efficiency of successful trajectories.
 \end{itemize}
 
-\section{SC2: Resource Efficiency through Lightweight Architecture}
+\subsection{Experiment 3: Multi-Object Success Rate (MSR)}
 \begin{itemize}
-    \item Evaluation of memory usage and model inference time using SEEM in place of multi-model VLFM pipeline.
-    \item Comparison of GPU memory footprint and runtime on equivalent hardware setups.
-    \item Qualitative discussion on model simplification trade-offs versus performance.
+    \item Metric: Percentage of tasks where all queried objects are found.
+    \item Important for evaluating real-world multi-object search performance.
 \end{itemize}
 
-\section{SC3: Fusion Strategy and Robustness to False Positives}
+\subsection{Experiment 4: Ablation – Exploitation Component (OpenFusion)}
 \begin{itemize}
-    \item Testing the sensor-based fusion approach under noisy and ambiguous object detections.
-    \item Analysis of semantic precision before and after fusion of VLFM and Open-Fusion detections.
-    \item Ablation study comparing performance with and without fusion, especially under occlusion and false positive conditions.
+    \item Metric: MSR change with vs. without OpenFusion (i.e. only \ac{VLFM}).
+    \item Purpose: Understand OpenFusion’s contribution in the hybrid setup.
 \end{itemize}
 
-\section{SC4: Real-World System Evaluation}
+\subsection{Experiment 5: Robustness to False Positives (Fusion Strategy)}
 \begin{itemize}
-    \item Deployment on a mobile robot in real indoor environments with varying lighting and sensor noise.
-    \item Measurement of real-time capabilities: FPS, inference latency, and CPU/GPU load.
-    \item Qualitative assessment of robustness in dynamic, unstructured scenes.
+    \item Metric: \textbf{Semantic Precision} and \textbf{False Positive Rate}.
+    \item Description: Evaluates how fusion between \ac{SEEM} and OpenFusion mitigates false detections under occlusion and ambiguous inputs.
 \end{itemize}
+
+\subsection{Experiment 6: Real-World System Performance}
+\begin{itemize}
+    \item Metrics:
+        \begin{itemize}
+            \item \textbf{SR, MSR, SPL}: for search performance under real-world conditions.
+            \item \textbf{System Metrics:} CPU/GPU usage, FPS, inference latency.
+        \end{itemize}
+    \item Objective: Assess robustness, efficiency, and deployability in physical environments.
+\end{itemize}
+
+\subsection{Experiment 7: Vision-Language Model Comparison (SEEM vs. BLIP2)}
+\begin{itemize}
+    \item Metrics: Cosine Similarity Consistency, SR, SPL, Memory Footprint.
+    \item Purpose: Compare SEEM and BLIP2 in the context of frontier scoring and value map generation.
+\end{itemize}
+
+% =====================================================================
+\section{Results on Semantic Multi-Object Search Tasks}
+
+\subsection{Experiment 1: Single-Object Success Rate (SR)}
+% Add table/plot: SR across scenes (VLFM, VLMaps, OneMap, GeFF)
+
+\subsection{Experiment 2: Navigation Efficiency (SPL)}
+% Add table: SPL scores per method
+
+\subsection{Experiment 3: Multi-Object Success Rate (MSR)}
+% Compare MSR with and without hybrid fusion; baseline: OneMap, VLMaps
+
+\subsection{Experiment 4: Ablation of Exploitation (OpenFusion)}
+% MSR with OpenFusion vs. only VLFM; include error bars
+
+% =====================================================================
+\section{Experiment 5: Improving Detection Robustness via Semantic Fusion}
+% Scenarios with occlusions and ambiguous detections
+% FPR, semantic precision; plot fusion vs. no fusion
+
+% =====================================================================
+\section{Experiment 6: Real-World Deployment}
+% Table with SR, MSR, SPL
+% System monitoring: FPS, latency, CPU/GPU stats
+% Qualitative discussion (figures)
+
+\section{Experiment 7: Comparison of VL-Models for Frontier Scoring}
+The goal is to assess whether SEEM, as a lightweight unified model, can maintain comparable exploration performance to BLIP2 while reducing computational overhead.
