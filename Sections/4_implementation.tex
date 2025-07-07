@@ -1,8 +1,42 @@
 \chapter{Implementation}
+This section details the practical implementation of the proposed approach, covering the simulation and real-world setup, datasets, software stack, and hardware configuration.
+
 \section{Simulation Environment}
+\begin{itemize}
+    \item Evaluation of simulation frameworks for indoor semantic navigation:
+    \begin{itemize}
+        \item HabitatSim: Realistic Matterport3D-based environments with semantic annotations.
+        \item Isaac Sim / Isaac Lab: GPU-accelerated simulation, advanced physics, support for RTX ray tracing.
+        \item MuJoCo: High-speed physics engine, limited support for complex indoor scenes.
+        \item Ignition Gazebo: Modular simulator, ROS2 integration, good for real-robot transfer.
+    \end{itemize}
+    \item \dots
+\end{itemize}
 
 \section{Dataset}
+\begin{itemize}
+    \item Use of \textbf{Matterport3D} scenes for realistic indoor environments with ground truth 3D reconstruction and semantic annotations.
+    \item Incorporation of the \textbf{Habitat Navigation Challenge 2023} tasks to benchmark exploration and navigation performance (SR, SPL).
+\end{itemize}
 
 \section{Software Setup}
+\begin{itemize}
+    \item ROS2-based implementation (Humble Hawksbill) as middleware.
+    \item Navigation stack: Navigation2 (Nav2) for frontier-based exploration and path planning.
+    \item DDS communication layer for distributed communication between detection, mapping, and control nodes.
+    \item Custom RobotDriver for interfacing with real robot hardware.
+    \item Integration of promptable models (SEEM, GroundingDINO, etc.) for real-time zero-shot detection during exploration and exploitation.
+    \item \dots
+\end{itemize}
 
 \section{Hardware Setup}
+\begin{itemize}
+    \item \textbf{PC:}
+    \begin{itemize}
+        \item CPU: AMD Ryzen 9 5950X 16-Core Processor
+        \item Motherboard: B550 Gaming X V2
+        \item GPU: ASUS TUF Gaming RTX 4090 24GB OC Edition
+        \item RAM: 64GB Corsair Vengeance LPX DDR4
+    \end{itemize}
+    \item \textbf{Real Robot:} Configuration and components to be determined (tbd).
+\end{itemize}
