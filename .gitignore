@@ -39,7 +39,9 @@
 *.swp
 *.swo
 
-build/
+# Ignore everything in build/ except SAGE.pdf
+build/*
+!build/SAGE.pdf
 
 # minted Temp-Folder
 _minted-*/
