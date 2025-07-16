@@ -1,5 +1,5 @@
 \chapter{Introduction}
-
+\section{Problem Statement}
 \begin{enumerate}
     \item Motivation \& Relevance
     \item Domain and Motivation: e.g. \ac{SAR}, semantic Navigation, exploration in unknown environments, etc.
@@ -13,14 +13,14 @@
         \item \ac{GeFF} \cite{qui2024geff}
     \end{enumerate}
 
-    \begin{figure}[h!]
+    \begin{figure}[!ht]
     \centering
     \includegraphics[width=\textwidth]{Images/1_introduction/temp_sota_comparison_common_properties.png}
     \caption{Comparison of state-of-the-art methods regarding common properties.}
     \label{fig:sota_comparison}
     \end{figure}
 
-    \begin{figure}[h!]
+    \begin{figure}[!ht]
     \centering
     \includegraphics[width=\textwidth]{Images/1_introduction/temp_sota_comparison_performance_metrics.png}
     \caption{Comparison of state-of-the-art methods regarding performance metrics.}
@@ -35,14 +35,7 @@
         \item Sensibility to false positives for zero shot object detection
     \end{enumerate}
     \item Scientific Contribution:
-    \begin{itemize}
-        \item Development of a hybrid semantic exploration framework that combines \ac{VLFM}-based \cite{yokoyama2024vlfm} frontier scoring with Open-Fusion's \cite{kashu2023openfusion} global 3D scene representation, enabling multi-object search with open-vocabulary queries (text\sout{, image, audio}) during autonomous exploration. The approach is evaluated for improvements in overall and multi-object success rate (\ac{SR}) as well as path efficiency measured by success weighted by path length (\ac{SPL}).
-        \item Implementation of a lightweight \ac{VLFM} \cite{yokoyama2024vlfm} component leveraging \ac{SEEM} \cite{zou2023seem} as a unified vision-language model, substantially reducing GPU memory requirements compared to traditional \ac{VLFM} \cite{yokoyama2024vlfm} pipelines using multiple separate models.
-        \item Design of a sensor-based fusion strategy that integrates semantic detections from \ac{SEEM} \cite{zou2023seem} with clustered relevance fields from Open-Fusion \cite{kashu2023openfusion}, applying spatial confidence weighting to enhance robustness against false positives in zero-shot object detection.
-        \item Experimental validation of the proposed system on a real mobile robot, focusing on practical aspects such as real-time performance and robustness to sensor noise including depth inaccuracies and changing lighting conditions.
-    \end{itemize}
-
-    While existing approaches either rely on short-term detection or isolated 3D mapping, this thesis introduces a hybrid architecture that tightly integrates real-time semantic frontier scoring with persistent 3D relevance fields.
-
-    \item Structure of the thesis:
+        This work contributes to the state-of-the-art development of a hybrid semantic exploration framework that combines open-vocabulary frontier scoring~\cite{yokoyama2024vlfm} with semantic global 3D scene representation~\cite{kashu2023openfusion}, enabling multi-object search with open-vocabulary queries (text\sout{, image, audio}) during autonomous exploration. The method is evaluated for improvements in multi-object \ac{SR} as well as path efficiency measured by \ac{SPL}. This is achieved by streamlining existing frontier scoring systems that selectively choose expert models based on the current tasks into a singular vision-language model based on \ac{SEEM}~\cite{zou2023seem}, substantially reducing GPU memory requirements compared to traditional semantic exploration pipelines using multiple separate models. Exploration is complemented by a sensor-based fusion strategy that integrates semantic detections from \ac{SEEM}~\cite{zou2023seem} with clustered relevance fields from semantic 3D mapping~\cite{kashu2023openfusion}, applying spatial confidence weighting to enhance robustness against false positives in zero-shot object detection. Experimental validation of the proposed system on a real mobile robot, focusing on practical aspects such as real-time performance and robustness to sensor noise including depth inaccuracies and changing lighting conditions.
 \end{enumerate}
+
+\section{Thesis Structure}
