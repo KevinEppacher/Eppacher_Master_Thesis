@@ -46,24 +46,43 @@ This section defines the evaluation metrics used throughout the experiments and 
 
 \begin{itemize}
     \item \textbf{Experiment 1 – Success Rate (SR):}  
-    Ratio of successfully reached single goal objects.  
+    Measures the proportion of tasks in which the robot successfully reaches the queried single goal object. This metric reflects the system’s ability to semantically ground a user-specified object and to navigate toward it reliably. It serves as a fundamental indicator of task success and is essential for evaluating overall system effectiveness in basic search scenarios.
     \textit{Evaluation against:} \ac{VLFM}, \ac{VLMaps}, \ac{OneMap}, \ac{GeFF}
 
+    \[
+    \text{SR} = \frac{1}{N} \sum_{i=1}^{N} S_i
+    \]
+    where \( S_i = 1 \) if the goal was reached in episode \( i \), and \( 0 \) otherwise; \( N \) is the total number of episodes.
+
+
     \item \textbf{Experiment 2 – Path Efficiency (SPL):}  
-    Success weighted by path length (SPL).  
-    \textit{Used to assess navigational efficiency of successful trajectories.}
+    SPL measures the efficiency of successful navigation by comparing the shortest possible path to the actual path taken. It is defined only for successful runs and penalizes overly long trajectories. In the context of semantic exploration, SPL provides insight into how effectively the system prioritizes relevant regions and minimizes detours when searching for target objects.
+
+    \[
+    \text{SPL} = \frac{1}{N} \sum_{i=1}^{N} S_i \cdot \frac{l_i}{\max(p_i, l_i)}
+    \]
+    where \( S_i \) is the success indicator for episode \( i \), \( l_i \) is the shortest path length to the goal, \( p_i \) is the actual path length taken, and \( N \) is the total number of episodes.
 
     \item \textbf{Experiment 3 – Multi-Object Success Rate (MSR):}  
-    Percentage of tasks where all queried objects are found.  
-    \textit{Important for evaluating real-world multi-object search performance.}
+    The average number of successfully found objects per episode (\textit{Progress, PR}) captures partial success in multi-goal navigation. SPL is computed separately for each object in sequence, conditioned on the success of the previous one. This highlights the system’s ability to reuse semantic map information and improve efficiency across successive targets.
+
+    \[
+    \text{PR} = \frac{1}{N} \sum_{i=1}^{N} C_i
+    \]
+    where \( C_i \) is the number of successfully found objects in episode \( i \), and \( N \) is the total number of episodes.
 
     \item \textbf{Experiment 4 – Ablation: Memory Component (OpenFusion):}  
-    MSR change with vs. without OpenFusion (i.e. only \ac{VLFM}).  
-    \textit{Purpose: Understand OpenFusion’s contribution in the hybrid setup.}
+    Comparison of multi-object progress and SPL with and without the semantic 3D memory component. Highlights the contribution of global semantic mapping to task success and efficiency in the hybrid system.
 
     \item \textbf{Experiment 5 – Robustness to False Positives (Fusion Strategy):}  
-    \textbf{Metrics:} Semantic Precision and False Positive Rate.  
-    \textit{Description: Evaluates how fusion between \ac{SEEM} and OpenFusion mitigates false detections under occlusion and ambiguous inputs.}
+    \textbf{Metrics:} Evaluated using semantic precision and false positive rate. Assesses the effect of the fusion strategy on filtering erroneous detections to improve overall task success.
+
+    \[
+    \text{Precision} = \frac{TP}{TP + FP}
+    \quad\quad
+    \text{FPR} = \frac{FP}{FP + TN}
+    \]
+    where \( TP \) and \( FP \) are the numbers of true and false positive semantic detections, and \( TN \) is the number of true negatives (i.e., correctly rejected background regions or non-target classes).
 
     \item \textbf{Experiment 6 – Real-World System Performance:}  
     \textbf{Metrics:}
@@ -74,6 +93,5 @@ This section defines the evaluation metrics used throughout the experiments and 
     \textit{Objective: Assess robustness, efficiency, and deployability in physical environments.}
 
     \item \textbf{Experiment 7 – Vision-Language Model Comparison (SEEM vs. BLIP2):}  
-    \textbf{Metrics:} Cosine Similarity Consistency, SR, SPL, Memory Footprint.  
-    \textit{Purpose: Compare SEEM and BLIP2 in the context of frontier scoring and value map generation.}
+    \textbf{Metrics:} Comparison of value maps generated using SEEM and BLIP2 for frontier scoring, focusing on their impact on exploration performance (SR and SPL) and GPU efficiency. Evaluates whether a lightweight unified model like SEEM can match or surpass BLIP2 in guiding semantic exploration through effective value map construction.
 \end{itemize}
