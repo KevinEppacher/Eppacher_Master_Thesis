@@ -44,48 +44,36 @@ This section details the practical implementation of the proposed approach, cove
 \section{Evaluation Metrics}
 This section defines the evaluation metrics used throughout the experiments and assigns them to each corresponding experiment.
 
-\subsection{Experiment 1: Success Rate (SR)}
 \begin{itemize}
-    \item Metric: Ratio of successfully reached single goal objects.
-    \item Evaluation against: \ac{VLFM}, \ac{VLMaps}, \ac{OneMap}, \ac{GeFF}
-\end{itemize}
+    \item \textbf{Experiment 1 – Success Rate (SR):}  
+    Ratio of successfully reached single goal objects.  
+    \textit{Evaluation against:} \ac{VLFM}, \ac{VLMaps}, \ac{OneMap}, \ac{GeFF}
 
-\subsection{Experiment 2: Path Efficiency (SPL)}
-\begin{itemize}
-    \item Metric: Success weighted by path length (SPL).
-    \item Used to assess navigational efficiency of successful trajectories.
-\end{itemize}
+    \item \textbf{Experiment 2 – Path Efficiency (SPL):}  
+    Success weighted by path length (SPL).  
+    \textit{Used to assess navigational efficiency of successful trajectories.}
 
-\subsection{Experiment 3: Multi-Object Success Rate (MSR)}
-\begin{itemize}
-    \item Metric: Percentage of tasks where all queried objects are found.
-    \item Important for evaluating real-world multi-object search performance.
-\end{itemize}
+    \item \textbf{Experiment 3 – Multi-Object Success Rate (MSR):}  
+    Percentage of tasks where all queried objects are found.  
+    \textit{Important for evaluating real-world multi-object search performance.}
 
-\subsection{Experiment 4: Ablation – Memory Component (OpenFusion)}
-\begin{itemize}
-    \item Metric: MSR change with vs. without OpenFusion (i.e. only \ac{VLFM}).
-    \item Purpose: Understand OpenFusion’s contribution in the hybrid setup.
-\end{itemize}
+    \item \textbf{Experiment 4 – Ablation: Memory Component (OpenFusion):}  
+    MSR change with vs. without OpenFusion (i.e. only \ac{VLFM}).  
+    \textit{Purpose: Understand OpenFusion’s contribution in the hybrid setup.}
 
-\subsection{Experiment 5: Robustness to False Positives (Fusion Strategy)}
-\begin{itemize}
-    \item Metric: \textbf{Semantic Precision} and \textbf{False Positive Rate}.
-    \item Description: Evaluates how fusion between \ac{SEEM} and OpenFusion mitigates false detections under occlusion and ambiguous inputs.
-\end{itemize}
+    \item \textbf{Experiment 5 – Robustness to False Positives (Fusion Strategy):}  
+    \textbf{Metrics:} Semantic Precision and False Positive Rate.  
+    \textit{Description: Evaluates how fusion between \ac{SEEM} and OpenFusion mitigates false detections under occlusion and ambiguous inputs.}
 
-\subsection{Experiment 6: Real-World System Performance}
-\begin{itemize}
-    \item Metrics:
-        \begin{itemize}
-            \item \textbf{SR, MSR, SPL}: for search performance under real-world conditions.
-            \item \textbf{System Metrics:} CPU/GPU usage, FPS, inference latency.
-        \end{itemize}
-    \item Objective: Assess robustness, efficiency, and deployability in physical environments.
-\end{itemize}
+    \item \textbf{Experiment 6 – Real-World System Performance:}  
+    \textbf{Metrics:}
+    \begin{itemize}
+        \item SR, MSR, SPL – for search performance under real-world conditions.
+        \item System metrics – CPU/GPU usage, FPS, inference latency.
+    \end{itemize}
+    \textit{Objective: Assess robustness, efficiency, and deployability in physical environments.}
 
-\subsection{Experiment 7: Vision-Language Model Comparison (SEEM vs. BLIP2)}
-\begin{itemize}
-    \item Metrics: Cosine Similarity Consistency, SR, SPL, Memory Footprint.
-    \item Purpose: Compare SEEM and BLIP2 in the context of frontier scoring and value map generation.
+    \item \textbf{Experiment 7 – Vision-Language Model Comparison (SEEM vs. BLIP2):}  
+    \textbf{Metrics:} Cosine Similarity Consistency, SR, SPL, Memory Footprint.  
+    \textit{Purpose: Compare SEEM and BLIP2 in the context of frontier scoring and value map generation.}
 \end{itemize}
