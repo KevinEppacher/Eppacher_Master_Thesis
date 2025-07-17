@@ -3,8 +3,8 @@ This chapter details the methods developed for semantic exploration, persistent 
 
 \section{System Overview}
 \begin{itemize}
-    \item Presentation of the overall architecture of the exploration, detection, mapping, and fusion pipeline.
-    \item Description of data flow between exploration (frontier evaluation), detection (promptable models), and exploitation (persistent semantic mapping).
+    \item Presentation of the overall architecture of the exploration~(\ref{sec:semantic_frontier}), detection~(\ref{sec:zero_shot_detection}), mapping~(\ref{sec:persistent_mapping}), and fusion~(\ref{sec:fusion_strategy}) pipeline.
+    \item Description of data flow between exploration (frontier evaluation), detection (promptable models), and exploitation (persistent semantic mapping), as shown in Figure~\ref{fig:system_overview}.
     \item Explanation of how exploration and mapping components interact to progressively build a semantic understanding of the environment.
 \end{itemize}
 
@@ -15,8 +15,7 @@ This chapter details the methods developed for semantic exploration, persistent 
     \label{fig:system_overview}
 \end{figure}
 
-\section{Semantic Frontier Mapping}
-\subsection{Frontier Detection and Calculation}
+\section{Semantic Frontier Exploration} \label{sec:semantic_frontier}\subsection{Frontier Detection and Calculation}
 \begin{itemize}
     \item Detection of frontiers on a 2D occupancy grid to identify candidate regions for exploration.
     \item Application of classical frontier-based exploration algorithms extended with semantic information.
@@ -36,7 +35,7 @@ This chapter details the methods developed for semantic exploration, persistent 
     \item Strategy for balancing exploration efficiency and semantic search goals.
 \end{itemize}
 
-\section{Persistent 3D Semantic Mapping}
+\section{Persistent Semantic 3D Mapping} \label{sec:persistent_mapping}
 
 \subsection{Global Map Construction with Open-Fusion}
 \begin{itemize}
@@ -52,13 +51,11 @@ This chapter details the methods developed for semantic exploration, persistent 
     \item Maintenance of the semantic graph as a persistent memory for multi-object search tasks.
 \end{itemize}
 
-\section{Promptable Zero-Shot Detection}
-\begin{itemize}
+\section{Promptable Zero-Shot Detection} \label{sec:zero_shot_detection}\begin{itemize}
     \item tbd
 \end{itemize}
 
-\section{Fusion Strategy}
-\begin{itemize}
+\section{Fusion Strategy} \label{sec:fusion_strategy}\begin{itemize}
     \item Formulation of a fusion strategy combining frontier-based semantic relevance with persistent 3D semantic mapping.
     \item Design of decision-making algorithms leveraging combined semantic information to robustly answer multi-object search queries.
 \end{itemize}
