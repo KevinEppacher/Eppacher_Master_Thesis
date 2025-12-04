@@ -1,5 +1,5 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:145.0) Gecko/20100101 Firefox/145.0" version="29.2.3" pages="4">
-  <diagram name="Page-1" id="SSXmRuW3qZjkE0Sjbskx">
+  <diagram name="SAGE Pipeline" id="SSXmRuW3qZjkE0Sjbskx">
     <mxGraphModel dx="1971" dy="1121" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="1" shadow="0">
       <root>
         <mxCell id="0" />
@@ -530,7 +530,7 @@
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram id="1h_zE9ew--eT8193DY9U" name="Page-2">
+  <diagram id="1h_zE9ew--eT8193DY9U" name="BLIP2">
     <mxGraphModel dx="2365" dy="1345" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="1" shadow="0">
       <root>
         <mxCell id="0" />
@@ -607,7 +607,7 @@
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram id="sGAe4NWk2Qvx5peaVnsY" name="Page-3">
+  <diagram id="sGAe4NWk2Qvx5peaVnsY" name="Evaluation Pipeline">
     <mxGraphModel dx="2365" dy="1345" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
@@ -871,7 +871,7 @@
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram id="1dEoRKNGklXaDisKjlr0" name="Page-4">
+  <diagram id="1dEoRKNGklXaDisKjlr0" name="ValueMap">
     <mxGraphModel dx="2365" dy="1345" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="1" shadow="0">
       <root>
         <mxCell id="0" />
