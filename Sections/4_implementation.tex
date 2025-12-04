@@ -44,6 +44,13 @@ This section details the practical implementation of the proposed approach, cove
 \section{Evaluation Metrics}
 This section defines the evaluation metrics used throughout the experiments and assigns them to each corresponding experiment.
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{Images/04_implementation/evaluation_pipeline.png}
+    \caption{System architecture}
+    \label{fig:system_overview}
+\end{figure}
+
 \begin{itemize}
     \item \textbf{Experiment 1 – Success Rate (SR):}  
     Measures the proportion of tasks in which the robot successfully reaches the queried single goal object. This metric reflects the system’s ability to semantically ground a user-specified object and to navigate toward it reliably. It serves as a fundamental indicator of task success and is essential for evaluating overall system effectiveness in basic search scenarios.
@@ -92,6 +99,4 @@ This section defines the evaluation metrics used throughout the experiments and 
     \end{itemize}
     \textit{Objective: Assess robustness, efficiency, and deployability in physical environments.}
 
-    \item \textbf{Experiment 7 – Vision-Language Model Comparison (SEEM vs. BLIP2):}  
-    \textbf{Metrics:} Comparison of value maps generated using SEEM and BLIP2 for frontier scoring, focusing on their impact on exploration performance (SR and SPL) and GPU efficiency. Evaluates whether a lightweight unified model like SEEM can match or surpass BLIP2 in guiding semantic exploration through effective value map construction.
 \end{itemize}

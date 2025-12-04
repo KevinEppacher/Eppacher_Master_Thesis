@@ -10,7 +10,7 @@ This chapter details the methods developed for semantic exploration, persistent 
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{Images/03_methods/Master_Thesis_Overview.drawio.png}
+    \includegraphics[width=\textwidth]{Images/03_methods/sage_pipeline.png}
     \caption{System architecture}
     \label{fig:system_overview}
 \end{figure}
@@ -23,8 +23,15 @@ This chapter details the methods developed for semantic exploration, persistent 
 
 \subsection{Value Map Generation using Vision-Language Models}
 \begin{itemize}
-    \item Computation of value maps by evaluating cosine similarity between multi-modal queries (text, image, audio) and scene observations.
-    \item Use of promptable vision-language models (e.g., SEEM) to assign semantic relevance scores to each region.
+    \item Computation of value maps by evaluating cosine similarity between text queries and scene observations.
+    
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=\textwidth]{Images/03_methods/blip2_cosine_sim.png}
+        \caption{System architecture}
+        \label{fig:system_overview}
+    \end{figure}
+
     \item Dynamic update of value maps as new observations are integrated.
 \end{itemize}
 
@@ -58,4 +65,17 @@ This chapter details the methods developed for semantic exploration, persistent 
 \section{Fusion Strategy} \label{sec:fusion_strategy}\begin{itemize}
     \item Formulation of a fusion strategy combining frontier-based semantic relevance with persistent 3D semantic mapping.
     \item Design of decision-making algorithms leveraging combined semantic information to robustly answer multi-object search queries.
+\end{itemize}
+
+\section{Behavior Tree for Semantic-Guided Exploration} \label{sec:behavior_tree}\begin{itemize}
+    \item Formulation of a fusion strategy combining frontier-based semantic relevance with persistent 3D semantic mapping.
+    \item Design of decision-making algorithms leveraging combined semantic information  to robustly answer multi-object search queries.
+    
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{Images/03_methods/sage_behaviortree.png}
+    \caption{System architecture}
+    \label{fig:system_overview}
+\end{figure}
+
 \end{itemize}
