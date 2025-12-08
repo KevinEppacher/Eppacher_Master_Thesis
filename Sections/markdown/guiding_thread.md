@@ -52,62 +52,31 @@ Core Gaps:
 | **Low real-world applicability** | ConceptGraphs, VLMaps | High GPU cost or simulation-only; not deployable on mobile robots. |
 
 - Scientific Contribution:
-    This work contributes to the state-of-the-art by introducing a hybrid semantic exploration framework that combines zero-shot frontier scoring~\cite{yokoyama2024vlfm} with global semantic 3D scene representation~\cite{kashu2023openfusion}, enabling multi-object search with open-vocabulary text queries during autonomous exploration. The proposed method is evaluated for improvements in multi-object \ac{SR} as well as path efficiency measured by \ac{SPL}.This is achieved by streamlining existing frontier scoring systems that selectively choose expert models based on the current tasks into a singular vision-language model based on \ac{SEEM}~\cite{zou2023seem}, substantially reducing GPU memory requirements compared to traditional semantic exploration pipelines using multiple separate models. Exploration is complemented by a sensor-based fusion strategy that integrates semantic detections from \ac{SEEM}~\cite{zou2023seem} with clustered relevance fields from semantic 3D mapping~\cite{kashu2023openfusion}, applying spatial confidence weighting to enhance robustness against false positives in zero-shot object detection. Experimental validation of the proposed system on a real mobile robot, focusing on practical aspects such as real-time performance and robustness to sensor noise including depth inaccuracies and changing lighting conditions.
-    
+
+    This work contributes to the state of the art by introducing a hybrid semantic exploration framework that integrates zero-shot semantic frontier scoring with persistent 3D scene representation, enabling autonomous search guided by open-vocabulary text queries. The system combines real-time semantic reasoning during exploration with a long-term spatial memory, allowing the robot to dynamically balance between discovering new information and exploiting previously acquired knowledge.
+
+    Unlike previous approaches that focus exclusively on either geometric frontiers or static semantic maps, the proposed framework continuously fuses information from multiple semantic sources to maintain a unified, confidence-based world model. Adaptive weighting enables the robot to adjust its behavior between exploration and exploitation according to the reliability of recent observations and the stability of stored semantic memory.
+
+    The framework further investigates how the quality and granularity of the underlying semantic information influence task success, navigation efficiency, and robustness. By systematically varying the trust between exploration and memory components, this work provides new insights into how semantic reasoning and persistent mapping can be effectively combined for open-vocabulary, multi-object search in dynamic environments.
+
     To evaluate the contribution of the proposed system, the following research questions are formulated.
-    ### **RQ1 – Overall Performance Benchmarking**
+    - Research Question 1: 
+        - How does integrating zero-shot semantic exploration and persistent 3D semantic mapping affect multi-object search performance and navigation efficiency compared to existing methods?
+        - Metrics: Success Rate (SR) and Success weighted by Path Length (SPL), Multi-Object Success Rate (MSR)
+    - Research Question 2: 
+        - How does the interaction between live exploration and accumulated semantic memory influence overall system performance?
+        - Metrics: Varying the weighting factor between exploration and memory during graph node fusion to assess impacts on SR and SPL, identifying optimal trade-offs between reactivity and exploitation.
+    - Research Question 3: 
+        - How does multi-source fusion of detection confidence, semantic similarity, and memory confidence impact detection robustness and false-positive suppression during exploration?
+        - Metrics: Precision, Recall, F1-Score, Confusion Matrix, SR under different fusion weight configurations across COCO, open-vocab, and zero-shot classes.
+    - Research Question 4: 
+        - How does the granularity of semantic map retrieval affect map quality, and can dynamic weighting between exploration and memory compensate for potential noise?
+        - Metrics: Varying the top-k retrieval depth in OpenFusion and adjusting exploration weight accordingly to evaluate effects on SR and SPL.
+    - Research Question 5: 
+        - What is the computational footprint and real-world robustness of the hybrid framework.
+        - Metrics: FPS, GPU/CPU usage, inference latency, detection stability under sensor noise during physical deployment on a mobile robot.
 
-    > **How does the proposed hybrid framework compare to existing semantic exploration and mapping systems in search success and navigation efficiency?**
-
-    * **RQ1a:** How does **Success Rate (SR)** and **Success per Path Length (SPL)** compare with state-of-the-art systems such as **OneMap**, **VLFM**, and **Pigeon**?
-    * **RQ1b:** Does the hybrid system maintain real-time performance on embedded hardware (Jetson Orin)?
-
-    **Purpose:**
-    To quantify baseline performance gains of the hybrid fusion approach relative to known methods.
-
-    ### **RQ2 – Exploration–Memory Fusion Weighting**
-
-    > **How does varying the weight between exploration and memory affect performance and stability?**
-
-    * **Parameter:** λₑₓₚₗₒᵣₐₜᵢₒₙ ∈ [0,1] controlling the influence of live exploration versus persistent memory in the **graph node fusion**.
-    * **RQ2a:** How do **SR** and **SPL** change when shifting trust from exploration to memory?
-    * **RQ2b:** What weighting yields the best trade-off local exploration and memory?
-
-    ### **RQ3 – Multi-Source Detection Fusion**
-
-    > **How does combining instance detection (YOLO-E), semantic similarity (BLIP-2), and memory confidence (OpenFusion) influence detection robustness and false-positive suppression?**
-
-    * Each source contributes a score:
-    ( S_\text{fusion} = w_d S_\text{det} + w_c S_\text{cosine} + w_m S_\text{memory} )
-    * **RQ3a:** How does SR change with different ( w_d, w_c, w_m ) configurations?
-    * **RQ3b:** How do detection precision and recall vary across **COCO**, **open-vocab**, and **zero-shot** classes?
-    * **RQ3c:** Which drawbacks arise from increasing the detection threshold and applying strong fusion weighting (e.g., missed low-confidence valid objects)?
-
-    **Purpose:**
-    To measure how multi-score fusion affects robustness and error behavior in mixed-vocabulary conditions.
-
-    ### **RQ4 – Sensitivity of Semantic Map Granularity**
-
-    > **How does increasing the semantic retrieval depth (*top-k*) in OpenFusion affect map quality, and how can dynamic weighting compensate for resulting noise?**
-
-    * **Top-k** controls the number of semantic candidates fused per voxel or grid cell.
-    * At each *top-k* step, **increase the exploration weight λₑₓₚₗₒᵣₐₜᵢₒₙ** proportionally, shifting trust away from the noisier memory.
-    * **RQ4a:** How do **SR** and **SPL** degrade when *top-k* grows while trusting only memory?
-    * **RQ4b:** Can gradual balancing toward exploration restore stable performance at higher *top-k* levels?
-
-    **Purpose:**
-    To understand the coupling between semantic map granularity and fusion weighting stability.
-
-    ### **RQ5 – System Efficiency and Real-World Performance**
-
-    > **What is the computational footprint and real-world robustness of the hybrid system?**
-
-    * **Metrics:** FPS, GPU/CPU usage, inference latency, detection stability under sensor noise.
-    * **Scenario:** Physical deployment with RGB-D camera and odometry on mobile robot.
-
-    **Purpose:**
-    To verify deployability and robustness in real-world conditions.
-
+    These research questions guide the design of the experimental evaluation, where each question is systematically addressed through targeted ablation studies, comparative benchmarks, and real-world validation presented in Chapter 4.
 
 ## Thesis Structure
 
