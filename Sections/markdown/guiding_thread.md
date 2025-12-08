@@ -1,5 +1,5 @@
-# Introduction (2 S.)
-## Problem Statement
+# 1. Introduction (2 S.)
+## 1.1 Problem Statement
 - Domain and relevance:
     - Service Robotics --> Vaucuum Robot searching for fridge in the Kitchen with semantic Input Prompt
     - Search and Rescue (SAR)--> using one or mutliple robots to search persons, with the hint, that they may be in the bathroom
@@ -38,6 +38,15 @@
 
         - Problem --> heavy GPU usage, offline training (no on the fly exploration), noisy maps hence ineffective navigation and search. some works solely rely on object detector which can lead to easy false-positive detections
 
+Derivative what is needed from the state of the art:
+- zero shot frontier exploration framework
+- persistent 3D semantic mapping with confidence-based fusion
+- uses pretrtained models only, no further training needed
+- hybrid fusion strategy to balance exploration and memory
+- multi-source detection fusion for robust object identification
+- GPU efficient design for real-time deployment on mobile robots
+- Modular architecture for easy adaptation and extension
+- Not limited to fix trained set of object categories
 
 Core Gaps:
 
@@ -62,7 +71,7 @@ Core Gaps:
     To evaluate the contribution of the proposed system, the following research questions are formulated.
     - Research Question 1: 
         - How does integrating zero-shot semantic exploration and persistent 3D semantic mapping affect multi-object search performance and navigation efficiency compared to existing methods?
-        - Metrics: Success Rate (SR) and Success weighted by Path Length (SPL), Multi-Object Success Rate (MSR)
+        - Metrics: Performance is quantified in terms of task success and path efficiency, measured through Success Rate (SR), Success per Path Length (SPL), and Multi-Object Success Rate (MSR) relative to representative state-of-the-art systems such as OneMap, VLFM, and Pigeon.
     - Research Question 2: 
         - How does the interaction between live exploration and accumulated semantic memory influence overall system performance?
         - Metrics: Varying the weighting factor between exploration and memory during graph node fusion to assess impacts on SR and SPL, identifying optimal trade-offs between reactivity and exploitation.
@@ -71,49 +80,49 @@ Core Gaps:
         - Metrics: Precision, Recall, F1-Score, Confusion Matrix, SR under different fusion weight configurations across COCO, open-vocab, and zero-shot classes.
     - Research Question 4: 
         - How does the granularity of semantic map retrieval affect map quality, and can dynamic weighting between exploration and memory compensate for potential noise?
-        - Metrics: Varying the top-k retrieval depth in OpenFusion and adjusting exploration weight accordingly to evaluate effects on SR and SPL.
+        - Metrics: Varying the semantic granularity in the 3D semantic Mapper and adjusting exploration weight accordingly to evaluate effects on SR and SPL.
     - Research Question 5: 
         - What is the computational footprint and real-world robustness of the hybrid framework.
         - Metrics: FPS, GPU/CPU usage, inference latency, detection stability under sensor noise during physical deployment on a mobile robot.
 
     These research questions guide the design of the experimental evaluation, where each question is systematically addressed through targeted ablation studies, comparative benchmarks, and real-world validation presented in Chapter 4.
 
-## Thesis Structure
+## 1.2 Thesis Structure
 
 
-# State of the Art (8 S.)
-## Geometric Exploration
-## Semantic Multi-Object Search Approaches
-## Map Reconstruction and Persistent Semantic Mapping
-## Object Detection and Promptable Models
+# 2. State of the Art (8 S.)
+## 2.1 Geometric Exploration
+## 2.2 Semantic Multi-Object Search Approaches
+## 2.3 Map Reconstruction and Persistent Semantic Mapping
+## 2.4 Object Detection and Promptable Models
 
-# Methods (22 S.)
-## System Overview
-## Semantic Frontier Exploration
-### Frontier Detection and Calculation
-### Value Map Generation using Vision-Language Models
-### Navigation to High-Value Frontiers
-## Persistent Semantic 3D Mapping
-### Global Map Construction with Open-Fusion
-### Semantic Clustering and Graph Node Generation
-## Promptable Zero-Shot Detection
-## Fusion Strategy
-## Behavior Tree for Semantic-Guided Exploration
+# 3. Methods (22 S.)
+## 3.1 System Overview
+## 3.2 Semantic Frontier Exploration
+**Frontier Detection and Calculation**
+**Value Map Generation using Vision-Language Models**
+**Navigation to High-Value Frontiers**
+## 3.3 Persistent Semantic 3D Mapping
+**Global Map Construction with Open-Fusion**
+**Semantic Clustering and Graph Node Generation**
+## 3.4 Promptable Zero-Shot Detection
+## 3.5 Fusion Strategy
+## 3.6 Behavior Tree for Semantic-Guided Exploration
 
-# Implementation (9 S.)
-## Simulation Environment
-## Dataset
-## Used Software
-## Used Hardware
-## Evaluation Metrics
+# 4. Implementation (9 S.)
+## 4.1 Simulation Environment
+## 4.2 Dataset
+## 4.3 Used Software
+## 4.4 Used Hardware
+## 4.5 Evaluation Metrics
 
-# Discussion and Results (30 S.)
-## Results on Semantic Multi-Object Search Tasks
-### Experiment 1: Single-Object Success Rate (SR)
-### Experiment 2: Navigation Efficiency (SPL)
-### Experiment 3: Multi-Object Success Rate (MSR)
-### Experiment 4: Ablation of Exploitation (OpenFusion)
-## Experiment 5: Improving Detection Robustness via Semantic Fusion
-## Experiment 6: Real-World Deployment
+# 5. Discussion and Results (30 S.)
+## 5.1 Results on Semantic Multi-Object Search Tasks
+### **Experiment 1: Single-Object Success Rate (SR)**
+### **Experiment 2: Navigation Efficiency (SPL)**
+### **Experiment 3: Multi-Object Success Rate (MSR)**
+### **Experiment 4: Ablation of Exploitation (OpenFusion)**
+## 5.2 Experiment 5: Improving Detection Robustness via Semantic Fusion
+## 5.3 Experiment 6: Real-World Deployment
 
-# Summary and Outlook (1. S)
+# 6. Summary and Outlook (1. S)
