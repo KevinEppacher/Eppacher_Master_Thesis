@@ -76,23 +76,22 @@ Core Gaps:
         - How does the interaction between live exploration and accumulated semantic memory influence overall system performance?
         - Metrics: Varying the weighting factor between exploration and memory during graph node fusion to assess impacts on SR and SPL, identifying optimal trade-offs between reactivity and exploitation.
     - Research Question 3: 
-        - How does multi-source fusion of detection confidence, semantic similarity, and memory confidence impact detection robustness and false-positive suppression during exploration?
-        - Metrics: Precision, Recall, F1-Score, Confusion Matrix, SR under different fusion weight configurations across COCO, open-vocab, and zero-shot classes.
-    - Research Question 4: 
         - How does the granularity of semantic map retrieval affect map quality, and can dynamic weighting between exploration and memory compensate for potential noise?
         - Metrics: Varying the semantic granularity in the 3D semantic Mapper and adjusting exploration weight accordingly to evaluate effects on SR and SPL.
+    - Research Question 4: 
+        - How does multi-source fusion of detection confidence, semantic similarity, and memory confidence impact detection robustness and false-positive suppression during exploration?
+        - Metrics: Precision, Recall, F1-Score, Confusion Matrix, SR under different fusion weight configurations across COCO, open-vocab, and zero-shot classes.
     - Research Question 5: 
         - What is the computational footprint and real-world robustness of the hybrid framework.
         - Metrics: FPS, GPU/CPU usage, inference latency, detection stability under sensor noise during physical deployment on a mobile robot.
 
     These research questions guide the design of the experimental evaluation, where each question is systematically addressed through targeted ablation studies, comparative benchmarks, and real-world validation presented in Chapter 4.
-
 ## 1.2 Thesis Structure
 
 
 # 2. State of the Art (8 S.)
 ## 2.1 Geometric Exploration
-## 2.2 Semantic Multi-Object Search Approaches
+## 2.2 Vision-Language-Guided Exploration
 ## 2.3 Map Reconstruction and Persistent Semantic Mapping
 ## 2.4 Object Detection and Promptable Models
 
@@ -117,12 +116,19 @@ Core Gaps:
 ## 4.5 Evaluation Metrics
 
 # 5. Discussion and Results (30 S.)
-## 5.1 Results on Semantic Multi-Object Search Tasks
-### **Experiment 1: Single-Object Success Rate (SR)**
-### **Experiment 2: Navigation Efficiency (SPL)**
-### **Experiment 3: Multi-Object Success Rate (MSR)**
-### **Experiment 4: Ablation of Exploitation (OpenFusion)**
-## 5.2 Experiment 5: Improving Detection Robustness via Semantic Fusion
-## 5.3 Experiment 6: Real-World Deployment
+## 5.1 Experiment 1: Benchmarking on Matterport Scenes
+Evaluates baseline performance in multi-object search compared to state-of-the-art frameworks (OneMap, VLFM, Pigeon) using SR, SPL, and MSR.
+
+## 5.2 Experiment 2: Impact of Exploration–Memory Weighting
+Analyzes how varying the balance between live exploration and persistent memory influences navigation efficiency and task success.
+
+## 5.3 Experiment 3: Sensitivity to Semantic Map Granularity
+Investigates how varying the semantic retrieval depth affects mapping robustness and overall navigation stability.
+
+## 5.4 Experiment 4: Effect of Multi-Source Semantic Fusion
+Examines how combining detection confidence, semantic similarity, and memory reliability improves detection robustness and reduces false positives.
+
+## 5.5 Experiment 5: System Efficiency and Real-World Validation
+Assesses runtime performance, resource utilization, and stability under real-world sensor noise during physical deployment.
 
 # 6. Summary and Outlook (1. S)
