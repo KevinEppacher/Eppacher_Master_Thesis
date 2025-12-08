@@ -695,7 +695,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="agFYEovbLkG5V1rdB4zz" name="Flowchart">
-    <mxGraphModel dx="1084" dy="630" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="898" dy="522" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -720,6 +720,15 @@
         <mxCell id="w9vOF-TgChk_tvrWmuev-1" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="Object detected?" vertex="1">
           <mxGeometry height="80" width="80" x="385" y="330" as="geometry" />
         </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-91" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="w9vOF-TgChk_tvrWmuev-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="640" y="475" />
+              <mxPoint x="640" y="260" />
+              <mxPoint x="425" y="260" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
         <mxCell id="w9vOF-TgChk_tvrWmuev-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Approach likiest Graph Node" vertex="1">
           <mxGeometry height="30" width="120" x="495" y="460" as="geometry" />
         </mxCell>
@@ -739,13 +748,13 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="w9vOF-TgChk_tvrWmuev-12" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Clear all Maps" vertex="1">
-          <mxGeometry height="30" width="120" x="365" y="170" as="geometry" />
+          <mxGeometry height="30" width="120" x="362.5" y="160" as="geometry" />
         </mxCell>
         <mxCell id="w9vOF-TgChk_tvrWmuev-32" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="w9vOF-TgChk_tvrWmuev-1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="w9vOF-TgChk_tvrWmuev-13" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Publish target Object &quot;Bed&quot;" vertex="1">
-          <mxGeometry height="30" width="120" x="365" y="230" as="geometry" />
+          <mxGeometry height="30" width="120" x="365" y="220" as="geometry" />
         </mxCell>
         <mxCell id="w9vOF-TgChk_tvrWmuev-25" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="w9vOF-TgChk_tvrWmuev-2">
           <mxGeometry relative="1" as="geometry" />
@@ -805,6 +814,114 @@
         </mxCell>
         <mxCell id="w9vOF-TgChk_tvrWmuev-40" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="Object still detected?" vertex="1">
           <mxGeometry height="80" width="95" x="378" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-82" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="w9vOF-TgChk_tvrWmuev-56">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-92" connectable="0" parent="w9vOF-TgChk_tvrWmuev-82" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="yes" vertex="1">
+          <mxGeometry relative="1" x="-0.4268" y="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-97" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="w9vOF-TgChk_tvrWmuev-67">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-53" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="Object detected?" vertex="1">
+          <mxGeometry height="80" width="80" x="240" y="1220" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-101" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-54" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="280" y="1220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-54" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Approach likiest Graph Node" vertex="1">
+          <mxGeometry height="30" width="120" x="305" y="1110" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-83" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="w9vOF-TgChk_tvrWmuev-71">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-56" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Go to detected Object" vertex="1">
+          <mxGeometry height="30" width="120" x="110" y="1300" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-79" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="w9vOF-TgChk_tvrWmuev-60">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-58" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Start" vertex="1">
+          <mxGeometry height="30" width="50" x="255" y="920" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-80" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-60" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="w9vOF-TgChk_tvrWmuev-62">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-60" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Clear all Maps" vertex="1">
+          <mxGeometry height="30" width="120" x="220" y="970" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-81" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-62" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="w9vOF-TgChk_tvrWmuev-53">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-62" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Publish target Object &quot;Bed&quot;" vertex="1">
+          <mxGeometry height="30" width="120" x="220" y="1030" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-99" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-67" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="w9vOF-TgChk_tvrWmuev-54">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="365" y="1200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-100" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-67" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="w9vOF-TgChk_tvrWmuev-69">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="520" y="1200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-67" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="All Frontiers observed?" vertex="1">
+          <mxGeometry height="80" width="95" x="387.5" y="1160" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-102" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-69" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="w9vOF-TgChk_tvrWmuev-53">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="555" y="1090" />
+              <mxPoint x="280" y="1090" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-69" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Spin to unobervsed Frontier" vertex="1">
+          <mxGeometry height="30" width="120" x="460" y="1110" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-84" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-71" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="w9vOF-TgChk_tvrWmuev-77">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-71" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Realign to Object" vertex="1">
+          <mxGeometry height="30" width="120" x="110" y="1360" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-72" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Take picture" vertex="1">
+          <mxGeometry height="30" width="120" x="110" y="1530" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-85" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-77" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="w9vOF-TgChk_tvrWmuev-72">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-87" connectable="0" parent="w9vOF-TgChk_tvrWmuev-85" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="yes" vertex="1">
+          <mxGeometry relative="1" x="-0.3467" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-86" edge="1" parent="1" source="w9vOF-TgChk_tvrWmuev-77" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="w9vOF-TgChk_tvrWmuev-53">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="90" y="1450" />
+              <mxPoint x="90" y="1200" />
+              <mxPoint x="280" y="1200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-88" connectable="0" parent="w9vOF-TgChk_tvrWmuev-86" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="no" vertex="1">
+          <mxGeometry relative="1" x="-0.9383" y="-1" as="geometry">
+            <mxPoint y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="w9vOF-TgChk_tvrWmuev-77" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="Object still detected?" vertex="1">
+          <mxGeometry height="80" width="95" x="122.5" y="1410" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
