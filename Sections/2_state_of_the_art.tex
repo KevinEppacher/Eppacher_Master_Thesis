@@ -1,3 +1,5 @@
+% chktex-file 44
+
 \chapter{State of the Art}
 
 In this chapter, the current state of research in semantic multi-object search, map reconstruction, and object detection is reviewed. The goal is to identify strengths and limitations of existing methods and establish the technological context for the proposed hybrid approach. The chapter is divided into three key areas: approaches for searching multiple objects semantically, techniques for building and maintaining persistent semantic maps, and recent advances in object detection and promptable models for open-vocabulary tasks.
@@ -17,14 +19,36 @@ In this chapter, the current state of research in semantic multi-object search, 
     \item These approaches are purely geometric and lack semantic awareness. They are not suitable for open-vocabulary object queries or multi-object search tasks requiring semantic reasoning.
 \end{itemize}
 
-\section{Semantic Multi-Object Search Approaches}
+\section{Vision-Language-Guided Exploration}
 \begin{itemize}
     \item Review of methods targeting simultaneous or sequential search for multiple objects in unknown environments.
-    \item Analysis of VLFM, VLMaps, OneMap, GeFF, ObjectNav,\dots regarding:
+    \item Analysis of \dots
     \begin{itemize}
-        \item Success Rate (SR) and Success weighted by Path Length (SPL) as key metrics.
-        \item Real-time capabilities and computational requirements.
-        \item Handling of open-vocabulary queries.
+        \item VLFM~\cite{yokoyama2024vlfm}
+        \item SemUtil~\cite{chen2023semutil}
+        \item ESC~\cite{liu2023esc}
+        \item LGX~\cite{shah2024lgx}
+        \item CoW~\cite{qi2023cow}
+        \item ZSON~\cite{shah2023zson}
+        \item PONI~\cite{qi2024poni}
+        \item PIRLNav~\cite{ma2024pirlnav}
+    \end{itemize}
+
+    regarding aspects such as:
+    \begin{itemize}
+        \item Training Required (Pretrained vs. Fine-tuned)
+        \item Real-Time Capability
+        \item VRAM Requirements
+        \item Sensor Modalities (RGB, RGB-D, LiDAR)
+        \item Semantic reasoning (BLIP2, CLIP, GPT-4V, etc.)
+        \item Persistent Memory (None, 2D Map, 3D Map, Scene Graph)
+    \end{itemize}
+
+    \item Evaluation of performance metrics used in multi-object search:
+    \begin{itemize}
+        \item Success Rate (SR) 
+        \item Success weighted by Path Length (SPL)
+        \item MSR (Multi-object Success Rate)
     \end{itemize}
     \item Discussion of semantic exploration frameworks combining language models with spatial reasoning.
     \item Challenges of maintaining semantic context across multiple targets.
@@ -32,8 +56,22 @@ In this chapter, the current state of research in semantic multi-object search, 
 
 \section{Map Reconstruction and Persistent Semantic Mapping}
 \begin{itemize}
-    \item Overview of approaches to build and update semantic maps during exploration.
-    \item Techniques for fusing sensor data into persistent 2D/3D representations.
+    \item Overview of approaches to build and update semantic maps during exploration:
+    \begin{itemize}
+        \item 2D grid maps
+        \item Pointclouds
+        \item Voxel grids
+        \item Octomaps
+        \item Scene graphs
+        \item Neural Radiance Fields (NeRFs)
+        \item Feature Fields
+    \end{itemize}
+    \item Techniques for fusing sensor data into persistent 2D/3D representations:
+    \begin{itemize}
+        \item Storing Visual Embeddings (e.g., CLIP features) in 3D maps for semantic querying.
+        \item Incremental updating of semantic labels based on new observations.
+        \item Handling uncertainty and conflicting detections over time.
+    \end{itemize}
     \item Comparison of representations (Octomaps, point clouds, voxel grids) in terms of:
     \begin{itemize}
         \item Memory efficiency.

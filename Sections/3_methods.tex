@@ -1,3 +1,5 @@
+% chktex-file 44
+
 \chapter{Methods}
 This chapter details the methods developed for semantic exploration, persistent 3D mapping, promptable object detection, and robust fusion strategies for multi-object search. 
 
@@ -15,13 +17,33 @@ This chapter details the methods developed for semantic exploration, persistent 
     \label{fig:system_overview}
 \end{figure}
 
-\section{Semantic Frontier Exploration} \label{sec:semantic_frontier}\subsection{Frontier Detection and Calculation}
+\section{Semantic Frontier Exploration} \label{sec:semantic_frontier}
+\textbf{Exploration 2D Occupancy Map}
+
+\begin{itemize}
+    \item The SLAM map is used for navigation.
+    \item Generating frontiers for each prompt would require deleting and rebuilding the SLAM map.
+    \item This approach is inefficient and impractical for navigation.
+    \item Therefore, a separate 2D occupancy grid is created exclusively for exploration.
+    \item The exploration map is constructed by:
+    \begin{itemize}
+        \item collecting robot poses, and
+        \item performing raytracing against the parent SLAM map.
+    \end{itemize}
+    \item For each new semantic prompt:
+    \begin{itemize}
+        \item all stored poses are cleared, and
+        \item the exploration occupancy grid is rebuilt from scratch.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Frontier Detection and Calculation}
 \begin{itemize}
     \item Detection of frontiers on a 2D occupancy grid to identify candidate regions for exploration.
     \item Application of classical frontier-based exploration algorithms extended with semantic information.
 \end{itemize}
 
-\subsection{Value Map Generation using Vision-Language Models}
+\textbf{Value Map Generation using Vision-Language Models}
 \begin{itemize}
     \item Computation of value maps by evaluating cosine similarity between text queries and scene observations.
     
@@ -35,47 +57,118 @@ This chapter details the methods developed for semantic exploration, persistent 
     \item Dynamic update of value maps as new observations are integrated.
 \end{itemize}
 
-\subsection{Navigation to High-Value Frontiers}
-\begin{itemize}
-    \item Selection of the frontier with the highest semantic relevance score.
-    \item Continuous re-evaluation of frontiers during exploration to adapt to changing scene semantics.
-    \item Strategy for balancing exploration efficiency and semantic search goals.
-\end{itemize}
-
 \section{Persistent Semantic 3D Mapping} \label{sec:persistent_mapping}
 
-\subsection{Global Map Construction with Open-Fusion}
+\textbf{Global Map Construction with Open-Fusion}
 \begin{itemize}
     \item Incremental creation of a global semantic point cloud map integrating RGB-D observations over time.
     \item Registration of observations using robot poses to maintain a consistent world representation.
     \item Association of semantic labels with 3D points based on query relevance scores.
 \end{itemize}
 
-\subsection{Semantic Clustering and Graph Node Generation}
+\textbf{Semantic Clustering and Graph Node Generation}
 \begin{itemize}
     \item Clustering of points with similar semantic labels to form object-level hypotheses.
     \item Construction of semantic graph nodes representing detected object instances with aggregated confidence scores.
     \item Maintenance of the semantic graph as a persistent memory for multi-object search tasks.
 \end{itemize}
 
-\section{Promptable Zero-Shot Detection} \label{sec:zero_shot_detection}\begin{itemize}
-    \item tbd
+\section{Promptable Zero-Shot Detection} \label{sec:zero_shot_detection}
+\begin{itemize}
+    \item In this work YOLO-E \cite{yolo_e} is used as the promptable zero-shot detection model.
+    \item YOLO-E has the following advantages:
+    \begin{itemize}
+        \item High inference speed suitable for real-time applications.
+        \item Ability to handle open-vocabulary object detection based on text prompts.
+        \item Integration of both visual and textual information for robust detection.
+        \item Pre-trained on large-scale datasets, enabling zero-shot generalization to unseen object categories.
+    \end{itemize}
 \end{itemize}
 
-\section{Fusion Strategy} \label{sec:fusion_strategy}\begin{itemize}
-    \item Formulation of a fusion strategy combining frontier-based semantic relevance with persistent 3D semantic mapping.
-    \item Design of decision-making algorithms leveraging combined semantic information to robustly answer multi-object search queries.
+
+\textbf{Open-Vocabulary Object Detection with YOLO-E}
+\begin{itemize}
+    \item Utilization of the YOLO-E model for open-vocabulary object detection based on text prompts.
+    \item Extraction of 2D bounding boxes and associated confidence scores for detected objects.
+    \item Segmentation of detected objects to isolate relevant pixels for 3D localization.
 \end{itemize}
 
-\section{Behavior Tree for Semantic-Guided Exploration} \label{sec:behavior_tree}\begin{itemize}
-    \item Formulation of a fusion strategy combining frontier-based semantic relevance with persistent 3D semantic mapping.
-    \item Design of decision-making algorithms leveraging combined semantic information  to robustly answer multi-object search queries.
-    
+\textbf{Depth-Based 3D Localization}
+\begin{itemize}
+    \item With camera intrinsics and depth information, the 2D bounding boxes are projected into 3D space.
+    \item Calculation of 3D coordinates for each detected object using depth values within the bounding box.
+    \item Semantic detection pointclouds are passed are then clustered and the centroid of each cluster is computed to obtain robust 3D object locations.
+    \item For each cluster, the mean of the confidence scores of the associated 2D detections is calculated to assign a confidence score to the 3D localization.
+\end{itemize}
+
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{Images/03_methods/sage_behaviortree.png}
+    \includegraphics[width=1.0\textwidth]{Images/03_methods/vlm_detector.png}
+    \caption{YOLO-E detection to graph node 3D localization}
+    \label{fig:vlm_detector}
+\end{figure}
+
+
+\section{Fusion Strategy}\label{sec:fusion_strategy}
+\textbf{Exploration–Memory Weighting}
+\begin{itemize}
+    \item Exploration and memory graph nodes are fused and weighted as follows:
+    \begin{itemize}
+        \item Proximity weighting: Nodes closer to the robot's current position are given higher weights.
+        \item Exploration vs Memory: Nodes from the exploration source are prioritized over memory nodes to encourage discovery of new information.
+        \item Costmap weighting: Nodes located in areas with lower navigation costs are favored to optimize path planning and navigation efficiency.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Multi-Source Detection Fusion}
+\begin{itemize}
+    \item Detection graph nodes are weighted based on:
+    \begin{itemize}
+        \item YOLO-E confidence scores: Higher confidence detections are given more weight.
+        \item BLIP-2 value map: Detections with higher semantic relevance to the text prompt are prioritized.
+        \item The nearer detection graph nodes are to memory graph nodes, the higher their weight.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Relevance Filtering and Node Suppression}
+\begin{itemize}
+    \item Each source's graph nodes are filtered based on a relevance threshold to eliminate graph nodes within the fov map.
+    \item Relevance map is build over time
+    \item If a graph node is located in an area that has already been explored and found to be irrelevant to the prompt, it is suppressed.
+\end{itemize}
+
+
+\section{Behavior Tree for Semantic-Guided Exploration} \label{sec:behavior_tree}
+
+\textbf{High-Level Task Structure}
+\begin{itemize}
+    \item The behavior tree (BT) is designed to manage the high-level task structure for semantic-guided exploration.
+    \item The BT consists of the following main components:
+    \begin{itemize}
+        \item Initialization: Clearing Maps, Publishing Prompts
+        \item Detection Branch: If object is detected over a threshold, navigate to it, realign to object take picture
+        \item Exploration Branch: While object not detected, perform semantic frontier exploration navigating to highest valued frontiers or memory nodes
+        \item Termination: If object found, end mission; If time limit reached, end mission
+        \item Behavior tree is called with a ros2 action server, which returns on termination success or failure, and actual path taken
+    \end{itemize}
+\end{itemize}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Images/03_methods/sage_bt_flowchart.png}
     \caption{System architecture}
     \label{fig:system_overview}
 \end{figure}
 
-\end{itemize}
+\textbf{Integration with Navigation Stack}
+% \begin{itemize}
+%     \item The BT interfaces with the robot's navigation stack to execute movement commands, such as calling
+%     the \texttt{/navigate_to_pose} service or performing spin-in-place actions.
+%     \item In this work, the MPPI Local Planner \cite{mppi_local_planner} is used for navigation.
+%     \item The BT monitors navigation status and handles failures or replanning as needed.
+% \end{itemize}
+
+
+\textbf{Action and Condition Nodes}
+
+    

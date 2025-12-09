@@ -1,10 +1,10 @@
 # 1. Introduction (2 S.)
-## 1.1 Problem Statement
 - Domain and relevance:
     - Service Robotics --> Vaucuum Robot searching for fridge in the Kitchen with semantic Input Prompt
     - Search and Rescue (SAR)--> using one or mutliple robots to search persons, with the hint, that they may be in the bathroom
     - Inspection --> Robot needs to autonomously explore unteleoperational areas with semantic input
     - warehouse automation --> Large warehouses require robots to locate items, pallets, or storage units that may not be consistently labeled or may be partially occluded.
+## 1.1 Problem Statement
 
 - Problem --> Classic geometric Exploration --> ineffiecient search, mainly used for mapping unexplored environemts
     - Solution --> Incorporating semantics into exploration by using camera rgb images
@@ -98,15 +98,27 @@ Core Gaps:
 # 3. Methods (22 S.)
 ## 3.1 System Overview
 ## 3.2 Semantic Frontier Exploration
+**Exploration 2D Occupancy Map**
 **Frontier Detection and Calculation**
 **Value Map Generation using Vision-Language Models**
-**Navigation to High-Value Frontiers**
+
 ## 3.3 Persistent Semantic 3D Mapping
 **Global Map Construction with Open-Fusion**
 **Semantic Clustering and Graph Node Generation**
+
 ## 3.4 Promptable Zero-Shot Detection
+**Open-Vocabulary Object Detection with YOLO-E**
+**Depth-Based 3D Localization**
+
 ## 3.5 Fusion Strategy
+**Exploration–Memory Weighting**
+**Multi-Source Detection Fusion**
+**Relevance Filtering and Node Suppression**
+
 ## 3.6 Behavior Tree for Semantic-Guided Exploration
+**High-Level Task Structure**
+**Integration with Navigation Stack**
+**Action and Condition Nodes**
 
 # 4. Implementation (9 S.)
 ## 4.1 Simulation Environment

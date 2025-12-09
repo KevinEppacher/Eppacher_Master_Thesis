@@ -1,28 +1,19 @@
+% chktex-file 44
+
 \chapter{Discussion and Results}
 This chapter presents the experimental evaluation of the proposed hybrid semantic exploration system. Each experiment targets a specific research question and is evaluated using quantitative performance metrics.
 
-% =====================================================================
-\section{Results on Semantic Multi-Object Search Tasks}
+\section{Experiment 1: Benchmarking on Matterport Scenes}
+Evaluates baseline performance in multi-object search compared to state-of-the-art frameworks (OneMap, VLFM, Pigeon) using SR, SPL, and MSR.
 
-\subsection{Experiment 1: Single-Object Success Rate (SR)}
-% Add table/plot: SR across scenes (VLFM, VLMaps, OneMap, GeFF)
+\section{Experiment 2: Impact of Exploration–Memory Weighting}
+Analyzes how varying the balance between live exploration and persistent memory influences navigation efficiency and task success.
 
-\subsection{Experiment 2: Navigation Efficiency (SPL)}
-% Add table: SPL scores per method
+\section{Experiment 3: Sensitivity to Semantic Map Granularity}
+Investigates how varying the semantic retrieval depth affects mapping robustness and overall navigation stability.
 
-\subsection{Experiment 3: Multi-Object Success Rate (MSR)}
-% Compare MSR with and without hybrid fusion; baseline: OneMap, VLMaps
+\section{Experiment 4: Effect of Multi-Source Semantic Fusion}
+Examines how combining detection confidence, semantic similarity, and memory reliability improves detection robustness and reduces false positives.
 
-\subsection{Experiment 4: Ablation of Exploitation (OpenFusion)}
-% MSR with OpenFusion vs. only VLFM; include error bars
-
-% =====================================================================
-\section{Experiment 5: Improving Detection Robustness via Semantic Fusion}
-% Scenarios with occlusions and ambiguous detections
-% FPR, semantic precision; plot fusion vs. no fusion
-
-% =====================================================================
-\section{Experiment 6: Real-World Deployment}
-% Table with SR, MSR, SPL
-% System monitoring: FPS, latency, CPU/GPU stats
-% Qualitative discussion (figures)
+\section{Experiment 5: System Efficiency and Real-World Validation}
+Assesses runtime performance, resource utilization, and stability under real-world sensor noise during physical deployment.
