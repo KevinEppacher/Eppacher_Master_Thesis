@@ -18,7 +18,9 @@ This section details the practical implementation of the proposed approach, cove
 \section{Dataset}
 \begin{itemize}
     \item Use of \textbf{Matterport3D} scenes for realistic indoor environments with ground truth 3D reconstruction and semantic annotations.
-    \item Incorporation of the \textbf{Habitat Navigation Challenge 2023} tasks to benchmark exploration and navigation performance (SR, SPL).
+    \item While the Habitat Navigation Challenge 2023 defines Success Rate (SR) and Success weighted by Path Length (SPL) as standard evaluation metrics within the Habitat-Sim environment, this work extends their application to Isaac Sim.
+Using Isaac Sim allows for a more physically accurate and sensor-consistent setup, incorporating realistic depth noise, lighting variation, and robot dynamics.
+To ensure comparability, SR and SPL are calculated following the official Habitat definitions, maintaining consistency with prior benchmarks while improving the realism of scene interaction and perception.
 \end{itemize}
 
 \section{Used Software}
@@ -26,9 +28,7 @@ This section details the practical implementation of the proposed approach, cove
     \item ROS2-based implementation (Humble Hawksbill) as middleware.
     \item Navigation stack: Navigation2 (Nav2) for frontier-based exploration and path planning.
     \item DDS communication layer for distributed communication between detection, mapping, and control nodes.
-    \item Custom RobotDriver for interfacing with real robot hardware.
-    \item Integration of promptable models (SEEM, GroundingDINO, etc.) for real-time zero-shot detection during exploration and exploitation.
-    \item \dots
+    \item Integration of promptable models (OpenFusion, BLIP-2, YOLO-E) for real-time zero-shot detection during exploration and exploitation.
 \end{itemize}
 
 \section{Used Hardware}
@@ -40,17 +40,37 @@ This section details the practical implementation of the proposed approach, cove
         \item GPU: ASUS TUF Gaming RTX 4090 24GB OC Edition
         \item RAM: 64GB Corsair Vengeance LPX DDR4
     \end{itemize}
-    \item \textbf{Real Robot:} Configuration and components to be determined (tbd).
+    \item \textbf{Real Robot:} Configuration and components to be determined (TurtleBot Waffle).
 \end{itemize}
 
 \section{Evaluation Metrics}
 This section defines the evaluation metrics used throughout the experiments and assigns them to each corresponding experiment.
 
+\textbf{Evaluation Pipeline Overview}
+
+\begin{itemize}
+    \item \textbf{Semantic Map Generation:} OpenFusion performs semantic segmentation of RGB-D input using the Matterport3D class list. Each segment is assigned its most likely class label from the detection model.
+    
+    \item \textbf{Manual Correction:} Incorrectly labeled segments can be manually relabeled within a dedicated ROS~2 node for semantic correction.
+    
+    \item \textbf{Data Storage:} OpenFusion saves both the 3D semantic pointcloud and the corresponding 2D SLAM map for each episode. All experiment data follows the \texttt{sage\_datasets/matterport\_isaac} directory structure.
+    
+    \item \textbf{Evaluation Initialization:} During evaluation, the saved maps and class definitions are loaded together with a list of target objects (e.g., ``bed'', ``toilet'', ``chair'').
+    
+    \item \textbf{Class Filtering and Centroid Extraction:} The evaluator node filters the semantic pointcloud according to the target classes and extracts the 3D centroids of matching clusters.
+    
+    \item \textbf{Path Planning:} The shortest-path planner computes the geodesic-optimal path from the robot’s current pose to the nearest centroid of the selected target class, with the Global Path Planner from ROS2 Navigation2.
+    
+    \item \textbf{Metric Computation:} The evaluator node compares the planned and executed trajectories to compute Success Rate (SR), Success weighted by Path Length (SPL), and Multi-Object Success Rate (MSR).
+    
+    \item \textbf{Result Storage:} Evaluation metrics, trajectories, and intermediate results are stored per episode for analysis and benchmarking.
+\end{itemize}
+
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{Images/04_implementation/evaluation_pipeline.png}
-    \caption{System architecture}
-    \label{fig:system_overview}
+    \caption{Evaluation pipeline for benchmarking SR, SPL, and MSR in the semantic exploration framework.}
+    \label{fig:evaluation_pipeline}
 \end{figure}
 
 \begin{itemize}
