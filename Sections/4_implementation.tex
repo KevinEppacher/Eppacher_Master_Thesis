@@ -73,8 +73,35 @@ This section defines the evaluation metrics used throughout the experiments and 
     \label{fig:evaluation_pipeline}
 \end{figure}
 
+\textbf{Experiment 1: Overall Performance Benchmarking}
+
 \begin{itemize}
-    \item \textbf{Experiment 1 – Success Rate (SR):}  
+    \item Compare SR, SPL and MSR across different baseline methods and the proposed hybrid approach.
+    \item Baselines include:
+    \begin{itemize}
+        \item \ac{VLFM} \cite{shah2023vlm},
+        \item \ac{VLMaps} \cite{liu2023vlmaps},
+        \item \ac{OneMap} \cite{yang20233don},
+        \item \ac{Pigeon} \cite{qi2023pigeon}.
+    \end{itemize}
+    \item Every scene within the ObjectNav HM3D v2 validation split:
+    % \item (wget https://dl.fbaipublicfiles.com/habitat/data/datasets/objectnav/hm3d/v2/objectnav_hm3d_v2.zip)
+    \item Within this dataset, each scene contains a set of episodes with the starting pose and target object specified.
+    \item Due to the custom nature of the Isaac Sim environment, all baselines are re-implemented to ensure fair comparison under similar conditions.
+    \item Limitations with IsaacSims Environment setup:
+    \begin{itemize}
+        \item Starting Pose Variability
+        \item Amount of episodes per scene
+        \item Different requirements:
+        \begin{itemize}
+            \item IsaacSim: Photorealistic rendering, physics simulation, realistic sensor noise
+            \item HabitatSim: Optimized for fast navigation and large-scale datasets
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\begin{itemize}
+    \item \textbf{Success Rate (SR):}  
     Measures the proportion of tasks in which the robot successfully reaches the queried single goal object. This metric reflects the system’s ability to semantically ground a user-specified object and to navigate toward it reliably. It serves as a fundamental indicator of task success and is essential for evaluating overall system effectiveness in basic search scenarios.
     \textit{Evaluation against:} \ac{VLFM}, \ac{VLMaps}, \ac{OneMap}, \ac{GeFF}
 
@@ -84,7 +111,7 @@ This section defines the evaluation metrics used throughout the experiments and 
     where \( S_i = 1 \) if the goal was reached in episode \( i \), and \( 0 \) otherwise; \( N \) is the total number of episodes.
 
 
-    \item \textbf{Experiment 2 – Path Efficiency (SPL):}  
+    \item \textbf{Path Efficiency (SPL):}  
     SPL measures the efficiency of successful navigation by comparing the shortest possible path to the actual path taken. It is defined only for successful runs and penalizes overly long trajectories. In the context of semantic exploration, SPL provides insight into how effectively the system prioritizes relevant regions and minimizes detours when searching for target objects.
 
     \[
@@ -92,7 +119,7 @@ This section defines the evaluation metrics used throughout the experiments and 
     \]
     where \( S_i \) is the success indicator for episode \( i \), \( l_i \) is the shortest path length to the goal, \( p_i \) is the actual path length taken, and \( N \) is the total number of episodes.
 
-    \item \textbf{Experiment 3 – Multi-Object Success Rate (MSR):}  
+    \item \textbf{Multi-Object Success Rate (MSR):}  
     The average number of successfully found objects per episode (\textit{Progress, PR}) captures partial success in multi-goal navigation. SPL is computed separately for each object in sequence, conditioned on the success of the previous one. This highlights the system’s ability to reuse semantic map information and improve efficiency across successive targets.
 
     \[
@@ -100,25 +127,25 @@ This section defines the evaluation metrics used throughout the experiments and 
     \]
     where \( C_i \) is the number of successfully found objects in episode \( i \), and \( N \) is the total number of episodes.
 
-    \item \textbf{Experiment 4 – Ablation: Memory Component (OpenFusion):}  
-    Comparison of multi-object progress and SPL with and without the semantic 3D memory component. Highlights the contribution of global semantic mapping to task success and efficiency in the hybrid system.
-
-    \item \textbf{Experiment 5 – Robustness to False Positives (Fusion Strategy):}  
-    \textbf{Metrics:} Evaluated using semantic precision and false positive rate. Assesses the effect of the fusion strategy on filtering erroneous detections to improve overall task success.
-
-    \[
-    \text{Precision} = \frac{TP}{TP + FP}
-    \quad\quad
-    \text{FPR} = \frac{FP}{FP + TN}
-    \]
-    where \( TP \) and \( FP \) are the numbers of true and false positive semantic detections, and \( TN \) is the number of true negatives (i.e., correctly rejected background regions or non-target classes).
-
-    \item \textbf{Experiment 6 – Real-World System Performance:}  
-    \textbf{Metrics:}
-    \begin{itemize}
-        \item SR, MSR, SPL – for search performance under real-world conditions.
-        \item System metrics – CPU/GPU usage, FPS, inference latency.
-    \end{itemize}
-    \textit{Objective: Assess robustness, efficiency, and deployability in physical environments.}
-
 \end{itemize}
+
+\textbf{Experiment 2: Exploration–Memory Fusion Weighting:} 
+
+Comparison of multi-object progress and SPL with and without the semantic 3D memory component. Highlights the contribution of global semantic mapping to task success and efficiency in the hybrid system.
+
+\textbf{Experiment 5: Robustness to False Positives (Fusion Strategy):}  
+Evaluated using semantic precision and false positive rate. Assesses the effect of the fusion strategy on filtering erroneous detections to improve overall task success.
+
+\[
+\text{Precision} = \frac{TP}{TP + FP}
+\quad\quad
+\text{FPR} = \frac{FP}{FP + TN}
+\]
+where \( TP \) and \( FP \) are the numbers of true and false positive semantic detections, and \( TN \) is the number of true negatives (i.e., correctly rejected background regions or non-target classes).
+
+\textbf{Experiment 6: Real-World System Performance:}  
+\begin{itemize}
+    \item SR, MSR, SPL – for search performance under real-world conditions.
+    \item System metrics – CPU/GPU usage, FPS, inference latency.
+\end{itemize}
+\textit{Objective: Assess robustness, efficiency, and deployability in physical environments.}
