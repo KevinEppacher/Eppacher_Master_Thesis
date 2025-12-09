@@ -91,7 +91,7 @@ This section defines the evaluation metrics used throughout the experiments and 
     \item Limitations with IsaacSims Environment setup:
     \begin{itemize}
         \item Starting Pose Variability
-        \item Amount of episodes per scene
+        \item Amount of episodes per scene (5 per scene per floor with each 5 sub-episodes for multi-object search)
         \item Different requirements:
         \begin{itemize}
             \item IsaacSim: Photorealistic rendering, physics simulation, realistic sensor noise
@@ -129,23 +129,163 @@ This section defines the evaluation metrics used throughout the experiments and 
 
 \end{itemize}
 
-\textbf{Experiment 2: Exploration–Memory Fusion Weighting:} 
+\textbf{Experiment 2: Exploration--Memory Fusion Weighting}
 
-Comparison of multi-object progress and SPL with and without the semantic 3D memory component. Highlights the contribution of global semantic mapping to task success and efficiency in the hybrid system.
+\begin{itemize}
 
-\textbf{Experiment 5: Robustness to False Positives (Fusion Strategy):}  
-Evaluated using semantic precision and false positive rate. Assesses the effect of the fusion strategy on filtering erroneous detections to improve overall task success.
+    \item \textbf{Objective:}  
+    Evaluate how varying the weighting between live semantic exploration and persistent 3D semantic memory influences navigation performance, stability, and overall search efficiency in the hybrid framework.
 
-\[
-\text{Precision} = \frac{TP}{TP + FP}
-\quad\quad
-\text{FPR} = \frac{FP}{FP + TN}
-\]
-where \( TP \) and \( FP \) are the numbers of true and false positive semantic detections, and \( TN \) is the number of true negatives (i.e., correctly rejected background regions or non-target classes).
+    \item \textbf{Fusion Parameter:}  
+    The trade-off between exploration and memory is controlled through a scalar weighting parameter
+    \[
+        \lambda_{\text{exploration}} \in [0, 1],
+    \]
+    which determines the relative influence of frontier-based exploration versus memory-driven exploitation during graph node fusion.
+
+    \item \textbf{Research Questions:}
+    \begin{itemize}
+        \item \textbf{RQ2a:} How do Success Rate (SR) and Success weighted by Path Length (SPL) vary as the weighting shifts from exploration (\(\lambda \rightarrow 1\)) toward memory-driven behavior (\(\lambda \rightarrow 0\))?
+        \item \textbf{RQ2b:} Which weighting configuration yields the best trade-off between reactivity (fast adaptation to newly observed information) and stability (robust semantic localization using persistent memory)?
+    \end{itemize}
+
+    \item \textbf{Evaluation Procedure:}
+    \begin{itemize}
+        \item Multiple runs are conducted across a range of \(\lambda_{\text{exploration}}\) values.
+        \item Performance is measured using the metrics SR and SPL.
+    \end{itemize}
+
+    \item \textbf{Expected Outcome:}  
+    This experiment highlights whether hybrid fusion provides measurable benefits over purely exploration-driven or purely memory-driven behavior, and identifies the optimal balance for multi-object search tasks.
+
+\end{itemize}
+
+\textbf{Experiment 3: Sensitivity to Semantic Map Granularity}
+
+\begin{itemize}
+
+    \item \textbf{Objective:}  
+    Investigate how the granularity of semantic retrieval in the 3D semantic mapper affects global map quality, navigation performance, and robustness of the hybrid exploration system.  
+    Specifically, this experiment evaluates whether dynamic rebalancing between exploration and memory can compensate for increased semantic noise introduced by higher retrieval depths.
+
+    \item \textbf{Semantic Granularity Parameter:}  
+    Semantic map quality is controlled through the retrieval depth \emph{top-k}, which specifies how many semantic candidates (from the VLM embedding space) are fused into each voxel:
+    \begin{itemize}
+        \item Low \emph{top-k}: sharper but potentially incomplete semantics.  
+        \item High \emph{top-k}: denser semantics but increased noise and ambiguity.
+    \end{itemize}
+
+    \item \textbf{Dynamic Fusion Weighting:}  
+    To counteract noise introduced by larger \emph{top-k} values, the exploration weight  
+    \[
+        \lambda_{\text{exploration}}
+    \]
+    is progressively increased, shifting trust toward frontier-driven exploration and away from noisy memory components.
+
+    \item \textbf{Research Questions:}
+    \begin{itemize}
+        \item \textbf{RQ4a:} How do Success Rate (SR) and Success weighted by Path Length (SPL) degrade as \emph{top-k} increases while relying primarily on memory?
+        \item \textbf{RQ4b:} Can adaptive rebalancing toward exploration (i.e., increasing \( \lambda_{\text{exploration}} \)) restore stable performance at higher \emph{top-k} values?
+    \end{itemize}
+
+    \item \textbf{Evaluation Metrics:}
+    \begin{itemize}
+        \item SR: ability to consistently reach goal objects under different semantic retrieval granularities.
+        \item SPL: navigation efficiency and the influence of semantic noise on path quality.
+        \item Additional qualitative assessment of map sharpness, cluster correctness, and temporal stability of semantic memory.
+    \end{itemize}
+
+    \item \textbf{Evaluation Procedure:}
+    \begin{itemize}
+        \item Generate semantic maps at multiple \emph{top-k} levels (e.g., 1, 3, 5, 10).
+        \item For each \emph{top-k}:
+        \begin{itemize}
+            \item Evaluate SR and SPL under memory-dominant settings.
+            \item Incrementally increase \( \lambda_{\text{exploration}} \) and re-evaluate.
+        \end{itemize}
+        \item Compare results to determine:
+        \begin{itemize}
+            \item tolerance of the system to semantic noise,
+            \item optimal balance between exploration and memory at different granularity levels,
+            \item interaction effects between map resolution and fusion stability.
+        \end{itemize}
+    \end{itemize}
+
+    \item \textbf{Purpose:}  
+    This experiment analyzes the coupling between semantic map granularity and the stability of exploration–memory fusion.  
+    Results reveal how coarse or noisy semantic retrieval affects overall navigation and whether adaptive weighting can maintain robust performance in open-vocabulary mapping environments.
+
+\end{itemize}
+
+
+\textbf{Experiment 4: Robustness to False Positives Through Multi-Source Detection Fusion}
+
+\begin{itemize}
+
+    \item \textbf{Objective:}  
+    Evaluate how combining multiple semantic evidence sources,instance detection (YOLO-E), semantic similarity scoring (BLIP-2), and memory confidence from the 3D semantic map, improves detection robustness and suppresses false positives during exploration.
+
+    \item \textbf{Fusion Model:}  
+    Each semantic source contributes a weighted score to the final fused confidence:
+    \[
+        S_{\text{fusion}} = w_d S_{\text{det}} \;+\; w_c S_{\text{cosine}} \;+\; w_m S_{\text{memory}},
+    \]
+    where \( w_d, w_c, w_m \) determine the influence of detection confidence, VLM similarity, and memory-based likelihood, respectively.
+
+    \item \textbf{Research Questions:}
+    \begin{itemize}
+        \item \textbf{RQ3a:} How does overall task performance (SR) change under different weight configurations \( (w_d, w_c, w_m) \)?
+        \item \textbf{RQ3b:} How do precision, recall, and F1-Score vary across:
+        \begin{itemize}
+            \item COCO categories (closed-set),
+            \item open-vocabulary object classes,
+            \item zero-shot categories absent from detector training?
+        \end{itemize}
+        \item \textbf{RQ3c:} Which drawbacks arise when increasing detection thresholds or overemphasising individual score sources (e.g., loss of low-confidence but valid detections)?
+    \end{itemize}
+
+    \item \textbf{Evaluation Metrics:}  
+    Robustness is quantified using semantic classification metrics derived from the confusion matrix:
+    \[
+        \text{Precision} = \frac{TP}{TP + FP}, \qquad
+        \text{Recall} = \frac{TP}{TP + FN},
+    \]
+    \[
+        \text{F1} = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}},
+    \]
+    \[
+        \text{FPR} = \frac{FP}{FP + TN}.
+    \]
+    Additionally, Success Rate (SR) is recorded for each weight triplet \( (w_d, w_c, w_m) \) to measure downstream impact on semantic search success.
+
+    \item \textbf{Evaluation Procedure:}
+    \begin{itemize}
+        \item Conduct experiments across a range of fusion weight configurations.
+        \item Compare performance against:
+        \begin{itemize}
+            \item detector-only predictions (YOLO-E baseline),
+            \item similarity-only filtering (BLIP-2),
+            \item memory-only selection,
+            \item full hybrid fusion model.
+        \end{itemize}
+        \item Evaluate per-class results for closed-set, open-vocab, and zero-shot categories.
+        \item Analyse how false positives propagate into:
+        \begin{itemize}
+            \item incorrect graph node generation,
+            \item unnecessary navigation actions,
+            \item degraded SR and SPL in the overall exploration pipeline.
+        \end{itemize}
+    \end{itemize}
+
+    \item \textbf{Purpose:}  
+    This experiment identifies whether multi-source semantic fusion provides measurable improvements over single-source detection, yielding more robust, stable, and semantically reliable object proposals in challenging indoor environments.
+
+\end{itemize}
+
 
 \textbf{Experiment 6: Real-World System Performance:}  
 \begin{itemize}
-    \item SR, MSR, SPL – for search performance under real-world conditions.
-    \item System metrics – CPU/GPU usage, FPS, inference latency.
+    \item SR, MSR and SP for search performance under real-world conditions.
+    \item System metrics: CPU/GPU usage, FPS, inference latency.
 \end{itemize}
 \textit{Objective: Assess robustness, efficiency, and deployability in physical environments.}
