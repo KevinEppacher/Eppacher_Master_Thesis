@@ -223,67 +223,86 @@ This section defines the evaluation metrics used throughout the experiments and 
 \begin{itemize}
 
     \item \textbf{Objective:}  
-    Evaluate how combining multiple semantic evidence sources,instance detection (YOLO-E), semantic similarity scoring (BLIP-2), and memory confidence from the 3D semantic map, improves detection robustness and suppresses false positives during exploration.
+    Evaluate how combining multiple semantic evidence sources, instance detection (YOLO-E), semantic similarity scoring (BLIP-2), and memory confidence from the 3D semantic map, improves detection robustness and suppresses false positives during exploration.
 
-    \item \textbf{Fusion Model:}  
-    Each semantic source contributes a weighted score to the final fused confidence:
+    \item \textbf{Fusion Model (Weighted Noisy-OR):}  
+    The proposed fusion strategy follows a weighted Noisy-OR formulation, in which independent semantic evidence sources jointly increase the probability of a valid detection:
     \[
-        S_{\text{fusion}} = w_d S_{\text{det}} \;+\; w_c S_{\text{cosine}} \;+\; w_m S_{\text{memory}},
+        S_{\text{fusion}}
+        = 1 - (1 - w_d S_{\text{det}})
+            (1 - w_c S_{\text{map}})
+            (1 - w_m S_{\text{mem}}).
     \]
-    where \( w_d, w_c, w_m \) determine the influence of detection confidence, VLM similarity, and memory-based likelihood, respectively.
+    Here,
+    \begin{itemize}
+        \item \( S_{\text{det}} \): YOLO-E detector confidence,
+        \item \( S_{\text{map}} \): similarity score from the value map (BLIP-2),
+        \item \( S_{\text{mem}} \): confidence from persistent 3D semantic memory,
+        \item \( w_d, w_c, w_m \): weights defining the contribution of each source.
+    \end{itemize}
+    This formulation ensures that high confidence from any source can compensate for uncertainty in others while suppressing spurious detections that lack multi-source agreement.
 
     \item \textbf{Research Questions:}
     \begin{itemize}
         \item \textbf{RQ3a:} How does overall task performance (SR) change under different weight configurations \( (w_d, w_c, w_m) \)?
-        \item \textbf{RQ3b:} How do precision, recall, and F1-Score vary across:
+        \item \textbf{RQ3b:} How do precision, recall, F1-score, and false-positive rate vary across:
         \begin{itemize}
-            \item COCO categories (closed-set),
+            \item COCO-style closed-set categories,
             \item open-vocabulary object classes,
-            \item zero-shot categories absent from detector training?
+            \item zero-shot categories not seen during detector training?
         \end{itemize}
-        \item \textbf{RQ3c:} Which drawbacks arise when increasing detection thresholds or overemphasising individual score sources (e.g., loss of low-confidence but valid detections)?
+        \item \textbf{RQ3c:} What drawbacks arise when detection thresholds are increased or when a single evidence source is overemphasised  
+        (e.g., memory bias, detector hallucination, missed low-confidence but valid detections)?
     \end{itemize}
 
-    \item \textbf{Evaluation Metrics:}  
-    Robustness is quantified using semantic classification metrics derived from the confusion matrix:
+    \item \textbf{Evaluation Metrics:}
+    Robustness is quantified using classification metrics derived from the confusion matrix:
     \[
         \text{Precision} = \frac{TP}{TP + FP}, \qquad
         \text{Recall} = \frac{TP}{TP + FN},
     \]
     \[
-        \text{F1} = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}},
+        \text{F1} = 2 \cdot 
+        \frac{\text{Precision} \cdot \text{Recall}}
+             {\text{Precision} + \text{Recall}},
     \]
     \[
         \text{FPR} = \frac{FP}{FP + TN}.
     \]
-    Additionally, Success Rate (SR) is recorded for each weight triplet \( (w_d, w_c, w_m) \) to measure downstream impact on semantic search success.
+    Additionally, downstream Success Rate (SR) is recorded for each weight triplet \( (w_d, w_c, w_m) \) to evaluate the effect of false positives on the overall navigation pipeline.
 
     \item \textbf{Evaluation Procedure:}
     \begin{itemize}
-        \item Conduct experiments across a range of fusion weight configurations.
-        \item Compare performance against:
+        \item Evaluate a range of weight combinations \( (w_d, w_c, w_m) \) spanning detector-dominant, map-dominant, memory-dominant, and balanced regimes, whereas the detection source is mandatory (i.e., \( w_d > 0 \)).
+        \item Compare against single-source baselines:
         \begin{itemize}
-            \item detector-only predictions (YOLO-E baseline),
-            \item similarity-only filtering (BLIP-2),
-            \item memory-only selection,
-            \item full hybrid fusion model.
+            \item detector-only (YOLO-E),
+            \item similarity-only (BLIP-2),
+            \item memory-only retrieval,
+            \item the full Noisy-OR fusion strategy.
         \end{itemize}
-        \item Evaluate per-class results for closed-set, open-vocab, and zero-shot categories.
-        \item Analyse how false positives propagate into:
+        \item Analyse outcomes under:
         \begin{itemize}
-            \item incorrect graph node generation,
+            \item closed-set (COCO) categories,
+            \item open-vocabulary targets,
+            \item zero-shot targets.
+        \end{itemize}
+        \item Quantify how false positives propagate into:
+        \begin{itemize}
+            \item erroneous graph node generation,
             \item unnecessary navigation actions,
-            \item degraded SR and SPL in the overall exploration pipeline.
+            \item degraded SR and SPL.
         \end{itemize}
     \end{itemize}
 
     \item \textbf{Purpose:}  
-    This experiment identifies whether multi-source semantic fusion provides measurable improvements over single-source detection, yielding more robust, stable, and semantically reliable object proposals in challenging indoor environments.
+    This experiment evaluates whether multi-source, Noisy-OR-based semantic fusion provides a measurable improvement in detection robustness and false-positive suppression compared to single-source methods, thereby enabling more reliable semantic exploration in open-vocabulary indoor environments.
 
 \end{itemize}
 
 
-\textbf{Experiment 6: Real-World System Performance:}  
+
+\textbf{Experiment 5: Real-World System Performance:}  
 \begin{itemize}
     \item SR, MSR and SP for search performance under real-world conditions.
     \item System metrics: CPU/GPU usage, FPS, inference latency.

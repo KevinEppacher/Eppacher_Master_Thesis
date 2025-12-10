@@ -6,7 +6,7 @@ This chapter details the methods developed for semantic exploration, persistent 
 \section{System Overview}
 \begin{itemize}
     \item Presentation of the overall architecture of the exploration~(\ref{sec:semantic_frontier}), detection~(\ref{sec:zero_shot_detection}), mapping~(\ref{sec:persistent_mapping}), and fusion~(\ref{sec:fusion_strategy}) pipeline.
-    \item Description of data flow between exploration (frontier evaluation), detection (promptable models), and exploitation (persistent semantic mapping), as shown in Figure~\ref{fig:system_overview}.
+    \item Description of data flow between exploration (frontier evaluation), detection (promptable models), and memory (persistent semantic mapping), as shown in Figure~\ref{fig:system_overview}.
     \item Explanation of how exploration and mapping components interact to progressively build a semantic understanding of the environment.
 \end{itemize}
 
@@ -43,6 +43,13 @@ This chapter details the methods developed for semantic exploration, persistent 
     \item Application of classical frontier-based exploration algorithms extended with semantic information.
 \end{itemize}
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{Images/03_methods/frontier_example.png}
+    \caption{Frontier detection on occupancy grid}
+    \label{fig:frontier_detection}
+\end{figure}
+
 \textbf{Value Map Generation using Vision-Language Models}
 \begin{itemize}
     \item Computation of value maps by evaluating cosine similarity between text queries and scene observations.
@@ -52,6 +59,13 @@ This chapter details the methods developed for semantic exploration, persistent 
         \includegraphics[width=\textwidth]{Images/03_methods/blip2_cosine_sim.png}
         \caption{System architecture}
         \label{fig:system_overview}
+    \end{figure}
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=\textwidth]{Images/03_methods/value_map_example.png}
+        \caption{Value map example}
+        \label{fig:value_map_example}
     \end{figure}
 
     \item Dynamic update of value maps as new observations are integrated.
@@ -95,7 +109,7 @@ This chapter details the methods developed for semantic exploration, persistent 
 
 \textbf{Depth-Based 3D Localization}
 \begin{itemize}
-    \item With camera intrinsics and depth information, the 2D bounding boxes are projected into 3D space.
+    \item With camera intrinsics and depth information, the 2D bounding boxes ans segmentation masks are projected into 3D space.
     \item Calculation of 3D coordinates for each detected object using depth values within the bounding box.
     \item Semantic detection pointclouds are passed are then clustered and the centroid of each cluster is computed to obtain robust 3D object locations.
     \item For each cluster, the mean of the confidence scores of the associated 2D detections is calculated to assign a confidence score to the 3D localization.
@@ -137,6 +151,19 @@ This chapter details the methods developed for semantic exploration, persistent 
     \item If a graph node is located in an area that has already been explored and found to be irrelevant to the prompt, it is suppressed.
 \end{itemize}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\textwidth]{Images/03_methods/3d_relevance_map.png}
+    \caption{Fusion strategy for exploration, detection, and memory graph nodes}
+    \label{fig:3d_relevance_map}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\textwidth]{Images/03_methods/relevance_map_example.png}
+    \caption{Fusion strategy for exploration, detection, and memory graph nodes}
+    \label{fig:relevance_map_example}
+\end{figure}
 
 \section{Behavior Tree for Semantic-Guided Exploration} \label{sec:behavior_tree}
 
