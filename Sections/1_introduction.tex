@@ -17,38 +17,6 @@ Across these domains, the integration of semantic understanding with autonomous 
 
 \begin{table}[H]
 \centering
-\begin{tabularx}{\textwidth}{
-    |>{\raggedright\arraybackslash}X
-    |>{\centering\arraybackslash}m{2.2cm}
-    |>{\centering\arraybackslash}m{2cm}
-    |>{\raggedright\arraybackslash}X|}
-    \hline
-    \textbf{Approach} & \textbf{Training Required} & \textbf{Real-Time} & \textbf{Semantic Reasoning Model} \\ \hline
-    \textbf{VLFM} & \xmark~(zero-shot) & \cmark& BLIP-2 + GroundingDINO + SAM \\ \hline
-\textbf{SemUtil} & \xmark~(training-free) & \cmark& Mask R-CNN + CLIP + BERT \\ \hline
-\textbf{ESC} & \xmark~(zero-shot) & \cmark& GLIP + DeBERTa / ChatGPT reasoning \\ \hline
-\textbf{LGX} & \xmark~(zero-shot) & \cmark& GPT-3 + GLIP + BLIP \\ \hline
-\textbf{CoW} & \xmark~(zero-shot) & \cmark& CLIP similarity scoring \\ \hline
-\textbf{ZSON} & \cmark~(RL pretraining) & \xmark& CLIP-based RL policy \\ \hline
-\textbf{PONI} & \cmark~(supervised) & \xmark& Learned potential-field network \\ \hline
-\textbf{PIRLNav} & \cmark~(BC + RL) & \xmark& DINO-based CNN-RNN policy \\ \hline
-\end{tabularx}
-\caption{Overview of Semantic Exploration Approaches without Persistent Memory}
-\end{table}
-
-None of the above methods incorporate a persistent semantic memory for efficient multi-object navigation and are often computationally demanding.
-
-\textbf{Problem:} 
-\begin{itemize}
-    \item Lack of persistent memory in semantic exploration frameworks limits long-term efficiency in multi-object search tasks.
-    \item Existing methods often require extensive offline training, reducing adaptability to new environments.
-    \item Deep Reinforcement Learning (DRL) approaches are computationally expensive and lack persistent memory for effective multi-object goal search.
-\end{itemize}
-
-\textbf{Current solutions:}
-
-\begin{table}[H]
-\centering
 \footnotesize
 \renewcommand{\arraystretch}{1.0}
 \setlength{\tabcolsep}{3pt}
@@ -71,6 +39,39 @@ None of the above methods incorporate a persistent semantic memory for efficient
 \caption{Overview of Semantic Zero-Shot and Trained Exploration Approaches}
 \end{table}
 
+
+None of the above methods incorporate a persistent semantic memory for efficient multi-object navigation and are often computationally demanding.
+
+\textbf{Problem:} 
+\begin{itemize}
+    \item Lack of persistent memory in semantic exploration frameworks limits long-term efficiency in multi-object search tasks.
+    \item Existing methods often require extensive offline training, reducing adaptability to new environments.
+    \item Deep Reinforcement Learning (DRL) approaches are computationally expensive and lack persistent memory for effective multi-object goal search.
+\end{itemize}
+
+\textbf{Current solutions:}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{
+    |>{\raggedright\arraybackslash}X
+    |>{\centering\arraybackslash}m{2.2cm}
+    |>{\centering\arraybackslash}m{2cm}
+    |>{\raggedright\arraybackslash}m{3.2cm}
+    |>{\raggedright\arraybackslash}X|}
+    \hline
+    \textbf{Approach} & \textbf{Training Required} & \textbf{Real-Time} & \textbf{Memory Representation} & \textbf{Exploration Integration} \\ \hline
+    \textbf{OneMap} & \xmark~(zero-shot) & \cmark& 2D probabilistic feature field & \cmark~(frontier-based) \\ \hline
+    \textbf{ConceptGraphs} & \xmark~(pretrained models) & \xmark& 3D scene graph & \cmark~(LLM-planner) \\ \hline
+    \textbf{SemExp} & \cmark~(RL + supervised) & \xmark& 2D semantic occupancy map & \cmark~(learned policy) \\ \hline
+    \textbf{GeFF} & \cmark~(ScanNet pretrain) & \cmark& Implicit 3D feature field & \xmark~(passive) \\ \hline
+    \textbf{RayFronts} & \xmark~(foundation model) & \cmark& Hybrid voxel + ray field & \cmark~(semantic frontier) \\ \hline
+    \textbf{VLMaps} & \xmark~(pretrained LSeg/CLIP) & \xmark& 2.5D open-vocab grid & \cmark~(frontier-compatible) \\ \hline
+    \textbf{Pigeon} & \cmark~(RLVR fine-tune) & \cmark& Point-of-Interest snapshot memory & \cmark~(reasoning-aware) \\ \hline
+\end{tabularx}
+\caption{Overview of Persistent or Memory-Based Semantic Mapping Approaches}
+\end{table}
 
 !!!!!!!!!!! Add chaplot2020semexp !!!!!!!!!!!!!!!!!!!
 
