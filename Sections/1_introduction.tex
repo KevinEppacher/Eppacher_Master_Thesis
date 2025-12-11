@@ -2,13 +2,19 @@
 
 \chapter{Introduction}
 
-Domain and Relevance:
+Service and industrial robots are increasingly deployed in environments that require autonomous understanding and interaction beyond geometric navigation. Many real-world applications demand that robots not only map and explore their surroundings but also identify, locate, and reason about semantically meaningful objects within them. These tasks extend beyond simple localization and mapping, requiring semantic awareness and the ability to interpret open-ended instructions provided through natural language or multimodal input.
+
+\textbf{Domain and Relevance.}
+The demand for robust and adaptive semantic exploration is evident across several domains:
+
 \begin{itemize}
-    \item \textbf{Service Robotics:} Vacuum robot searching for a fridge in the kitchen using a semantic input prompt.
-    \item \textbf{Search and Rescue (SAR):} Deployment of one or multiple robots to locate persons, e.g., with the hint that they may be in the bathroom.
-    \item \textbf{Inspection:} Robots autonomously exploring areas not accessible via teleoperation, guided by semantic input.
-    \item \textbf{Warehouse Automation:} Large warehouses requiring robots to locate items, pallets, or storage units that may not be consistently labeled or may be partially occluded.
+    \item \textbf{Service Robotics:} A domestic vacuum robot may be instructed to find and approach a specific household object, such as a fridge in the kitchen, using a semantic input prompt rather than fixed coordinates or predefined waypoints.
+    \item \textbf{Search and Rescue (SAR):} In emergency scenarios, autonomous ground or aerial robots are deployed to search for persons with incomplete or uncertain information, such as a hint that a missing individual may be located in a bathroom or behind a closed door.
+    \item \textbf{Inspection:} Industrial or infrastructure inspection robots must autonomously explore and analyze previously uncharted or unteleoperable areas, guided by semantic instructions (e.g., “inspect the corroded pipe near the valve”).
+    \item \textbf{Warehouse Automation:} Large-scale warehouses often contain thousands of storage units or pallets that may not be consistently labeled or easily visible. Semantic perception enables robots to efficiently locate and retrieve items that match high-level descriptions (e.g., “find the blue container behind the conveyor belt”).
 \end{itemize}
+
+In all of these use cases, the integration of semantic understanding with autonomous navigation is critical. Robots must be capable of interpreting abstract human instructions, reasoning about spatial and semantic context, and performing efficient searches in complex, dynamic environments. This motivates the development of a unified framework that bridges geometric exploration with semantic scene understanding.
 
 \section{Problem Statement}
 
@@ -75,6 +81,8 @@ None of the above methods incorporate a persistent semantic memory for efficient
 \end{table}
 
 
+!!!!!!!!!!! Add chaplot2020semexp !!!!!!!!!!!!!!!!!!!
+
 
 Despite notable progress, these methods often suffer from heavy GPU requirements, offline training procedures, or noisy semantic maps that reduce navigation reliability. Some further depend heavily on object detectors, which can introduce false positives in open-vocabulary settings.
 
@@ -113,7 +121,7 @@ Despite notable progress, these methods often suffer from heavy GPU requirements
     \item Independence from fixed, pre-trained object category sets.
 \end{itemize}
 
-\section*{Scientific Contribution}
+\section{Scientific Contribution}
 
 This work contributes to the state of the art by introducing a hybrid semantic exploration framework that integrates zero-shot semantic frontier scoring with persistent 3D scene representation, enabling autonomous search guided by open-vocabulary text queries. The system combines real-time semantic reasoning during exploration with a long-term spatial memory, allowing the robot to dynamically balance between discovering new information and exploiting previously acquired knowledge.
 

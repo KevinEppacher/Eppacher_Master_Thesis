@@ -1,0 +1,1248 @@
+<rdf:RDF
+ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+ xmlns:z="http://www.zotero.org/namespaces/export#"
+ xmlns:dc="http://purl.org/dc/elements/1.1/"
+ xmlns:foaf="http://xmlns.com/foaf/0.1/"
+ xmlns:bib="http://purl.org/net/biblio#"
+ xmlns:dcterms="http://purl.org/dc/terms/"
+ xmlns:link="http://purl.org/rss/1.0/modules/link/"
+ xmlns:prism="http://prismstandard.org/namespaces/1.2/basic/">
+    <rdf:Description rdf:about="https://arxiv.org/abs/2312.03275">
+        <z:itemType>preprint</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>arXiv</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Yokoyama</foaf:surname>
+                        <foaf:givenName>Naoki</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Ha</foaf:surname>
+                        <foaf:givenName>Sehoon</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Batra</foaf:surname>
+                        <foaf:givenName>Dhruv</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Wang</foaf:surname>
+                        <foaf:givenName>Jiuguang</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Bucher</foaf:surname>
+                        <foaf:givenName>Bernadette</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Artificial Intelligence (cs.AI)</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>FOS: Computer and information sciences</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Robotics (cs.RO)</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:title>VLFM: Vision-Language Frontier Maps for Zero-Shot Semantic Navigation</dc:title>
+        <dcterms:abstract>Understanding how humans leverage semantic knowledge to navigate unfamiliar environments and decide where to explore next is pivotal for developing robots capable of human-like search behaviors. We introduce a zero-shot navigation approach, Vision-Language Frontier Maps (VLFM), which is inspired by human reasoning and designed to navigate towards unseen semantic objects in novel environments. VLFM builds occupancy maps from depth observations to identify frontiers, and leverages RGB observations and a pre-trained vision-language model to generate a language-grounded value map. VLFM then uses this map to identify the most promising frontier to explore for finding an instance of a given target object category. We evaluate VLFM in photo-realistic environments from the Gibson, Habitat-Matterport 3D (HM3D), and Matterport 3D (MP3D) datasets within the Habitat simulator. Remarkably, VLFM achieves state-of-the-art results on all three datasets as measured by success weighted by path length (SPL) for the Object Goal Navigation task. Furthermore, we show that VLFM's zero-shot nature enables it to be readily deployed on real-world robots such as the Boston Dynamics Spot mobile manipulation platform. We deploy VLFM on Spot and demonstrate its capability to efficiently navigate to target objects within an office building in the real world, without any prior knowledge of the environment. The accomplishments of VLFM underscore the promising potential of vision-language models in advancing the field of semantic navigation. Videos of real-world deployment can be viewed at naoki.io/vlfm.</dcterms:abstract>
+        <dc:date>2023</dc:date>
+        <z:shortTitle>VLFM</z:shortTitle>
+        <z:libraryCatalog>DOI.org (Datacite)</z:libraryCatalog>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>https://arxiv.org/abs/2312.03275</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:06:02</dcterms:dateSubmitted>
+        <dc:rights>arXiv.org perpetual, non-exclusive license</dc:rights>
+        <dc:description>Version Number: 1</dc:description>
+        <dc:identifier>DOI 10.48550/ARXIV.2312.03275</dc:identifier>
+    </rdf:Description>
+    <bib:Article rdf:about="https://www.mdpi.com/1424-8220/25/16/4994">
+        <z:itemType>journalArticle</z:itemType>
+        <dcterms:isPartOf rdf:resource="urn:issn:1424-8220"/>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Miao</foaf:surname>
+                        <foaf:givenName>Le</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Liu</foaf:surname>
+                        <foaf:givenName>Wen</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Deng</foaf:surname>
+                        <foaf:givenName>Zhongliang</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Miao</foaf:surname>
+                        <foaf:givenName>Le</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Liu</foaf:surname>
+                        <foaf:givenName>Wen</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Deng</foaf:surname>
+                        <foaf:givenName>Zhongliang</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <link:link rdf:resource="#item_3"/>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>multimodal sensor fusion</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>open-world perception</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>robotic perception</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+           <z:AutomaticTag><rdf:value>semantic SLAM</rdf:value></z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>zero-shot learning</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:title>A Frontier Review of Semantic SLAM Technologies Applied to the Open World</dc:title>
+        <dcterms:abstract>With the growing demand for autonomous robotic operations in complex and unstructured environments, traditional semantic SLAM systems—which rely on cl...</dcterms:abstract>
+        <dc:date>2025-08-12</dc:date>
+        <z:language>en</z:language>
+        <z:libraryCatalog>www.mdpi.com</z:libraryCatalog>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>https://www.mdpi.com/1424-8220/25/16/4994</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:14:23</dcterms:dateSubmitted>
+        <dc:rights>http://creativecommons.org/licenses/by/3.0/</dc:rights>
+        <dc:description>Company: Multidisciplinary Digital Publishing Institute
+Distributor: Multidisciplinary Digital Publishing Institute
+Institution: Multidisciplinary Digital Publishing Institute
+Label: Multidisciplinary Digital Publishing Institute
+Publisher: publisher</dc:description>
+    </bib:Article>
+    <bib:Journal rdf:about="urn:issn:1424-8220">
+        <prism:volume>25</prism:volume>
+        <dc:title>Sensors</dc:title>
+        <dc:identifier>DOI 10.3390/s25164994</dc:identifier>
+        <prism:number>16</prism:number>
+        <dc:identifier>ISSN 1424-8220</dc:identifier>
+    </bib:Journal>
+    <z:Attachment rdf:about="#item_3">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/3/Miao et al. - 2025 - A Frontier Review of Semantic SLAM Technologies Applied to the Open World.pdf"/>
+        <dc:title>Full Text PDF</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+                <rdf:value>https://www.mdpi.com/1424-8220/25/16/4994/pdf</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:14:24</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>application/pdf</link:type>
+    </z:Attachment>
+    <bib:Article rdf:about="https://www.sciencedirect.com/science/article/pii/S2667305325001176">
+        <z:itemType>journalArticle</z:itemType>
+        <dcterms:isPartOf rdf:resource="urn:issn:2667-3053"/>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Kanso</foaf:surname>
+                        <foaf:givenName>Houssein</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Singh</foaf:surname>
+                        <foaf:givenName>Abhilasha</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Zarif</foaf:surname>
+                        <foaf:givenName>Etaf El</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Almohammed</foaf:surname>
+                        <foaf:givenName>Nooruldeen</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Mounsef</foaf:surname>
+                        <foaf:givenName>Jinane</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Maalouf</foaf:surname>
+                        <foaf:givenName>Noel</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Arain</foaf:surname>
+                        <foaf:givenName>Bilal</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <link:link rdf:resource="#item_6"/>
+        <link:link rdf:resource="#item_5"/>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Autonomous systems</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Dynamic environments</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Object-level SLAM</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Semantic mapping</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+           <z:AutomaticTag><rdf:value>Semantic SLAM</rdf:value></z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+           <z:AutomaticTag><rdf:value>Visual SLAM</rdf:value></z:AutomaticTag>
+        </dc:subject>
+        <dc:title>Semantic SLAM: A comprehensive survey of methods and applications</dc:title>
+        <dcterms:abstract>This paper surveys the different approaches in semantic Simultaneous Localization and Mapping (SLAM), exploring how the incorporation of semantic information has enhanced performance in both indoor and outdoor settings, while highlighting key advancements in the field. It also identifies existing gaps and proposes potential directions for future improvements to address these issues. We provide a detailed review of the fundamentals of semantic SLAM, illustrating how incorporating semantic data enhances scene understanding and mapping accuracy. The paper presents semantic SLAM methods and core techniques that contribute to improved robustness and precision in mapping. A comprehensive overview of commonly used datasets for evaluating semantic SLAM systems is provided, along with a discussion of performance metrics used to assess their efficiency and accuracy. To demonstrate the reliability of semantic SLAM methodologies, we reproduce selected results from existing studies offering insights into the reproducibility of these approaches. The paper also addresses key challenges such as real-time processing, dynamic scene adaptation, and scalability while highlighting future research directions. Unlike prior surveys, this paper uniquely combines (i) a systematic taxonomy of semantic SLAM approaches across different sensing modalities and environments, (ii) a comparative review of datasets and evaluation metrics, and (iii) a reproducibility study of selected methods. To our knowledge, this is the first survey that integrates methods, datasets, evaluation practices, and application insights into a single comprehensive review, thereby offering a unified reference for researchers and practitioners. In conclusion, this review underscores the vital role of semantic SLAM in driving advancements in autonomous systems and intelligent navigation by analyzing recent developments, validating findings, and highlighting future research directions.</dcterms:abstract>
+        <dc:date>2025-12-01</dc:date>
+        <z:shortTitle>Semantic SLAM</z:shortTitle>
+        <z:libraryCatalog>ScienceDirect</z:libraryCatalog>
+        <dc:identifier>
+            <dcterms:URI>
+                <rdf:value>https://www.sciencedirect.com/science/article/pii/S2667305325001176</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:15:24</dcterms:dateSubmitted>
+        <bib:pages>200591</bib:pages>
+    </bib:Article>
+    <bib:Journal rdf:about="urn:issn:2667-3053">
+        <prism:volume>28</prism:volume>
+        <dc:title>Intelligent Systems with Applications</dc:title>
+        <dc:identifier>DOI 10.1016/j.iswa.2025.200591</dc:identifier>
+        <dcterms:alternative>Intelligent Systems with Applications</dcterms:alternative>
+        <dc:identifier>ISSN 2667-3053</dc:identifier>
+    </bib:Journal>
+    <z:Attachment rdf:about="#item_6">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/6/Kanso et al. - 2025 - Semantic SLAM A comprehensive survey of methods and applications.pdf"/>
+        <dc:title>ScienceDirect Full Text PDF</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+                <rdf:value>https://pdf.sciencedirectassets.com/779210/1-s2.0-S2667305325X00041/1-s2.0-S2667305325001176/main.pdf?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEB4aCXVzLWVhc3QtMSJHMEUCIQCbDawe4P73wRrAFMcc5N%2FjKHBMuyP%2FUA9P8vQKnw5KHAIgI6QfmZya6Z1CTWmjAztKqNh7W7vb5J5vpAZECiAuj0IqvAUI5%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAFGgwwNTkwMDM1NDY4NjUiDMiF0JW5pAUDTWMBeyqQBbQkpDeBE8sVxKygMyyUoskahuvpAZPPOlfhZaCQSWbcwLl%2FMSZEswFT9D0Bz4gqH4Vp124D59nAq%2Bjf3QOxwlffVZeTt5EaJm%2FP1TGoX5r04N1QSWJ7aIEI%2Fz02MpJDEthsJigk4VbxnpMPc7ICWbvGGWMk4PiAbOUdA%2BcKINJMljhFyUJLs7jIOlF7pApd23HRGMhP%2BfnMcuXjdjKphJFrqsBMN%2BmURCR74pKNkW4xcTksZvTRZ5ijvTPwqh61TkPXG8s5%2BrPH0wF7t3xnYS%2FWU1HKOp2m42edHX0xhYsqpDvLPC8V5L74yjj%2FsKicZDE9xaxECqc9YBIgrL2T98j%2B3U%2FiG3yLr%2B%2F4RR8aNI8QQRORS9cL8mgmoa8P1ZJtUG%2BV459Hf5arvSHCYsYz1R1doXd73Wg%2BKASz6Z91%2BjCCTIeGLKDtIv0%2Fkp%2BGqY45OghpdG%2FFSoHIFP3GnJKCYNq3A0TYEDOYfTX56ShLE89mAZ7D33LRc9FiGtdXdxnvLZsF4AxOppHRVdYhlv9MZcnuc1o%2FGqDh6LtdEg6VSgvqoW0fsFfpALetQ8r25m9RpWyPJ6sGbUQaLhSH1xvC%2B%2FNfNIcfmnuytt1xd6cudq%2BX7%2F6as8e07mBqtLiTKr1%2FcaTFp8PddjWdsLMig7fiSizOW8%2B2HsEUzsHvcBX3R46KbUsSE5Jzcy2Bd25nkNMBnPw1eUPwbkqAbiVsx14o8tKuEzFjvFP9TVCi0fdIHwe3%2F6qRBlVSAH%2FCVIRmx1mBYQMuw6N5IS6PN6NGce9A5G0swF3ib44oqnXqzN2Jg5Cuys%2FTkxi%2Fmu9xAyoum3Nx8zxpS3wHf%2By4hahRy1V3n7f78c8A0faAWvCK3J%2F%2BgMdPMN606ckGOrEBs6FRcu4rOtI%2BbABzfdRQ4YcPvh%2F5lZHYoW%2FtGH6u6U63cuRa5JpSDOgfTf0Ee2cCXyZxzOo1OxUwxJ6FlAwL7HLHosKn8xk%2FBpXJUQKocqZe9pUrOqV6gsFpsA1BmkD64SCOyIKia6IgkwgY%2FyHCCgr6woZ3BnMOt723NATB3brPqpjSPRekTte02cHjhpL6nQK1b9fqsu0lt0n8IhrpD7IHwdsQbwXkJpCtDLKmCRw4&amp;X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Date=20251211T061532Z&amp;X-Amz-SignedHeaders=host&amp;X-Amz-Expires=300&amp;X-Amz-Credential=ASIAQ3PHCVTYZ4BNYFBI%2F20251211%2Fus-east-1%2Fs3%2Faws4_request&amp;X-Amz-Signature=3fd13e43a2173c217bacd12dddb982ba459df0d37e79ac09d5f259b22c35506d&amp;hash=7f239dd1b774d65d496790ba0d809c4ea9b4de57c4ac2825314e81f8e90e4b15&amp;host=68042c943591013ac2b2430a89b270f6af2c76d8dfd086a07176afe7c76c2c61&amp;pii=S2667305325001176&amp;tid=spdf-32e2c70e-b085-4d02-930f-8a93b303b1bd&amp;sid=47c2cfff857a714b371b2911b305ab36bd46gxrqb&amp;type=client&amp;tsoh=d3d3LnNjaWVuY2VkaXJlY3QuY29t&amp;rh=d3d3LnNjaWVuY2VkaXJlY3QuY29t&amp;ua=1b115e0e06520a585f0f54&amp;rr=9ac2d91a48c75bb4&amp;cc=at</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:15:36</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>application/pdf</link:type>
+    </z:Attachment>
+    <z:Attachment rdf:about="#item_5">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/5/S2667305325001176.html"/>
+        <dc:title>ScienceDirect Snapshot</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+                <rdf:value>https://www.sciencedirect.com/science/article/pii/S2667305325001176</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:15:35</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>text/html</link:type>
+    </z:Attachment>
+    <rdf:Description rdf:about="http://arxiv.org/abs/2409.11764">
+        <z:itemType>preprint</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>arXiv</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Busch</foaf:surname>
+                        <foaf:givenName>Finn Lukas</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Homberger</foaf:surname>
+                        <foaf:givenName>Timon</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Ortega-Peimbert</foaf:surname>
+                        <foaf:givenName>Jesús</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Yang</foaf:surname>
+                        <foaf:givenName>Quantao</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Andersson</foaf:surname>
+                        <foaf:givenName>Olov</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <link:link rdf:resource="#item_9"/>
+        <link:link rdf:resource="#item_8"/>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Computer Science - Artificial Intelligence</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Computer Science - Robotics</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:title>One Map to Find Them All: Real-time Open-Vocabulary Mapping for Zero-shot Multi-Object Navigation</dc:title>
+        <dcterms:abstract>The capability to efficiently search for objects in complex environments is fundamental for many real-world robot applications. Recent advances in open-vocabulary vision models have resulted in semantically-informed object navigation methods that allow a robot to search for an arbitrary object without prior training. However, these zero-shot methods have so far treated the environment as unknown for each consecutive query. In this paper we introduce a new benchmark for zero-shot multi-object navigation, allowing the robot to leverage information gathered from previous searches to more efficiently find new objects. To address this problem we build a reusable open-vocabulary feature map tailored for real-time object search. We further propose a probabilistic-semantic map update that mitigates common sources of errors in semantic feature extraction and leverage this semantic uncertainty for informed multi-object exploration. We evaluate our method on a set of object navigation tasks in both simulation as well as with a real robot, running in real-time on a Jetson Orin AGX. We demonstrate that it outperforms existing state-of-the-art approaches both on single and multi-object navigation tasks. Additional videos, code and the multi-object navigation benchmark will be available on https://finnbsch.github.io/OneMap.</dcterms:abstract>
+        <dc:date>2025-03-03</dc:date>
+        <z:shortTitle>One Map to Find Them All</z:shortTitle>
+        <z:libraryCatalog>arXiv.org</z:libraryCatalog>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/2409.11764</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:35:51</dcterms:dateSubmitted>
+        <dc:description>arXiv:2409.11764 [cs]</dc:description>
+        <dc:identifier>DOI 10.48550/arXiv.2409.11764</dc:identifier>
+        <prism:number>arXiv:2409.11764</prism:number>
+    </rdf:Description>
+    <z:Attachment rdf:about="#item_9">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/9/Busch et al. - 2025 - One Map to Find Them All Real-time Open-Vocabulary Mapping for Zero-shot Multi-Object Navigation.pdf"/>
+        <dc:title>Preprint PDF</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/pdf/2409.11764v2</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:35:54</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>application/pdf</link:type>
+    </z:Attachment>
+    <z:Attachment rdf:about="#item_8">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/8/2409.html"/>
+        <dc:title>Snapshot</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/2409.11764</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:35:52</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>text/html</link:type>
+    </z:Attachment>
+    <rdf:Description rdf:about="http://arxiv.org/abs/2210.05714">
+        <z:itemType>preprint</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>arXiv</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Huang</foaf:surname>
+                        <foaf:givenName>Chenguang</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Mees</foaf:surname>
+                        <foaf:givenName>Oier</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Zeng</foaf:surname>
+                        <foaf:givenName>Andy</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Burgard</foaf:surname>
+                        <foaf:givenName>Wolfram</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dcterms:isReferencedBy rdf:resource="#item_11"/>
+        <link:link rdf:resource="#item_13"/>
+        <link:link rdf:resource="#item_12"/>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Computer Science - Artificial Intelligence</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Computer Science - Robotics</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Computer Science - Computation and Language</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+                <rdf:value>Computer Science - Computer Vision and Pattern Recognition</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Computer Science - Machine Learning</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:title>Visual Language Maps for Robot Navigation</dc:title>
+        <dcterms:abstract>Grounding language to the visual observations of a navigating agent can be performed using off-the-shelf visual-language models pretrained on Internet-scale data (e.g., image captions). While this is useful for matching images to natural language descriptions of object goals, it remains disjoint from the process of mapping the environment, so that it lacks the spatial precision of classic geometric maps. To address this problem, we propose VLMaps, a spatial map representation that directly fuses pretrained visual-language features with a 3D reconstruction of the physical world. VLMaps can be autonomously built from video feed on robots using standard exploration approaches and enables natural language indexing of the map without additional labeled data. Specifically, when combined with large language models (LLMs), VLMaps can be used to (i) translate natural language commands into a sequence of open-vocabulary navigation goals (which, beyond prior work, can be spatial by construction, e.g., &quot;in between the sofa and TV&quot; or &quot;three meters to the right of the chair&quot;) directly localized in the map, and (ii) can be shared among multiple robots with different embodiments to generate new obstacle maps on-the-fly (by using a list of obstacle categories). Extensive experiments carried out in simulated and real world environments show that VLMaps enable navigation according to more complex language instructions than existing methods. Videos are available at https://vlmaps.github.io.</dcterms:abstract>
+        <dc:date>2023-03-08</dc:date>
+        <z:libraryCatalog>arXiv.org</z:libraryCatalog>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/2210.05714</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:36:47</dcterms:dateSubmitted>
+        <dc:description>arXiv:2210.05714 [cs]</dc:description>
+        <dc:identifier>DOI 10.48550/arXiv.2210.05714</dc:identifier>
+        <prism:number>arXiv:2210.05714</prism:number>
+    </rdf:Description>
+    <bib:Memo rdf:about="#item_11">
+        <rdf:value>Comment: Accepted at the 2023 IEEE International Conference on Robotics and Automation (ICRA). Project page: https://vlmaps.github.io</rdf:value>
+    </bib:Memo>
+    <z:Attachment rdf:about="#item_13">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/13/Huang et al. - 2023 - Visual Language Maps for Robot Navigation.pdf"/>
+        <dc:title>Preprint PDF</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/pdf/2210.05714v4</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:36:52</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>application/pdf</link:type>
+    </z:Attachment>
+    <z:Attachment rdf:about="#item_12">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/12/2210.html"/>
+        <dc:title>Snapshot</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/2210.05714</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:36:47</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>text/html</link:type>
+    </z:Attachment>
+    <rdf:Description rdf:about="http://arxiv.org/abs/2309.16650">
+        <z:itemType>preprint</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>arXiv</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Gu</foaf:surname>
+                        <foaf:givenName>Qiao</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Kuwajerwala</foaf:surname>
+                        <foaf:givenName>Alihusein</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Morin</foaf:surname>
+                        <foaf:givenName>Sacha</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Jatavallabhula</foaf:surname>
+                        <foaf:givenName>Krishna Murthy</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Sen</foaf:surname>
+                        <foaf:givenName>Bipasha</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Agarwal</foaf:surname>
+                        <foaf:givenName>Aditya</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Rivera</foaf:surname>
+                        <foaf:givenName>Corban</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Paul</foaf:surname>
+                        <foaf:givenName>William</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Ellis</foaf:surname>
+                        <foaf:givenName>Kirsty</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Chellappa</foaf:surname>
+                        <foaf:givenName>Rama</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Gan</foaf:surname>
+                        <foaf:givenName>Chuang</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Melo</foaf:surname>
+                        <foaf:givenName>Celso Miguel de</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Tenenbaum</foaf:surname>
+                        <foaf:givenName>Joshua B.</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Torralba</foaf:surname>
+                        <foaf:givenName>Antonio</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Shkurti</foaf:surname>
+                        <foaf:givenName>Florian</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Paull</foaf:surname>
+                        <foaf:givenName>Liam</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dcterms:isReferencedBy rdf:resource="#item_15"/>
+        <link:link rdf:resource="#item_17"/>
+        <link:link rdf:resource="#item_16"/>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Computer Science - Robotics</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+                <rdf:value>Computer Science - Computer Vision and Pattern Recognition</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:title>ConceptGraphs: Open-Vocabulary 3D Scene Graphs for Perception and Planning</dc:title>
+        <dcterms:abstract>For robots to perform a wide variety of tasks, they require a 3D representation of the world that is semantically rich, yet compact and efficient for task-driven perception and planning. Recent approaches have attempted to leverage features from large vision-language models to encode semantics in 3D representations. However, these approaches tend to produce maps with per-point feature vectors, which do not scale well in larger environments, nor do they contain semantic spatial relationships between entities in the environment, which are useful for downstream planning. In this work, we propose ConceptGraphs, an open-vocabulary graph-structured representation for 3D scenes. ConceptGraphs is built by leveraging 2D foundation models and fusing their output to 3D by multi-view association. The resulting representations generalize to novel semantic classes, without the need to collect large 3D datasets or finetune models. We demonstrate the utility of this representation through a number of downstream planning tasks that are specified through abstract (language) prompts and require complex reasoning over spatial and semantic concepts. (Project page: https://concept-graphs.github.io/ Explainer video: https://youtu.be/mRhNkQwRYnc )</dcterms:abstract>
+        <dc:date>2023-09-28</dc:date>
+        <z:shortTitle>ConceptGraphs</z:shortTitle>
+        <z:libraryCatalog>arXiv.org</z:libraryCatalog>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/2309.16650</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:37:54</dcterms:dateSubmitted>
+        <dc:description>arXiv:2309.16650 [cs]</dc:description>
+        <dc:identifier>DOI 10.48550/arXiv.2309.16650</dc:identifier>
+        <prism:number>arXiv:2309.16650</prism:number>
+    </rdf:Description>
+    <bib:Memo rdf:about="#item_15">
+        <rdf:value>Comment: Project page: https://concept-graphs.github.io/ Explainer video: https://youtu.be/mRhNkQwRYnc</rdf:value>
+    </bib:Memo>
+    <z:Attachment rdf:about="#item_17">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/17/Gu et al. - 2023 - ConceptGraphs Open-Vocabulary 3D Scene Graphs for Perception and Planning.pdf"/>
+        <dc:title>Preprint PDF</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/pdf/2309.16650v1</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:37:56</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>application/pdf</link:type>
+    </z:Attachment>
+    <z:Attachment rdf:about="#item_16">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/16/2309.html"/>
+        <dc:title>Snapshot</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/2309.16650</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:37:55</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>text/html</link:type>
+    </z:Attachment>
+    <rdf:Description rdf:about="http://arxiv.org/abs/2007.00643">
+        <z:itemType>preprint</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>arXiv</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Chaplot</foaf:surname>
+                        <foaf:givenName>Devendra Singh</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Gandhi</foaf:surname>
+                        <foaf:givenName>Dhiraj</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Gupta</foaf:surname>
+                        <foaf:givenName>Abhinav</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Salakhutdinov</foaf:surname>
+                        <foaf:givenName>Ruslan</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dcterms:isReferencedBy rdf:resource="#item_19"/>
+        <link:link rdf:resource="#item_21"/>
+        <link:link rdf:resource="#item_20"/>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Computer Science - Robotics</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+                <rdf:value>Computer Science - Computer Vision and Pattern Recognition</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Computer Science - Machine Learning</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:title>Object Goal Navigation using Goal-Oriented Semantic Exploration</dc:title>
+        <dcterms:abstract>This work studies the problem of object goal navigation which involves navigating to an instance of the given object category in unseen environments. End-to-end learning-based navigation methods struggle at this task as they are ineffective at exploration and long-term planning. We propose a modular system called, `Goal-Oriented Semantic Exploration' which builds an episodic semantic map and uses it to explore the environment efficiently based on the goal object category. Empirical results in visually realistic simulation environments show that the proposed model outperforms a wide range of baselines including end-to-end learning-based methods as well as modular map-based methods and led to the winning entry of the CVPR-2020 Habitat ObjectNav Challenge. Ablation analysis indicates that the proposed model learns semantic priors of the relative arrangement of objects in a scene, and uses them to explore efficiently. Domain-agnostic module design allow us to transfer our model to a mobile robot platform and achieve similar performance for object goal navigation in the real-world.</dcterms:abstract>
+        <dc:date>2020-07-02</dc:date>
+        <z:libraryCatalog>arXiv.org</z:libraryCatalog>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/2007.00643</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:38:48</dcterms:dateSubmitted>
+        <dc:description>arXiv:2007.00643 [cs]</dc:description>
+        <dc:identifier>DOI 10.48550/arXiv.2007.00643</dc:identifier>
+        <prism:number>arXiv:2007.00643</prism:number>
+    </rdf:Description>
+    <bib:Memo rdf:about="#item_19">
+        <rdf:value>Comment: Winner of the CVPR 2020 AI-Habitat Object Goal Navigation Challenge. See the project webpage at https://devendrachaplot.github.io/projects/semantic-exploration.html</rdf:value>
+    </bib:Memo>
+    <z:Attachment rdf:about="#item_21">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/21/Chaplot et al. - 2020 - Object Goal Navigation using Goal-Oriented Semantic Exploration.pdf"/>
+        <dc:title>Preprint PDF</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/pdf/2007.00643v2</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:38:49</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>application/pdf</link:type>
+    </z:Attachment>
+    <z:Attachment rdf:about="#item_20">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/20/2007.html"/>
+        <dc:title>Snapshot</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/2007.00643</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:38:48</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>text/html</link:type>
+    </z:Attachment>
+    <rdf:Description rdf:about="http://arxiv.org/abs/2403.07563">
+        <z:itemType>preprint</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>arXiv</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Qiu</foaf:surname>
+                        <foaf:givenName>Ri-Zhao</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Hu</foaf:surname>
+                        <foaf:givenName>Yafei</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Song</foaf:surname>
+                        <foaf:givenName>Yuchen</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Yang</foaf:surname>
+                        <foaf:givenName>Ge</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Fu</foaf:surname>
+                        <foaf:givenName>Yang</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Ye</foaf:surname>
+                        <foaf:givenName>Jianglong</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Mu</foaf:surname>
+                        <foaf:givenName>Jiteng</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Yang</foaf:surname>
+                        <foaf:givenName>Ruihan</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Atanasov</foaf:surname>
+                        <foaf:givenName>Nikolay</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Scherer</foaf:surname>
+                        <foaf:givenName>Sebastian</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Wang</foaf:surname>
+                        <foaf:givenName>Xiaolong</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dcterms:isReferencedBy rdf:resource="#item_23"/>
+        <link:link rdf:resource="#item_25"/>
+        <link:link rdf:resource="#item_24"/>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Computer Science - Robotics</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+                <rdf:value>Computer Science - Computer Vision and Pattern Recognition</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Computer Science - Machine Learning</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:title>Learning Generalizable Feature Fields for Mobile Manipulation</dc:title>
+        <dcterms:abstract>An open problem in mobile manipulation is how to represent objects and scenes in a unified manner so that robots can use both for navigation and manipulation. The latter requires capturing intricate geometry while understanding fine-grained semantics, whereas the former involves capturing the complexity inherent at an expansive physical scale. In this work, we present GeFF (Generalizable Feature Fields), a scene-level generalizable neural feature field that acts as a unified representation for both navigation and manipulation that performs in real-time. To do so, we treat generative novel view synthesis as a pre-training task, and then align the resulting rich scene priors with natural language via CLIP feature distillation. We demonstrate the effectiveness of this approach by deploying GeFF on a quadrupedal robot equipped with a manipulator. We quantitatively evaluate GeFF's ability for open-vocabulary object-/part-level manipulation and show that GeFF outperforms point-based baselines in runtime and storage-accuracy trade-offs, with qualitative examples of semantics-aware navigation and articulated object manipulation.</dcterms:abstract>
+        <dc:date>2024-11-26</dc:date>
+        <z:libraryCatalog>arXiv.org</z:libraryCatalog>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/2403.07563</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:45:00</dcterms:dateSubmitted>
+        <dc:description>arXiv:2403.07563 [cs]</dc:description>
+        <dc:identifier>DOI 10.48550/arXiv.2403.07563</dc:identifier>
+        <prism:number>arXiv:2403.07563</prism:number>
+    </rdf:Description>
+    <bib:Memo rdf:about="#item_23">
+        <rdf:value>Comment: Preprint. Project website is at: https://geff-b1.github.io/</rdf:value>
+    </bib:Memo>
+    <z:Attachment rdf:about="#item_25">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/25/Qiu et al. - 2024 - Learning Generalizable Feature Fields for Mobile Manipulation.pdf"/>
+        <dc:title>Preprint PDF</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/pdf/2403.07563v2</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:45:06</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>application/pdf</link:type>
+    </z:Attachment>
+    <z:Attachment rdf:about="#item_24">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/24/2403.html"/>
+        <dc:title>Snapshot</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/2403.07563</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:45:01</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>text/html</link:type>
+    </z:Attachment>
+    <rdf:Description rdf:about="http://arxiv.org/abs/2310.03923">
+        <z:itemType>preprint</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>arXiv</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Yamazaki</foaf:surname>
+                        <foaf:givenName>Kashu</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Hanyu</foaf:surname>
+                        <foaf:givenName>Taisei</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Vo</foaf:surname>
+                        <foaf:givenName>Khoa</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Pham</foaf:surname>
+                        <foaf:givenName>Thang</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Tran</foaf:surname>
+                        <foaf:givenName>Minh</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Doretto</foaf:surname>
+                        <foaf:givenName>Gianfranco</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Nguyen</foaf:surname>
+                        <foaf:givenName>Anh</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Le</foaf:surname>
+                        <foaf:givenName>Ngan</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <link:link rdf:resource="#item_28"/>
+        <link:link rdf:resource="#item_27"/>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Computer Science - Robotics</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:subject>
+            <z:AutomaticTag>
+                <rdf:value>Computer Science - Computer Vision and Pattern Recognition</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:title>Open-Fusion: Real-time Open-Vocabulary 3D Mapping and Queryable Scene Representation</dc:title>
+        <dcterms:abstract>Precise 3D environmental mapping is pivotal in robotics. Existing methods often rely on predefined concepts during training or are time-intensive when generating semantic maps. This paper presents Open-Fusion, a groundbreaking approach for real-time open-vocabulary 3D mapping and queryable scene representation using RGB-D data. Open-Fusion harnesses the power of a pre-trained vision-language foundation model (VLFM) for open-set semantic comprehension and employs the Truncated Signed Distance Function (TSDF) for swift 3D scene reconstruction. By leveraging the VLFM, we extract region-based embeddings and their associated confidence maps. These are then integrated with 3D knowledge from TSDF using an enhanced Hungarian-based feature-matching mechanism. Notably, Open-Fusion delivers outstanding annotation-free 3D segmentation for open-vocabulary without necessitating additional 3D training. Benchmark tests on the ScanNet dataset against leading zero-shot methods highlight Open-Fusion's superiority. Furthermore, it seamlessly combines the strengths of region-based VLFM and TSDF, facilitating real-time 3D scene comprehension that includes object concepts and open-world semantics. We encourage the readers to view the demos on our project page: https://uark-aicv.github.io/OpenFusion</dcterms:abstract>
+        <dc:date>2023-10-05</dc:date>
+        <z:shortTitle>Open-Fusion</z:shortTitle>
+        <z:libraryCatalog>arXiv.org</z:libraryCatalog>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/2310.03923</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:46:26</dcterms:dateSubmitted>
+        <dc:description>arXiv:2310.03923 [cs]</dc:description>
+        <dc:identifier>DOI 10.48550/arXiv.2310.03923</dc:identifier>
+        <prism:number>arXiv:2310.03923</prism:number>
+    </rdf:Description>
+    <z:Attachment rdf:about="#item_28">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/28/Yamazaki et al. - 2023 - Open-Fusion Real-time Open-Vocabulary 3D Mapping and Queryable Scene Representation.pdf"/>
+        <dc:title>Preprint PDF</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/pdf/2310.03923v1</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:46:27</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>application/pdf</link:type>
+    </z:Attachment>
+    <z:Attachment rdf:about="#item_27">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/27/2310.html"/>
+        <dc:title>Snapshot</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/2310.03923</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:46:26</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>text/html</link:type>
+    </z:Attachment>
+    <rdf:Description rdf:about="http://arxiv.org/abs/2304.06718">
+        <z:itemType>preprint</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>arXiv</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Zou</foaf:surname>
+                        <foaf:givenName>Xueyan</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Yang</foaf:surname>
+                        <foaf:givenName>Jianwei</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Zhang</foaf:surname>
+                        <foaf:givenName>Hao</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Li</foaf:surname>
+                        <foaf:givenName>Feng</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Li</foaf:surname>
+                        <foaf:givenName>Linjie</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Wang</foaf:surname>
+                        <foaf:givenName>Jianfeng</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Wang</foaf:surname>
+                        <foaf:givenName>Lijuan</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Gao</foaf:surname>
+                        <foaf:givenName>Jianfeng</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Lee</foaf:surname>
+                        <foaf:givenName>Yong Jae</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <link:link rdf:resource="#item_31"/>
+        <link:link rdf:resource="#item_30"/>
+        <dc:subject>
+            <z:AutomaticTag>
+                <rdf:value>Computer Science - Computer Vision and Pattern Recognition</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:title>Segment Everything Everywhere All at Once</dc:title>
+        <dcterms:abstract>In this work, we present SEEM, a promptable and interactive model for segmenting everything everywhere all at once in an image, as shown in Fig.1. In SEEM, we propose a novel decoding mechanism that enables diverse prompting for all types of segmentation tasks, aiming at a universal segmentation interface that behaves like large language models (LLMs). More specifically, SEEM is designed with four desiderata: i) Versatility. We introduce a new visual prompt to unify different spatial queries including points, boxes, scribbles and masks, which can further generalize to a different referring image; ii) Compositionality. We learn a joint visual-semantic space between text and visual prompts, which facilitates the dynamic composition of two prompt types required for various segmentation tasks; iii) Interactivity. We further incorporate learnable memory prompts into the decoder to retain segmentation history through mask-guided cross-attention from decoder to image features; and iv) Semantic-awareness. We use a text encoder to encode text queries and mask labels into the same semantic space for open-vocabulary segmentation. We conduct a comprehensive empirical study to validate the effectiveness of SEEM across diverse segmentation tasks. Notably, our single SEEM model achieves competitive performance across interactive segmentation, generic segmentation, referring segmentation, and video object segmentation on 9 datasets with minimum 1/100 supervision. Furthermore, SEEM showcases a remarkable capacity for generalization to novel prompts or their combinations, rendering it a readily universal image segmentation interface.</dcterms:abstract>
+        <dc:date>2023-07-11</dc:date>
+        <z:libraryCatalog>arXiv.org</z:libraryCatalog>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/2304.06718</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:47:51</dcterms:dateSubmitted>
+        <dc:description>arXiv:2304.06718 [cs]</dc:description>
+        <dc:identifier>DOI 10.48550/arXiv.2304.06718</dc:identifier>
+        <prism:number>arXiv:2304.06718</prism:number>
+    </rdf:Description>
+    <z:Attachment rdf:about="#item_31">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/31/Zou et al. - 2023 - Segment Everything Everywhere All at Once.pdf"/>
+        <dc:title>Preprint PDF</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/pdf/2304.06718v4</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:48:04</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>application/pdf</link:type>
+    </z:Attachment>
+    <z:Attachment rdf:about="#item_30">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/30/2304.html"/>
+        <dc:title>Snapshot</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/2304.06718</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:47:52</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>text/html</link:type>
+    </z:Attachment>
+    <rdf:Description rdf:about="http://arxiv.org/abs/1806.03581">
+        <z:itemType>preprint</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>arXiv</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Topiwala</foaf:surname>
+                        <foaf:givenName>Anirudh</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Inani</foaf:surname>
+                        <foaf:givenName>Pranav</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Kathpal</foaf:surname>
+                        <foaf:givenName>Abhishek</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <link:link rdf:resource="#item_33"/>
+        <link:link rdf:resource="#item_34"/>
+        <dc:subject>
+            <z:AutomaticTag>
+               <rdf:value>Computer Science - Robotics</rdf:value>
+            </z:AutomaticTag>
+        </dc:subject>
+        <dc:title>Frontier Based Exploration for Autonomous Robot</dc:title>
+        <dcterms:abstract>Exploration is process of selecting target points that yield the biggest contribution to a specific gain function at an initially unknown environment. Frontier-based exploration is the most common approach to exploration, wherein frontiers are regions on the boundary between open space and unexplored space. By moving to a new frontier, we can keep building the map of the environment, until there are no new frontiers left to detect. In this paper, an autonomous frontier-based exploration strategy, namely Wavefront Frontier Detector (WFD) is described and implemented on Gazebo Simulation Environment as well as on hardware platform, i.e. Kobuki TurtleBot using Robot Operating System (ROS). The advantage of this algorithm is that the robot can explore large open spaces as well as small cluttered spaces. Further, the map generated from this technique is compared and validated with the map generated using turtlebot_teleop ROS Package.</dcterms:abstract>
+        <dc:date>2018-06-10</dc:date>
+        <z:libraryCatalog>arXiv.org</z:libraryCatalog>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/1806.03581</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:49:11</dcterms:dateSubmitted>
+        <dc:description>arXiv:1806.03581 [cs]</dc:description>
+        <dc:identifier>DOI 10.48550/arXiv.1806.03581</dc:identifier>
+        <prism:number>arXiv:1806.03581</prism:number>
+    </rdf:Description>
+    <z:Attachment rdf:about="#item_33">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/33/Topiwala et al. - 2018 - Frontier Based Exploration for Autonomous Robot.pdf"/>
+        <dc:title>Preprint PDF</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/pdf/1806.03581v1</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:49:12</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>application/pdf</link:type>
+    </z:Attachment>
+    <z:Attachment rdf:about="#item_34">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/34/1806.html"/>
+        <dc:title>Snapshot</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>http://arxiv.org/abs/1806.03581</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:49:12</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>text/html</link:type>
+    </z:Attachment>
+    <bib:Document rdf:about="https://ieeexplore-1ieee-1org-100033czj02b7.han.technikum-wien.at/document/10608408">
+        <z:itemType>webpage</z:itemType>
+        <dcterms:isPartOf>
+           <z:Website></z:Website>
+        </dcterms:isPartOf>
+        <link:link rdf:resource="#item_36"/>
+        <dc:title>Robotic Exploration Using Generalized Behavioral Entropy</dc:title>
+        <dcterms:abstract>This letter presents and evaluates a novel strategy for robotic exploration that leverages human models of uncertainty perception. To do this, we introduce a measure of uncertainty that we term “Behavioral entropy”, which builds on Prelec's probability weighting from Behavioral Economics. We show that the new operator is an admissible generalized entropy, analyze its theoretical properties and compare it with other common formulations such as Shannon's and Renyi's. In particular, we discuss how the new formulation is more expressive in the sense of measures of sensitivity and perceptiveness to uncertainty introduced here. Then we use Behavioral entropy to define a new type of utility function that can guide a frontier-based environment exploration process. The approach's benefits are illustrated and compared in a Proof-of-Concept and ROS-Unity simulation environment with a Clearpath Warthog robot. We show that the robot equipped with Behavioral entropy explores faster than Shannon and Renyi entropies.</dcterms:abstract>
+        <z:language>en-US</z:language>
+        <dc:identifier>
+            <dcterms:URI>
+                <rdf:value>https://ieeexplore-1ieee-1org-100033czj02b7.han.technikum-wien.at/document/10608408</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:55:18</dcterms:dateSubmitted>
+    </bib:Document>
+    <z:Attachment rdf:about="#item_36">
+        <z:itemType>attachment</z:itemType>
+        <rdf:resource rdf:resource="files/36/10608408.html"/>
+        <dc:title>Snapshot</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+                <rdf:value>https://ieeexplore-1ieee-1org-100033czj02b7.han.technikum-wien.at/document/10608408</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2025-12-11 06:55:32</dcterms:dateSubmitted>
+        <z:linkMode>1</z:linkMode>
+        <link:type>text/html</link:type>
+    </z:Attachment>
+    <z:Collection rdf:about="#collection_3">
+        <dc:title>Introduction</dc:title>
+        <dcterms:hasPart rdf:resource="https://www.mdpi.com/1424-8220/25/16/4994"/>
+        <dcterms:hasPart rdf:resource="https://www.sciencedirect.com/science/article/pii/S2667305325001176"/>
+    </z:Collection>
+    <z:Collection rdf:about="#collection_2">
+        <dc:title>SOTA</dc:title>
+        <dcterms:hasPart rdf:resource="#collection_5"/>
+        <dcterms:hasPart rdf:resource="#collection_6"/>
+        <dcterms:hasPart rdf:resource="#collection_4"/>
+        <dcterms:hasPart rdf:resource="https://arxiv.org/abs/2312.03275"/>
+        <dcterms:hasPart rdf:resource="http://arxiv.org/abs/2409.11764"/>
+        <dcterms:hasPart rdf:resource="http://arxiv.org/abs/2210.05714"/>
+        <dcterms:hasPart rdf:resource="http://arxiv.org/abs/2309.16650"/>
+        <dcterms:hasPart rdf:resource="http://arxiv.org/abs/2007.00643"/>
+        <dcterms:hasPart rdf:resource="http://arxiv.org/abs/2403.07563"/>
+    </z:Collection>
+    <z:Collection rdf:about="#collection_5">
+        <dc:title>Detectors</dc:title>
+        <dcterms:hasPart rdf:resource="http://arxiv.org/abs/2304.06718"/>
+    </z:Collection>
+    <z:Collection rdf:about="#collection_6">
+        <dc:title>Geometric Exploration</dc:title>
+        <dcterms:hasPart rdf:resource="http://arxiv.org/abs/1806.03581"/>
+        <dcterms:hasPart rdf:resource="https://ieeexplore-1ieee-1org-100033czj02b7.han.technikum-wien.at/document/10608408"/>
+    </z:Collection>
+    <z:Collection rdf:about="#collection_4">
+        <dc:title>Semantic Memory</dc:title>
+        <dcterms:hasPart rdf:resource="http://arxiv.org/abs/2310.03923"/>
+    </z:Collection>
+</rdf:RDF>
