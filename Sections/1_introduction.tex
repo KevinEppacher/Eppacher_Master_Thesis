@@ -43,7 +43,7 @@ Approaches such as ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}, PONI~\cite{ra
 
 Some approaches, such as ESC~\cite{zhouESCExplorationSoft2023} and LGX~\cite{dorbalaCanEmbodiedAgent2024}, further integrate \acp{LLM} for commonsense reasoning and high-level task interpretation, enabling a more contextual understanding of complex instructions. However, this comes at the cost of increased computational demand and potential inference latency, which limits their applicability on resource-constrained mobile platforms. While \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023} achieves real-time performance, it relies on multiple computationally heavy models (GroundingDINO, SAM, and BLIP-2) that require high-end GPUs with up to 16~GB of VRAM, which is impractical for embedded robotic systems.
 
-Overall, these methods primarily focus on short-term semantic reasoning and lack persistent memory. They do not maintain long-term storage or recall mechanisms for previously acquired semantic knowledge, leading to redundant exploration and reduced efficiency in multi-object search tasks. A persistent global memory would enable robots to exploit past observations, recall detected objects, and avoid revisiting known regions—thereby improving navigation efficiency, scalability, and robustness in open-vocabulary, real-world environments.
+Overall, these methods primarily focus on short-term semantic reasoning and lack persistent memory. They do not maintain long-term storage or recall mechanisms for previously acquired semantic knowledge, leading to redundant exploration and reduced efficiency in multi-object search tasks. A persistent global memory would enable robots to exploit past observations, recall detected objects, and avoid revisiting known regions—thereby improving navigation efficiency, scalability, and robustness in open-vocabulary, real-world environments. Table~\ref{tab:introduction:persistent_mapping_approaches} summarizes representative works that incorporate persistent or memory-based semantic mapping to enhance exploration capabilities.
 
 \begin{table}[H]
     \centering
@@ -58,23 +58,23 @@ Overall, these methods primarily focus on short-term semantic reasoning and lack
         |>{\raggedright\arraybackslash}X|}
         \hline
         \textbf{Approach} & \textbf{Training Required} & \textbf{Real-Time} & \textbf{Memory Representation} & \textbf{Exploration Integration} \\ \hline
-        \textbf{OneMap} & \xmark~(zero-shot) & \cmark & 2D probabilistic feature field & \cmark~(frontier-based) \\ \hline
-        \textbf{ConceptGraphs} & \xmark~(pretrained models) & \xmark & 3D scene graph & \cmark~(LLM-planner) \\ \hline
-        \textbf{SemExp} & \cmark~(RL + supervised) & \xmark & 2D semantic occupancy map & \cmark~(learned policy) \\ \hline
-        \textbf{GeFF} & \cmark~(ScanNet pretrain) & \cmark & Implicit 3D feature field & \xmark~(passive) \\ \hline
-        \textbf{RayFronts} & \xmark~(foundation model) & \cmark & Hybrid voxel + ray field & \cmark~(semantic frontier) \\ \hline
-        \textbf{VLMaps} & \xmark~(pretrained LSeg/CLIP) & \xmark & 2.5D open-vocab grid & \cmark~(frontier-compatible) \\ \hline
-        \textbf{Pigeon} & \cmark~(RLVR fine-tune) & \cmark & Point-of-Interest snapshot memory & \cmark~(reasoning-aware) \\ \hline
+        \textbf{\acs{OneMap}~\cite{buschOneMapFind2025}} & \xmark~(zero-shot) & \cmark & 2D probabilistic feature field & \cmark~(frontier-based) \\ \hline
+        \textbf{\acs{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}} & \xmark~(pretrained models) & \xmark & 3D scene graph & \cmark~(LLM-planner) \\ \hline
+        \textbf{\acs{SemExp}~\cite{chaplotObjectGoalNavigation2020}} & \cmark~(RL + supervised) & \xmark & 2D semantic occupancy map & \cmark~(learned policy) \\ \hline
+        \textbf{\acs{GeFF}~\cite{qiuLearningGeneralizableFeature2024}} & \cmark~(ScanNet pretrain) & \cmark & Implicit 3D feature field & \xmark~(passive) \\ \hline
+        \textbf{RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025}} & \xmark~(foundation model) & \cmark & Hybrid voxel + ray field & \xmark~(planner-agnostic) \\ \hline
+        \textbf{\acs{VLMaps}~\cite{huangVisualLanguageMaps2023}} & \xmark~(pretrained LSeg/CLIP) & \xmark & 2.5D open-vocab grid & \cmark~(frontier-compatible) \\ \hline
+        \textbf{Pigeon~\cite{PIGEONVLMDrivenObject}} & \cmark~(RLVR fine-tune) & \cmark & Point-of-Interest snapshot memory & \cmark~(reasoning-aware) \\ \hline
     \end{tabularx}
-    \caption{Overview of Persistent or Memory-Based Semantic Mapping Approaches.}
+    \caption{Overview of persistent or memory-based semantic mapping approaches.}
     \label{tab:introduction:persistent_mapping_approaches}
 \end{table}
 
+Similar to the previously discussed category, methods such as \ac{SemExp}~\cite{chaplotObjectGoalNavigation2020}, Pigeon~\cite{PIGEONVLMDrivenObject}, and \ac{GeFF}~\cite{qiuLearningGeneralizableFeature2024} rely on offline training to develop navigation policies that utilize persistent semantic representations. This dependence on extensive training limits their adaptability to novel environments and unseen object categories. Other approaches, such as \ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023} and \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, construct persistent open-vocabulary maps using pretrained foundation models but often require pre-mapping and lack real-time performance, which restricts their use in dynamic or large-scale settings.
 
-Despite notable progress, these methods often suffer from heavy GPU requirements, offline training procedures, or noisy semantic maps that reduce navigation reliability. Some further depend heavily on object detectors, which can introduce false positives in open-vocabulary settings.
+While \ac{OneMap}~\cite{buschOneMapFind2025} achieves real-time performance on embedded hardware such as the Jetson Orin AGX, its computational cost limits operation to approximately 2~Hz, which may be insufficient for high-speed navigation tasks. Additionally, noise in depth perception directly degrades the quality of the probabilistic feature map, reducing overall semantic reliability. The detector used in \ac{OneMap} relies solely on \ac{VLM}-based CLIP image–text similarity, which makes it prone to false positives under open-vocabulary conditions, a phenomenon commonly referred to as \textit{open-vocabulary drift}. 
 
-\bigskip
-\textbf{Core Gaps in Existing Work:}
+\ac{GeFF}~\cite{qiuLearningGeneralizableFeature2024} provides a compact implicit 3D representation by distilling CLIP-aligned features into a neural field, enabling both geometric and semantic understanding. However, it requires pretraining on large-scale datasets such as ScanNet, limiting its direct generalization to arbitrary environments. RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025} introduces a hybrid 3D representation that combines voxel-based semantics with ray-based frontier expansion, offering real-time operation and high efficiency for open-set semantic search. Nevertheless, its computational complexity grows with environment size, and its planner-agnostic design prevents it from actively guiding exploration toward semantically relevant regions.
 
 \begin{table}[H]
     \centering
