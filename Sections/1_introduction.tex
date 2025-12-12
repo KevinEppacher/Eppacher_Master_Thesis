@@ -76,6 +76,8 @@ While \ac{OneMap}~\cite{buschOneMapFind2025} achieves real-time performance on e
 
 \ac{GeFF}~\cite{qiuLearningGeneralizableFeature2024} provides a compact implicit 3D representation by distilling CLIP-aligned features into a neural field, enabling both geometric and semantic understanding. However, it requires pretraining on large-scale datasets such as ScanNet, limiting its direct generalization to arbitrary environments. RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025} introduces a hybrid 3D representation that combines voxel-based semantics with ray-based frontier expansion, offering real-time operation and high efficiency for open-set semantic search. Nevertheless, its computational complexity grows with environment size, and its planner-agnostic design prevents it from actively guiding exploration toward semantically relevant regions.
 
+Table~\ref{tab:introduction:identified_gaps} summarizes the identified limitations in existing semantic exploration frameworks, highlighting key gaps that motivate the development of a new approach capable of addressing these challenges.
+
 \begin{table}[H]
     \centering
     \footnotesize
@@ -87,29 +89,19 @@ While \ac{OneMap}~\cite{buschOneMapFind2025} achieves real-time performance on e
         |>{\raggedright\arraybackslash}X|}
         \hline
         \textbf{Limitation} & \textbf{Example Works} & \textbf{Implication} \\ \hline
-        \textbf{No persistent memory} & VLFM, CoW, LGX, ESC & No long-term fusion or recall; repeated exploration of known areas. \\ \hline
-        \textbf{Offline training required} & ZSON, PONI, PIRLNav, SemExp & Heavy RL/supervised training; poor adaptability to new scenes. \\ \hline
-        \textbf{No balance between exploration and memory} & OneMap, RayFronts, VLMaps & Either passive mapping or short-term exploration; inefficient search. \\ \hline
-        \textbf{No zero-shot exploration} & VLFM, CoW, LGX & Detect novel objects but fail to explore unseen regions strategically. \\ \hline
-        \textbf{Premapping needed} & ConceptGraphs, VLMaps, GeFF & Depend on pre-recorded data; not suited for online autonomy. \\ \hline
-        \textbf{Limited robustness} & PONI, SemExp, PIRLNav & Closed-set categories; fragile under real-world variation. \\ \hline
-        \textbf{Low real-world applicability} & ConceptGraphs, VLMaps & High GPU cost or simulation-only; not deployable on mobile robots. \\ \hline
+        \textbf{No persistent memory} & VLFM\cite{yokoyamaVLFMVisionLanguageFrontier2023}, CoW\cite{gadreCoWsPastureBaselines2022}, LGX\cite{dorbalaCanEmbodiedAgent2024}, ESC\cite{zhouESCExplorationSoft2023} & No long-term fusion or recall; repeated exploration of known areas. \\ \hline
+        \textbf{Offline training required} & ZSON\cite{majumdarZSONZeroShotObjectGoal2023}, PONI\cite{ramakrishnanPONIPotentialFunctions2022}, PIRLNav\cite{ramrakhyaPIRLNavPretrainingImitation2023}, SemExp\cite{chaplotObjectGoalNavigation2020} & Heavy RL/supervised training; poor adaptability to new scenes. \\ \hline
+        \textbf{No balance between exploration and memory} & OneMap\cite{buschOneMapFind2025}, RayFronts\cite{alamaRayFrontsOpenSetSemantic2025}, VLMaps\cite{huangVisualLanguageMaps2023} & Either passive mapping or short-term exploration; inefficient search. \\ \hline
+        \textbf{No zero-shot exploration} & VLFM\cite{yokoyamaVLFMVisionLanguageFrontier2023}, CoW\cite{gadreCoWsPastureBaselines2022}, LGX\cite{dorbalaCanEmbodiedAgent2024} & Detect novel objects but fail to explore unseen regions strategically. \\ \hline
+        \textbf{Premapping needed} & ConceptGraphs\cite{guConceptGraphsOpenVocabulary3D2023}, VLMaps\cite{huangVisualLanguageMaps2023}, GeFF\cite{qiuLearningGeneralizableFeature2024} & Depend on pre-recorded data; not suited for online autonomy. \\ \hline
+        \textbf{Limited robustness} & PONI\cite{ramakrishnanPONIPotentialFunctions2022}, SemExp\cite{chaplotObjectGoalNavigation2020}, PIRLNav\cite{ramrakhyaPIRLNavPretrainingImitation2023} & Closed-set categories; fragile under real-world variation. \\ \hline
+        \textbf{Low real-world applicability} & ConceptGraphs\cite{guConceptGraphsOpenVocabulary3D2023}, VLMaps\cite{huangVisualLanguageMaps2023} & High GPU cost or simulation-only; not deployable on mobile robots. \\ \hline
     \end{tabularx}
     \caption{Identified Gaps in Existing Semantic Exploration Frameworks.}
     \label{tab:introduction:identified_gaps}
 \end{table}
 
-\textbf{Derived Requirements from the State of the Art:}
-\begin{itemize}
-    \item Zero-shot frontier exploration framework.
-    \item Persistent 3D semantic mapping with confidence-based fusion.
-    \item Use of pretrained models only (no additional training required).
-    \item Hybrid fusion strategy to balance exploration and memory.
-    \item Multi-source detection fusion for robust object identification.
-    \item GPU-efficient design for real-time deployment on mobile robots.
-    \item Modular architecture for easy adaptation and extension.
-    \item Independence from fixed, pre-trained object category sets.
-\end{itemize}
+Consequently, there is a need for framework, which allows the robot to explore unknown encironments in a zero-shot manner, while maintaining a persistent 3D semantic map that can be dynamically updated and queried. By leveraging pretrained \acs{VLFM}'s, there is no need for offline training or pre-mapping with systems such as \acs{DRL}, which only limits the robot for search of objects beyond its training scope. There is also the need of a hybrid exploration strategy, which allows the user of either focusing on exploring new areas, which may be more helpful in dynamic encironments, or exploiting the persistent memory for more efficient search in static environments. Finally, the framework should be designed with real-world deployment in mind, ensuring computational efficiency and robustness to sensor noise and environmental variability. Even if the computational resources are limited, the robot should still be able to perform real-time semantic exploration and mapping on embedded hardware, without loosing latency performance. Furthermore, unlike to existing works like \acs{OneMap} \cite{buschOneMapFind2025} or \acs{VLFM} \cite{yokoyamaVLFMVisionLanguageFrontier2023}, which only relies on single-source detection fusion, the framework should incorporate multi-source fusion strategies to enhance detection robustness and reduce false positives during open-vocabulary search tasks.
 
 \section{Scientific Contribution}
 
