@@ -7,27 +7,19 @@ In this chapter, the current state of research in semantic multi-object search, 
 
 \section{Geometric Exploration}
 
-Frontier-based exploration is one of the most widely used approaches for geometric exploration in robotic mapping. Its core principle is to identify \emph{frontiers}, defined as boundary regions between known free space and unknown space, and to iteratively navigate toward them to expand the map~\cite{FrontierbasedApproachAutonomous}. Several strategies exist to compute and select such frontiers.
+A \textit{frontier} is defined as the boundary between known free space and unknown regions of the environment~\cite{lluviaActiveMappingRobot2021}. Frontier-based exploration relies on the principle that unexplored areas adjacent to known free regions provide the highest potential information gain. To identify such frontiers, the robot must maintain a global representation of the environment, typically an occupancy grid or voxel map, where each cell is classified as \textit{free}, \textit{occupied}, or \textit{unknown}, based on sensor observations from \ac{LiDAR} or RGB-D cameras. The robot then iteratively selects and navigates to frontiers to expand its knowledge of the environment.
 
-A classical method detects frontiers using a 4- or 8-neighborhood check, where a cell is considered a frontier if it is free and has at least one unknown neighbor~\cite{FrontierbasedApproachAutonomous}. An improved approach is the Wavefront Frontier Detector (WFD)~\cite{keidar2014wavefront}, which performs a breadth-first search from the robot's position to efficiently extract frontier clusters without scanning the entire map. A more recent variant is the Fast Frontier Detector (FFD) introduced by Umari and Mukhopadhyay~\cite{umari2017autonomous}, which incrementally tracks frontier changes and significantly reduces computational overhead, enabling real-time operation.
+\citeauthor{quinApproachesEfficientlyDetecting2021}~\cite{quinApproachesEfficientlyDetecting2021} evaluated three commonly used frontier extraction methods that differ primarily in computational efficiency and scalability.  
+The first approach, known as the \textit{Naïve Active Area (NaïveAA)} method, evaluates every cell in the occupancy grid to determine whether it is free and has at least one unknown neighbor. Although this approach is conceptually simple and accurate for small-scale maps, it becomes computationally expensive for larger environments and often produces small, fragmented frontier clusters.
 
-In addition to purely geometric frontier detection, information-gain (entropy-based) frontier methods score candidate frontiers based on the expected reduction in map uncertainty~\cite{bourgault2002informationbasedadaptive}. These methods leverage probabilistic occupancy grid maps and sensor models to evaluate visibility and expected information gain, resulting in more informed and efficient exploration behavior.
+The second approach, the \textit{Wavefront Frontier Detector (WFD)}~\cite{quinApproachesEfficientlyDetecting2021,topiwalaFrontierBasedExploration2018}, improves efficiency by using a breadth-first search (BFS) to identify connected frontier regions without exhaustively scanning the entire map. Unlike the NaïveAA method, WFD directly extracts continuous frontier clusters rather than treating each frontier cell individually, significantly reducing redundant computations.
 
+The third method, the \textit{Frontier-Tracing Frontier Detection (FTFD)}~\cite{quinApproachesEfficientlyDetecting2021}, further enhances performance by incrementally updating frontier information using only the most recent sensor observations. Instead of re-evaluating the full map, FTFD initiates a BFS from previously known frontier cells that remain within the active area and from the endpoints of the latest sensor rays. Newly visible free-space cells along the scan boundary are evaluated as potential frontiers, while outdated frontier cells that are now occupied or re-observed are removed. By restricting computation to the local scan perimeter, FTFD achieves significantly faster update rates than NaïveAA and WFD, supporting real-time frontier detection even in large-scale environments.
 
+After frontiers have been extracted, a selection strategy determines which frontier the robot should explore next. Simple heuristics such as \textit{nearest-frontier selection} minimize travel distance but can lead to oscillatory behavior between nearby frontiers. Alternatively, selecting the \textit{largest frontier} favors unexplored regions of higher spatial extent, reducing dead-end visits but increasing traversal cost.  
+To address these trade-offs, \citeauthor{bourgaultInformationBasedAdaptive2002}~\cite{bourgaultInformationBasedAdaptive2002} introduced a \textit{utility-based frontier selection} framework that combines multiple criteria, such as distance, frontier size, and expected information gain, into a unified objective function. This approach enables more balanced decision-making, improving overall exploration efficiency and map completeness. Many subsequent works have built upon this foundation, incorporating additional factors such as energy consumption, obstacle density, and dynamic environment considerations into the utility function~\cite{lluviaActiveMappingRobot2021}.
 
-\begin{itemize}
-    \item Geometric exploration aims to explore unknown environments by navigating toward frontiers — the boundaries between known and unknown space — typically within a SLAM-based mapping framework.
-    
-    \item Selecting the frontier closest to the robot minimizes path cost (\textit{greedy strategy})~\cite{topiwalaFrontierBasedExploration2018}.  
-    \textit{Advantage:} simple and efficient.  
-    \textit{Limitation:} ignores potential information gain.
-    
-    \item Prioritizing frontiers based on maximum expected information gain (e.g., entropy, mutual information) enables more informative exploration~\cite{bourgaultInformationBasedAdaptive2002}.
-    
-    \item Selecting the largest frontier clusters improves stability and continuity in exploration~\cite{stachniss2009efficientexploration}.
-    
-    \item These approaches are purely geometric and lack semantic awareness. They are not suitable for open-vocabulary object queries or multi-object search tasks requiring semantic reasoning.
-\end{itemize}
+However, all these methods are primarily designed for geometric exploration without incorporating semantic understanding. As a result, they are optimized for complete map coverage rather than goal-directed exploration tasks. In scenarios where a robot must locate specific objects or regions based on semantic cues, purely geometric frontier selection often leads to inefficient search behavior and unnecessary traversal. This motivates the integration of semantic reasoning into the frontier-based exploration process, where frontiers can be prioritized not only by geometric utility but also by their semantic relevance to the task objective.
 
 \section{Vision-Language-Guided Exploration}
 \begin{itemize}
