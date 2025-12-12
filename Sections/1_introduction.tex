@@ -2,118 +2,115 @@
 
 \chapter{Introduction}
 
-Domain and Relevance:
-\begin{itemize}
-    \item \textbf{Service Robotics:} Vacuum robot searching for a fridge in the kitchen using a semantic input prompt.
-    \item \textbf{Search and Rescue (SAR):} Deployment of one or multiple robots to locate persons, e.g., with the hint that they may be in the bathroom.
-    \item \textbf{Inspection:} Robots autonomously exploring areas not accessible via teleoperation, guided by semantic input.
-    \item \textbf{Warehouse Automation:} Large warehouses requiring robots to locate items, pallets, or storage units that may not be consistently labeled or may be partially occluded.
-\end{itemize}
+The introduction of Transformer-based architectures~\cite{vaswaniAttentionAllYou2023} has opened new opportunities for integrating high-level semantic reasoning with low-level geometric navigation in robotics. Traditional robotic exploration methods have primarily focused on mapping unknown environments using geometric cues, often neglecting the rich semantic information available in visual and linguistic modalities~\cite{topiwalaFrontierBasedExploration2018}. However, recent advances in \acp{LLM} and \acp{VLM} have enabled robots to interpret and act upon complex, open-ended instructions expressed in natural language. These developments have catalyzed a paradigm shift toward semantic reasoning and zero-shot generalization, allowing robots to understand unseen concepts beyond fixed, task-specific datasets.
+
+Consequently, new applications have emerged that require robots not only to explore and map their surroundings but also to reason about the semantic structure and relationships within them. In service robotics, for instance, a mobile agent may be instructed to locate a specific object based on high-level descriptions such as \textit{``find the red chair in the living room''}, rather than relying on a limited set of predefined categories such as those from \acs{COCO}~\cite{linMicrosoftCOCOCommon2015}. Similarly, in \ac{SAR} operations, robots may be tasked with locating missing persons based on vague or incomplete contextual information, such as the assumption that an individual might be found \textit{``in the bathroom''}. In industrial inspection, autonomous agents must identify structural anomalies or specific components within unstructured and partially observable environments, while in warehouse automation, robots must locate items or storage units that may not be consistently labeled or fully visible.
+
+Across these domains, the integration of semantic understanding with autonomous navigation is becoming increasingly essential. Robots must be capable of interpreting abstract human instructions, reasoning about both spatial and semantic context, and conducting efficient searches in dynamic, partially known environments. These challenges motivate the development of a unified framework that bridges geometric exploration with semantic scene understanding, enabling autonomous agents to perform open-vocabulary, goal-directed exploration guided by high-level semantic input.
 
 \section{Problem Statement}
 
-\textbf{Problem:} Classic geometric exploration methods often lead to inefficient search behavior, as they are primarily designed for mapping unexplored environments rather than for goal-directed semantic search tasks.
+Traditional geometric exploration techniques are widely used for mapping unknown environments by identifying frontiers in either two or three dimensions and navigating toward the frontier with the highest expected information gain. Such methods, including those based on occupancy grids or point cloud representations, are particularly effective for coverage and mapping tasks and have been successfully extended to multi-robot systems for large-scale exploration. However, these approaches remain primarily geometry-driven and do not incorporate semantic understanding of the environment. Consequently, they are suboptimal for goal-directed exploration tasks, where the objective is to locate specific objects or regions of interest defined by high-level semantic criteria rather than unexplored geometry.
 
-\textbf{Solution:} Incorporating semantic reasoning into exploration by using RGB camera input to associate geometric frontiers with language-based meaning and task relevance.
-
-\textbf{Current solutions:}
-
-\begin{table}[H]
-\centering
-\begin{tabularx}{\textwidth}{
-    |>{\raggedright\arraybackslash}X
-    |>{\centering\arraybackslash}m{2.2cm}
-    |>{\centering\arraybackslash}m{2cm}
-    |>{\raggedright\arraybackslash}X|}
-    \hline
-    \textbf{Approach} & \textbf{Training Required} & \textbf{Real-Time} & \textbf{Semantic Reasoning Model} \\ \hline
-    \textbf{VLFM} & \xmark~(zero-shot) & \cmark& BLIP-2 + GroundingDINO + SAM \\ \hline
-\textbf{SemUtil} & \xmark~(training-free) & \cmark& Mask R-CNN + CLIP + BERT \\ \hline
-\textbf{ESC} & \xmark~(zero-shot) & \cmark& GLIP + DeBERTa / ChatGPT reasoning \\ \hline
-\textbf{LGX} & \xmark~(zero-shot) & \cmark& GPT-3 + GLIP + BLIP \\ \hline
-\textbf{CoW} & \xmark~(zero-shot) & \cmark& CLIP similarity scoring \\ \hline
-\textbf{ZSON} & \cmark~(RL pretraining) & \xmark& CLIP-based RL policy \\ \hline
-\textbf{PONI} & \cmark~(supervised) & \xmark& Learned potential-field network \\ \hline
-\textbf{PIRLNav} & \cmark~(BC + RL) & \xmark& DINO-based CNN-RNN policy \\ \hline
-\end{tabularx}
-\caption{Overview of Semantic Exploration Approaches without Persistent Memory}
-\end{table}
-
-None of the above methods incorporate a persistent semantic memory for efficient multi-object navigation and are often computationally demanding.
-
-\textbf{Problem:} 
-\begin{itemize}
-    \item Lack of persistent memory in semantic exploration frameworks limits long-term efficiency in multi-object search tasks.
-    \item Existing methods often require extensive offline training, reducing adaptability to new environments.
-    \item Deep Reinforcement Learning (DRL) approaches are computationally expensive and lack persistent memory for effective multi-object goal search.
-\end{itemize}
-
-\textbf{Current solutions:}
-
-\begin{table}[H]
-\centering
-\footnotesize
-\renewcommand{\arraystretch}{1.0}
-\setlength{\tabcolsep}{3pt}
-\begin{tabularx}{\textwidth}{
-|>{\raggedright\arraybackslash}X
-|>{\centering\arraybackslash}X
-|>{\centering\arraybackslash}X
-|>{\raggedright\arraybackslash}X|}
-\hline
-\textbf{Approach} & \textbf{Training Required} & \textbf{Real-Time} & \textbf{Semantic Reasoning Model} \\ \hline
-\textbf{VLFM} & \xmark~(zero-shot) & \cmark & BLIP-2 + GroundingDINO + SAM \\ \hline
-\textbf{SemUtil} & \xmark~(training-free) & \cmark & Mask R-CNN + CLIP + BERT \\ \hline
-\textbf{ESC} & \xmark~(zero-shot) & \cmark & GLIP + DeBERTa / ChatGPT reasoning \\ \hline
-\textbf{LGX} & \xmark~(zero-shot) & \cmark & GPT-3 + GLIP + BLIP \\ \hline
-\textbf{CoW} & \xmark~(zero-shot) & \cmark & CLIP similarity scoring \\ \hline
-\textbf{ZSON} & \cmark~(RL pretraining) & \xmark & CLIP-based RL policy \\ \hline
-\textbf{PONI} & \cmark~(supervised) & \xmark & Learned potential-field network \\ \hline
-\textbf{PIRLNav} & \cmark~(BC + RL) & \xmark & DINO-based CNN-RNN policy \\ \hline
-\end{tabularx}
-\caption{Overview of Semantic Zero-Shot and Trained Exploration Approaches}
-\end{table}
-
-
-
-Despite notable progress, these methods often suffer from heavy GPU requirements, offline training procedures, or noisy semantic maps that reduce navigation reliability. Some further depend heavily on object detectors, which can introduce false positives in open-vocabulary settings.
-
-\bigskip
-\textbf{Core Gaps in Existing Work:}
+To address this limitation, recent research has focused on integrating semantic perception into exploration frameworks. Instead of relying solely on LiDAR or depth sensors for geometric mapping, the use of RGB imagery enables semantic reasoning about the scene and the objects contained within it. Table~\ref{tab:introduction:semantic_exploration_approaches} summarizes representative works that leverage either pretrained \acp{VLM} or reinforcement learning-based policies to guide robots toward regions that are semantically relevant to a given target description.
 
 \begin{table}[H]
     \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.0}
+    \setlength{\tabcolsep}{3pt}
     \begin{tabularx}{\textwidth}{
-        |>{\raggedright\arraybackslash}m{4cm}
-        |>{\raggedright\arraybackslash}m{4cm}
+        |>{\raggedright\arraybackslash}X
+        |>{\centering\arraybackslash}X
+        |>{\centering\arraybackslash}X
+        |>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Approach} & \textbf{Training Required} & \textbf{Real-Time} & \textbf{Semantic Reasoning Model} \\ \hline
+        \textbf{\acs{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}} & \xmark~(zero-shot) & \cmark & BLIP-2 + GroundingDINO + SAM \\ \hline
+        \textbf{SemUtil~\cite{chenHowNotTrain2023}} & \xmark~(training-free) & \cmark & Mask R-CNN + CLIP + BERT \\ \hline
+        \textbf{ESC~\cite{zhouESCExplorationSoft2023}} & \xmark~(zero-shot) & \cmark & GLIP + DeBERTa / ChatGPT reasoning \\ \hline
+        \textbf{LGX~\cite{dorbalaCanEmbodiedAgent2024}} & \xmark~(zero-shot) & \cmark & GPT-3 + GLIP + BLIP \\ \hline
+        \textbf{CoW~\cite{gadreCoWsPastureBaselines2022}} & \xmark~(zero-shot) & \cmark & CLIP similarity scoring \\ \hline
+        \textbf{ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}} & \cmark~(RL pretraining) & \xmark & CLIP-based RL policy \\ \hline
+        \textbf{PONI~\cite{ramakrishnanPONIPotentialFunctions2022}} & \cmark~(supervised) & \xmark & Learned potential-field network \\ \hline
+        \textbf{PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023}} & \cmark~(BC + RL) & \xmark & DINO-based CNN-RNN policy \\ \hline
+    \end{tabularx}
+    \caption{Overview of semantic zero-shot and trained exploration approaches.}
+    \label{tab:introduction:semantic_exploration_approaches}
+\end{table}
+
+Approaches such as ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}, PONI~\cite{ramakrishnanPONIPotentialFunctions2022}, and PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023} employ deep reinforcement learning (DRL) or supervised training to develop navigation policies capable of generalizing to unseen objects. Although these methods achieve promising results in simulation, they require extensive offline training and exhibit limited adaptability to novel environments or object categories not encountered during training. In contrast, zero-shot methods such as \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, SemUtil~\cite{chenHowNotTrain2023}, ESC~\cite{zhouESCExplorationSoft2023}, LGX~\cite{dorbalaCanEmbodiedAgent2024}, and CoW~\cite{gadreCoWsPastureBaselines2022} leverage pretrained \acp{VLM} to perform semantic exploration without additional training. These models enable real-time decision-making by exploiting semantic cues extracted from RGB imagery, guiding robots toward areas likely to contain the target object or region.
+
+Some approaches, such as ESC~\cite{zhouESCExplorationSoft2023} and LGX~\cite{dorbalaCanEmbodiedAgent2024}, further integrate \acp{LLM} for commonsense reasoning and high-level task interpretation, enabling a more contextual understanding of complex instructions. However, this comes at the cost of increased computational demand and potential inference latency, which limits their applicability on resource-constrained mobile platforms. While \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023} achieves real-time performance, it relies on multiple computationally heavy models (GroundingDINO, SAM, and BLIP-2) that require high-end GPUs with up to 16~GB of VRAM, which is impractical for embedded robotic systems.
+
+Overall, these methods primarily focus on short-term semantic reasoning and lack persistent memory. They do not maintain long-term storage or recall mechanisms for previously acquired semantic knowledge, leading to redundant exploration and reduced efficiency in multi-object search tasks. A persistent global memory would enable robots to exploit past observations, recall detected objects, and avoid revisiting known regions, thereby improving navigation efficiency, scalability, and robustness in open-vocabulary, real-world environments. Table~\ref{tab:introduction:persistent_mapping_approaches} summarizes representative works that incorporate persistent or memory-based semantic mapping to enhance exploration capabilities.
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.0}
+    \setlength{\tabcolsep}{3pt}
+    \begin{tabularx}{\textwidth}{
+        |>{\raggedright\arraybackslash}X
+        |>{\centering\arraybackslash}X
+        |>{\centering\arraybackslash}X
+        |>{\raggedright\arraybackslash}X
+        |>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Approach} & \textbf{Training Required} & \textbf{Real-Time} & \textbf{Memory Representation} & \textbf{Exploration Integration} \\ \hline
+        \textbf{\acs{OneMap}~\cite{buschOneMapFind2025}} & \xmark~(zero-shot) & \cmark & 2D probabilistic feature field & \cmark~(frontier-based) \\ \hline
+        \textbf{\acs{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}} & \xmark~(pretrained models) & \xmark & 3D scene graph & \cmark~(LLM-planner) \\ \hline
+        \textbf{\acs{SemExp}~\cite{chaplotObjectGoalNavigation2020}} & \cmark~(RL + supervised) & \xmark & 2D semantic occupancy map & \cmark~(learned policy) \\ \hline
+        \textbf{\acs{GeFF}~\cite{qiuLearningGeneralizableFeature2024}} & \cmark~(ScanNet pretrain) & \cmark & Implicit 3D feature field & \xmark~(passive) \\ \hline
+        \textbf{RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025}} & \xmark~(foundation model) & \cmark & Hybrid voxel + ray field & \xmark~(planner-agnostic) \\ \hline
+        \textbf{\acs{VLMaps}~\cite{huangVisualLanguageMaps2023}} & \xmark~(pretrained LSeg/CLIP) & \xmark & 2.5D open-vocab grid & \cmark~(frontier-compatible) \\ \hline
+        \textbf{Pigeon~\cite{PIGEONVLMDrivenObject}} & \cmark~(RLVR fine-tune) & \cmark & Point-of-Interest snapshot memory & \cmark~(reasoning-aware) \\ \hline
+    \end{tabularx}
+    \caption{Overview of persistent or memory-based semantic mapping approaches.}
+    \label{tab:introduction:persistent_mapping_approaches}
+\end{table}
+
+Similar to the previously discussed category, methods such as \ac{SemExp}~\cite{chaplotObjectGoalNavigation2020}, Pigeon~\cite{PIGEONVLMDrivenObject}, and \ac{GeFF}~\cite{qiuLearningGeneralizableFeature2024} rely on offline training to develop navigation policies that utilize persistent semantic representations. This dependence on extensive training limits their adaptability to novel environments and unseen object categories. Other approaches, such as \ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023} and \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, construct persistent open-vocabulary maps using pretrained foundation models but often require pre-mapping and lack real-time performance, which restricts their use in dynamic or large-scale settings.
+
+While \ac{OneMap}~\cite{buschOneMapFind2025} achieves real-time performance on embedded hardware such as the Jetson Orin AGX, its computational cost limits operation to approximately 2~Hz, which may be insufficient for high-speed navigation tasks. Additionally, noise in depth perception directly degrades the quality of the probabilistic feature map, reducing overall semantic reliability. The detector used in \ac{OneMap} relies solely on \ac{VLM}-based CLIP image–text similarity, which makes it prone to false positives under open-vocabulary conditions, a phenomenon commonly referred to as \textit{open-vocabulary drift}. 
+
+\ac{GeFF}~\cite{qiuLearningGeneralizableFeature2024} provides a compact implicit 3D representation by distilling CLIP-aligned features into a neural field, enabling both geometric and semantic understanding. However, it requires pretraining on large-scale datasets such as ScanNet, limiting its direct generalization to arbitrary environments. RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025} introduces a hybrid 3D representation that combines voxel-based semantics with ray-based frontier expansion, offering real-time operation and high efficiency for open-set semantic search. Nevertheless, its computational complexity grows with environment size, and its planner-agnostic design prevents it from actively guiding exploration toward semantically relevant regions.
+
+Table~\ref{tab:introduction:identified_gaps} summarizes the key limitations observed across existing semantic exploration frameworks. These gaps illustrate the need for a unified approach that combines zero-shot semantic understanding, persistent spatial memory, and real-time exploration to achieve robust, scalable autonomy in complex environments.
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.0}
+    \setlength{\tabcolsep}{3pt}
+    \begin{tabularx}{\textwidth}{
+        |>{\raggedright\arraybackslash}X
+        |>{\raggedright\arraybackslash}X
         |>{\raggedright\arraybackslash}X|}
         \hline
         \textbf{Limitation} & \textbf{Example Works} & \textbf{Implication} \\ \hline
-        No persistent memory & VLFM, CoW, LGX, ESC & No long-term fusion or recall; repeated exploration of known areas. \\ \hline
-        Offline training required & ZSON, PONI, PIRLNav, SemExp & Heavy RL/supervised training; poor adaptability to new scenes. \\ \hline
-        No balance between exploration and memory & OneMap, RayFronts, VLMaps & Either passive mapping or short-term exploration; inefficient search. \\ \hline
-        No zero-shot exploration & VLFM, CoW, LGX & Detect novel objects but fail to explore unseen regions strategically. \\ \hline
-        Premapping needed & ConceptGraphs, VLMaps, GeFF & Depend on pre-recorded data; not suited for online autonomy. \\ \hline
-        Limited robustness & PONI, SemExp, PIRLNav & Closed-set categories; fragile under real-world variation. \\ \hline
-        Low real-world applicability & ConceptGraphs, VLMaps & High GPU cost or simulation-only; not deployable on mobile robots. \\ \hline
+        \textbf{No persistent memory} & \acs{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, CoW~\cite{gadreCoWsPastureBaselines2022}, LGX~\cite{dorbalaCanEmbodiedAgent2024}, ESC~\cite{zhouESCExplorationSoft2023} & No long-term fusion or recall; repeated exploration of known areas. \\ \hline
+        \textbf{Offline training required} & ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}, PONI~\cite{ramakrishnanPONIPotentialFunctions2022}, PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023}, \acs{SemExp}~\cite{chaplotObjectGoalNavigation2020} & Heavy RL/supervised training; poor adaptability to new scenes. \\ \hline
+        \textbf{No balance between exploration and memory} & \acs{OneMap}~\cite{buschOneMapFind2025}, RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025}, \acs{VLMaps}~\cite{huangVisualLanguageMaps2023} & Either passive mapping or short-term exploration; inefficient search. \\ \hline
+        \textbf{No zero-shot exploration} & \acs{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, CoW~\cite{gadreCoWsPastureBaselines2022}, LGX~\cite{dorbalaCanEmbodiedAgent2024} & Detect novel objects but fail to explore unseen regions strategically. \\ \hline
+        \textbf{Premapping needed} & \acs{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}, \acs{VLMaps}~\cite{huangVisualLanguageMaps2023}, \acs{GeFF}~\cite{qiuLearningGeneralizableFeature2024} & Depend on pre-recorded data; not suited for online autonomy. \\ \hline
+        \textbf{Limited robustness} & PONI~\cite{ramakrishnanPONIPotentialFunctions2022}, \acs{SemExp}~\cite{chaplotObjectGoalNavigation2020}, PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023} & Closed-set categories; fragile under real-world variation. \\ \hline
+        \textbf{Low real-world applicability} & \acs{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}, \acs{VLMaps}~\cite{huangVisualLanguageMaps2023}, Pigeon~\cite{PIGEONVLMDrivenObject} & High GPU cost or simulation-only evaluation; limited deployability on mobile robots. \\ \hline
     \end{tabularx}
-\caption{Identified Gaps in Existing Semantic Exploration Frameworks}
+    \caption{Identified gaps in existing semantic exploration frameworks.}
+    \label{tab:introduction:identified_gaps}
 \end{table}
 
-\bigskip
-\textbf{Derived Requirements from the State of the Art:}
-\begin{itemize}
-    \item Zero-shot frontier exploration framework.
-    \item Persistent 3D semantic mapping with confidence-based fusion.
-    \item Use of pretrained models only (no additional training required).
-    \item Hybrid fusion strategy to balance exploration and memory.
-    \item Multi-source detection fusion for robust object identification.
-    \item GPU-efficient design for real-time deployment on mobile robots.
-    \item Modular architecture for easy adaptation and extension.
-    \item Independence from fixed, pre-trained object category sets.
-\end{itemize}
+These observations reveal a clear research gap: there is a need for a framework that enables autonomous robots to explore unknown environments in a zero-shot manner while maintaining a persistent, incrementally updated 3D semantic map. Such a system should support continuous updates, querying, and reasoning over spatial and semantic information without the need for retraining or pre-mapping.
 
-\section*{Scientific Contribution}
+By leveraging pretrained \acp{VLM}, the dependency on computationally expensive \acp{DRL} or supervised training pipelines can be eliminated, enabling flexible object and scene understanding beyond fixed category sets. Furthermore, a hybrid exploration strategy is essential, allowing the robot to dynamically balance between discovering new regions (\textit{exploration}) and exploiting previously stored knowledge (\textit{memory}) depending on environmental stability and task objectives. This trade-off is particularly relevant in dynamic settings, where semantic frontiers evolve over time, as well as in static domains, where persistent knowledge can be efficiently reused.
+
+For real-world deployment, the proposed framework must prioritize computational efficiency and robustness to sensor noise and environmental variability. Even under constrained hardware resources, it should sustain real-time operation on embedded platforms without compromising latency or inference stability. 
+
+Finally, unlike prior works such as \acs{OneMap}~\cite{buschOneMapFind2025} and \acs{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, which rely on single-source detection pipelines, the envisioned framework integrates a multi-source fusion strategy. By combining detection confidence, semantic similarity, and memory-based reliability, the system aims to enhance detection robustness, suppress false positives, and achieve consistent open-vocabulary reasoning during long-term semantic exploration.
+
+
+\section{Scientific Contribution}
 
 This work contributes to the state of the art by introducing a hybrid semantic exploration framework that integrates zero-shot semantic frontier scoring with persistent 3D scene representation, enabling autonomous search guided by open-vocabulary text queries. The system combines real-time semantic reasoning during exploration with a long-term spatial memory, allowing the robot to dynamically balance between discovering new information and exploiting previously acquired knowledge.
 
@@ -125,21 +122,23 @@ To evaluate the contribution of the proposed system, the following research ques
 
 \begin{enumerate}
     \item \textbf{How does integrating zero-shot semantic exploration and persistent 3D semantic mapping affect multi-object search performance and navigation efficiency compared to existing methods?} \\
-    \textit{Metrics:} Performance is quantified in terms of task success and path efficiency, measured through Success Rate (SR), Success per Path Length (SPL), and Multi-Object Success Rate (MSR) relative to representative state-of-the-art systems such as OneMap, VLFM, and Pigeon.
+    \textit{Metrics:} Performance is quantified in terms of task success and path efficiency, measured through \acs{SR}, \acs{SPL}, and \acs{MSR} relative to representative state-of-the-art systems such as \acs{OneMap}~\cite{buschOneMapFind2025}, \acs{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, and Pigeon~\cite{PIGEONVLMDrivenObject}.
     
     \item \textbf{How does the interaction between live exploration and accumulated semantic memory influence overall system performance?} \\
-    \textit{Metrics:} The weighting factor between exploration and memory is varied during graph node fusion to assess impacts on SR and SPL, identifying optimal trade-offs between reactivity and exploitation.
+    \textit{Metrics:} The weighting factor between exploration and memory is varied during graph node fusion to assess impacts on \acs{SR} and \acs{SPL}, identifying optimal trade-offs between reactivity and exploitation.
     
     \item \textbf{How does the granularity of semantic map retrieval affect map quality, and can dynamic weighting between exploration and memory compensate for potential noise?} \\
-    \textit{Metrics:} The semantic granularity in the 3D semantic mapper is varied while adjusting exploration weight to evaluate effects on SR and SPL\@.
+    \textit{Metrics:} The semantic granularity in the 3D semantic mapper is varied while adjusting exploration weight to evaluate effects on \acs{SR} and \acs{SPL}\@.
     
     \item \textbf{How does multi-source fusion of detection confidence, semantic similarity, and memory confidence impact detection robustness and false-positive suppression during exploration?} \\
-    \textit{Metrics:} Precision, Recall, F1-Score, Confusion Matrix, and SR under different fusion weight configurations across COCO, open-vocabulary, and zero-shot classes.
+    \textit{Metrics:} Precision, Recall, F1-Score, Confusion Matrix, and \acs{SR} under different fusion weight configurations across \acs{COCO}, open-vocabulary, and zero-shot classes.
     
     \item \textbf{What is the computational footprint and real-world robustness of the hybrid framework?} \\
-    \textit{Metrics:} Frames per second (FPS), GPU/CPU usage, inference latency, and detection stability under sensor noise during physical deployment on a mobile robot.
+    \textit{Metrics:} \acs{FPS}, GPU/CPU usage, inference latency, and detection stability under sensor noise during physical deployment on a mobile robot.
 \end{enumerate}
 
 These research questions guide the design of the experimental evaluation, where each question is systematically addressed through targeted ablation studies, comparative benchmarks, and real-world validation presented in Chapter~\ref{ch:results}.
 
 \section{Thesis Structure}
+
+This work is structured as follows: Chapter~\ref{ch:sota} describes the state-of-the-art in semantic exploration, persistent mapping, and object detection. Chapter~\ref{ch:methods} describes the methods used, for hybrid semantic exploration, persistent 3D mapping, promptable zero-shot detection, and multi-source fusion strategies. Chapter ~\ref{ch:implementation} details the practical implementation of the proposed approach, covering the simulation and real-world setup, datasets, software stack, and hardware configuration. Chapter~\ref{ch:results} presents the experimental evaluation, including ablation studies, comparative benchmarks, and real-world validation. Finally, Chapter~\ref{ch:conclusion} concludes the thesis with a summary of findings, discussion of limitations, and suggestions for future research directions.
