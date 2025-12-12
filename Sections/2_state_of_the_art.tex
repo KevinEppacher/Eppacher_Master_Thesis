@@ -4,16 +4,25 @@
 \label{ch:sota}
 
 In this chapter, the current state of research in semantic multi-object search, map reconstruction, and object detection is reviewed. The goal is to identify strengths and limitations of existing methods and establish the technological context for the proposed hybrid approach. The chapter is divided into three key areas: approaches for searching multiple objects semantically, techniques for building and maintaining persistent semantic maps, and recent advances in object detection and promptable models for open-vocabulary tasks.
+
 \section{Geometric Exploration}
+
+Frontier-based exploration is one of the most widely used approaches for geometric exploration in robotic mapping. Its core principle is to identify \emph{frontiers}, defined as boundary regions between known free space and unknown space, and to iteratively navigate toward them to expand the map~\cite{FrontierbasedApproachAutonomous}. Several strategies exist to compute and select such frontiers.
+
+A classical method detects frontiers using a 4- or 8-neighborhood check, where a cell is considered a frontier if it is free and has at least one unknown neighbor~\cite{FrontierbasedApproachAutonomous}. An improved approach is the Wavefront Frontier Detector (WFD)~\cite{keidar2014wavefront}, which performs a breadth-first search from the robot's position to efficiently extract frontier clusters without scanning the entire map. A more recent variant is the Fast Frontier Detector (FFD) introduced by Umari and Mukhopadhyay~\cite{umari2017autonomous}, which incrementally tracks frontier changes and significantly reduces computational overhead, enabling real-time operation.
+
+In addition to purely geometric frontier detection, information-gain (entropy-based) frontier methods score candidate frontiers based on the expected reduction in map uncertainty~\cite{bourgault2002informationbasedadaptive}. These methods leverage probabilistic occupancy grid maps and sensor models to evaluate visibility and expected information gain, resulting in more informed and efficient exploration behavior.
+
+
 
 \begin{itemize}
     \item Geometric exploration aims to explore unknown environments by navigating toward frontiers — the boundaries between known and unknown space — typically within a SLAM-based mapping framework.
     
-    \item Selecting the frontier closest to the robot minimizes path cost (\textit{greedy strategy})~\cite{topiwala2018frontierbasedexplorationautonomous}.  
+    \item Selecting the frontier closest to the robot minimizes path cost (\textit{greedy strategy})~\cite{topiwalaFrontierBasedExploration2018}.  
     \textit{Advantage:} simple and efficient.  
     \textit{Limitation:} ignores potential information gain.
     
-    \item Prioritizing frontiers based on maximum expected information gain (e.g., entropy, mutual information) enables more informative exploration~\cite{bourgault2002informationbasedadaptiveexploration, Suresh_2024}.
+    \item Prioritizing frontiers based on maximum expected information gain (e.g., entropy, mutual information) enables more informative exploration~\cite{bourgaultInformationBasedAdaptive2002}.
     
     \item Selecting the largest frontier clusters improves stability and continuity in exploration~\cite{stachniss2009efficientexploration}.
     
@@ -25,7 +34,7 @@ In this chapter, the current state of research in semantic multi-object search, 
     \item Review of methods targeting simultaneous or sequential search for multiple objects in unknown environments.
     \item Analysis of \dots
     \begin{itemize}
-        \item VLFM~\cite{yokoyama2024vlfm}
+        \item VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}
         \item SemUtil~\cite{chen2023semutil}
         \item ESC~\cite{liu2023esc}
         \item LGX~\cite{shah2024lgx}
