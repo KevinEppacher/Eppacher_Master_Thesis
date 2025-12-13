@@ -3,6 +3,7 @@
 \chapter{State of the Art}
 \label{ch:sota}
 
+
 In this chapter, the current state of research in semantic multi-object search, map reconstruction, and object detection is reviewed. The goal is to identify strengths and limitations of existing methods and establish the technological context for the proposed hybrid approach. The chapter is divided into three key areas: approaches for searching multiple objects semantically, techniques for building and maintaining persistent semantic maps, and recent advances in object detection and promptable models for open-vocabulary tasks.
 
 \section{Geometric Exploration}
@@ -20,8 +21,6 @@ After frontiers have been extracted, a selection strategy determines which front
 To address these trade-offs, \citeauthor{bourgaultInformationBasedAdaptive2002}~\cite{bourgaultInformationBasedAdaptive2002} introduced a \textit{utility-based frontier selection} framework that combines multiple criteria, such as distance, frontier size, and expected information gain, into a unified objective function. This approach enables more balanced decision-making, improving overall exploration efficiency and map completeness. Many subsequent works have built upon this foundation, incorporating additional factors such as energy consumption, obstacle density, and dynamic environment considerations into the utility function~\cite{lluviaActiveMappingRobot2021}.
 
 However, all these methods are primarily designed for geometric exploration without incorporating semantic understanding. As a result, they are optimized for complete map coverage rather than goal-directed exploration tasks. In scenarios where a robot must locate specific objects or regions based on semantic cues, purely geometric frontier selection often leads to inefficient search behavior and unnecessary traversal. This motivates the integration of semantic reasoning into the frontier-based exploration process, where frontiers can be prioritized not only by geometric utility but also by their semantic relevance to the task objective.
-
-\section{Vision-Language-Guided Exploration}
 
 \section{Vision-Language-Guided Exploration}
 
@@ -57,7 +56,7 @@ U_t(f) = \alpha \, U_t^a(f) + (1 - \alpha) \, U_t^o(f),
 where \(\alpha\) controls the trade-off between exploration and exploitation.  
 The frontier with the highest score is selected as the next navigation goal, which is then reached using a deterministic path planner rather than a learned action policy.  
 
-While \ac{PONI} achieves efficient and interpretable exploration behavior, it depends on category-level semantic inputs and assumes a fixed, closed set of object classes encountered during training. Consequently, it cannot generalize to unseen categories or open-vocabulary settings, and its reliance on dense semantic annotations limits applicability in real-world scenarios where such data are unavailable or noisy.
+While \ac{PONI} achieves efficient and interpretable exploration behavior, it depends on category-level semantic inputs and assumes a fixed, closed set of object classes encountered during training. Consequently, it cannot generalize to unseen categories or open-vocabulary settings, and its reliance on dense semantic annotations limits applicability in real-world scenarios where such data are unavailable or noisy~\cite{ramakrishnanPONIPotentialFunctions2022}.
 
 
 % \begin{table}[H]
