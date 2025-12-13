@@ -22,6 +22,87 @@ To address these trade-offs, \citeauthor{bourgaultInformationBasedAdaptive2002}~
 However, all these methods are primarily designed for geometric exploration without incorporating semantic understanding. As a result, they are optimized for complete map coverage rather than goal-directed exploration tasks. In scenarios where a robot must locate specific objects or regions based on semantic cues, purely geometric frontier selection often leads to inefficient search behavior and unnecessary traversal. This motivates the integration of semantic reasoning into the frontier-based exploration process, where frontiers can be prioritized not only by geometric utility but also by their semantic relevance to the task objective.
 
 \section{Vision-Language-Guided Exploration}
+
+\section{Vision-Language-Guided Exploration}
+
+In contrast to geometric exploration, which aims to maximize map coverage using the shortest possible path and time, semantic exploration focuses on efficiently locating specific objects or regions of interest described in high-level semantic terms. The objective is to minimize path length and exploration time while prioritizing areas likely to contain relevant targets rather than achieving complete spatial coverage.  
+
+Recent research has introduced \ac{DRL} and supervised learning approaches to train agents capable of performing semantic object search~\cite{majumdarZSONZeroShotObjectGoal2023,ramakrishnanPONIPotentialFunctions2022,ramrakhyaPIRLNavPretrainingImitation2023}.  
+\citeauthor{majumdarZSONZeroShotObjectGoal2023}~\cite{majumdarZSONZeroShotObjectGoal2023} proposed \ac{ZSON}, a zero-shot object navigation framework that leverages the multimodal embedding space of CLIP~\cite{radfordLearningTransferableVisual2021} to guide exploration policies trained via reinforcement learning.  
+During training, the agent’s observation space consists of previous actions and RGB images, while the navigation goal is represented by the CLIP embedding of an image containing the target object. The reward function is defined as:
+
+\begin{equation}
+r_t = r_{\text{success}} + r_{\text{angle-success}} - \Delta d_{tg} - \Delta a_{tg} + r_{\text{slack}},
+\end{equation}
+
+where $r_{\text{success}}$ provides a large positive reward for successfully locating the target object,  
+$r_{\text{angle-success}}$ rewards correct orientation toward the object,  
+$\Delta d_{tg}$ penalizes increased distance to the target,  
+$\Delta a_{tg}$ penalizes angular deviation,  
+and $r_{\text{slack}}$ applies a small negative reward to encourage efficiency.  
+At inference time, the image-based embedding is replaced by the CLIP embedding of a text description of the target object, enabling zero-shot generalization to unseen objects.  
+The agent’s action space includes four discrete actions: \textit{move forward}, \textit{turn left}, \textit{turn right}, and \textit{stop}.
+
+While \ac{ZSON} demonstrates strong zero-shot generalization and effective object localization within trained domains, it lacks explicit mechanisms for structured exploration in unknown regions. Since the learned policy primarily directs the agent toward locations visually similar to previously encountered objects, it may become trapped in familiar areas and fail to discover new regions. Moreover, the reliance on \ac{DRL} training reduces interpretability and generalizability; retraining is often required when visual conditions, environment layouts, or sensor modalities differ significantly from the training distribution.
+
+\citeauthor{ramakrishnanPONIPotentialFunctions2022}~\cite{ramakrishnanPONIPotentialFunctions2022} proposed \ac{PONI}, a map-based object-goal navigation framework that decouples high-level exploration decisions from low-level navigation control. \ac{PONI} learns a potential-field network that operates on a partial allocentric semantic map, where free space, occupied space, unknown regions, and detected object categories are encoded in distinct semantic channels. The network predicts two dense potential fields aligned with the current map: an \textit{area potential} \(U_t^a\), which promotes the exploration of large unexplored regions, and an \textit{object potential} \(U_t^o\), which estimates the likelihood of proximity to the target object.
+
+The potential-field network is trained in a fully supervised, interaction-free manner using annotated semantic maps from simulated environments. During training, ground-truth area and object potentials are computed offline by exploiting complete knowledge of free space and object locations. The model is optimized to regress these potentials using a pixel-wise loss applied to frontier cells.  
+At inference time, the network predicts both potentials from the current partial map without access to ground-truth information. Geometric frontiers are extracted from the occupancy map and scored by sampling the predicted potentials according to:
+
+\begin{equation}
+U_t(f) = \alpha \, U_t^a(f) + (1 - \alpha) \, U_t^o(f),
+\end{equation}
+
+where \(\alpha\) controls the trade-off between exploration and exploitation.  
+The frontier with the highest score is selected as the next navigation goal, which is then reached using a deterministic path planner rather than a learned action policy.  
+
+While \ac{PONI} achieves efficient and interpretable exploration behavior, it depends on category-level semantic inputs and assumes a fixed, closed set of object classes encountered during training. Consequently, it cannot generalize to unseen categories or open-vocabulary settings, and its reliance on dense semantic annotations limits applicability in real-world scenarios where such data are unavailable or noisy.
+
+
+% \begin{table}[H]
+%     \centering
+%     \footnotesize
+%     \renewcommand{\arraystretch}{1.0}
+%     \setlength{\tabcolsep}{3pt}
+%     \begin{tabularx}{\textwidth}{
+%         |>{\raggedright\arraybackslash}X
+%         |>{\centering\arraybackslash}X
+%         |>{\centering\arraybackslash}X
+%         |>{\raggedright\arraybackslash}X
+%         |>{\raggedright\arraybackslash}X|}
+%         \hline
+%         \textbf{Approach} & \textbf{Training Required} & \textbf{Real-Time} & \textbf{Memory Representation} & \textbf{Exploration Integration} \\ \hline
+
+%     \end{tabularx}
+%     \caption{Overview of persistent or memory-based semantic mapping approaches.}
+%     \label{tab:introduction:semantic_navigation_overview}
+% \end{table}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \begin{itemize}
     \item Review of methods targeting simultaneous or sequential search for multiple objects in unknown environments.
     \item Analysis of \dots
@@ -95,22 +176,3 @@ However, all these methods are primarily designed for geometric exploration with
     as examples of global 3D semantic maps.
     \item Limitations in updating or correcting the map after wrong detections.
 \end{itemize}
-
-\section{Object Detection and Promptable Models}
-\begin{itemize}
-    \item Review of traditional and open-vocabulary object detection methods.
-    \item Analysis of grounding-capable detectors and segmentation models for zero-shot tasks.
-    \item Specific evaluation of the following models for their suitability in semantic multi-object search:
-    \begin{itemize}
-        \item YOLO-E
-        \item GroundingDINO
-        \item MobileSAM
-        \item GroundedSAM
-        \item SEEM
-        \item OWL-ViT
-        \item MaskDINO
-    \end{itemize}
-    \item Discussion of promptable vision-language models supporting multi-modal queries (text, image, audio).
-    \item Challenges with false positives in zero-shot settings and their implications for reliable multi-object detection.
-\end{itemize}
-

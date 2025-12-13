@@ -92,6 +92,78 @@ Core Gaps:
 # 2. State of the Art (8 S.)
 ## 2.1 Geometric Exploration
 ## 2.2 Vision-Language-Guided Exploration
+
+- Aim of VL-guided Exploration: Searching for objects minimizing path lenght, time and total map coverage.
+
+- How is this done?
+
+- Using RGB images from onboard camera to semantically reason about the environment and guide exploration towards likely object locations
+
+- 1. Method - Reinforcement Learning-based Approaches
+    - Train an agent to learn exploration policies that maximize expected rewards for locating target objects based on visual inputs.
+    - Examples: ZSON, PONI, PIRLNav
+    - ZSON:
+        - Projects CLIP Image and Text embeddings into a shared space, while training a reinforcement learning policy to navigate towards target objects.
+        - Policy is trained on ImageNav, meaning policy learns to go back to places where target objects were similar to the CLIP embedding of the target text query.
+        - During inference, the agent replaces the image embedding with the CLIP embedding of the target text query to guide navigation --> zero-shot object search.
+        - How does ZSON know when to stop? The agent only learns when to press STOP from RL training.
+        - Action Space: Forward, Turn Left, Turn Right, Stop --> discrete action space
+        - Observation Space: RGB image + Semantic Goal Embedding + Previous Action (LSTM)
+        - Disadvantages: No exploration in unknown areas, only goes back to places where it has seen similar objects during training (only intuition based on CLIP similarity and previously seen areas), Limited interpretability and no explicit semantic memory, retraining needed if environment changes significantly in visual style and sensor characteristics.
+    - PIRLNav:
+        - Combines behavior cloning with reinforcement learning to train a navigation policy.
+        - Utilizes DINO-based visual features to inform the policy about object locations and guide exploration.
+    - PONI:
+        - Learns a potential-field network that predicts attractive and repulsive forces based on visual inputs to guide exploration towards target objects.
+        - The potential-field network takes as input ...  and outputs ... during training.
+        - How dos training work? ...
+        - The potential-field network takes as input ...  and outputs ... during inference.
+        - This potential field is then used score frontiers ...
+        - Hyperparameter alpha determines if agent should explore or exploit more
+            [
+            U_t(f) = \alpha , U_t^a(f) + (1 - \alpha), U_t^o(f)
+            ]
+        - Object detection is done via ...
+        - Zero shot or Object-category based?
+        - Disadvantages: ...  
+
+
+Limitations of RL-based or supervised learning approaches:
+    - Require extensive training on large datasets, limiting adaptability to new environments.
+    - Computationally intensive, hindering real-time deployment on resource-constrained robots.
+    - Often rely on closed-set object categories, reducing effectiveness in open-world scenarios.
+
+- 2. Method - Zero-Shot and Training-Free Approaches
+    - Leverage pretrained vision-language models or LLMs to perform semantic reasoning without additional training.
+    - Examples: VLFM, SemUtil, ESC, LGX, CoW
+
+How are pre-trained models used for zero-shot exploration?
+- 1. ESC:
+    - Utilizes GLIP for open-vocabulary object detection and DeBERTa/ChatGPT for reasoning about object locations.
+    - Scores frontiers based on detected objects and their semantic relevance to the target query.
+    - ESC selects its frontiers by evaluating the presence and relevance of detected objects in the environment using GLIP, an open-vocabulary object detector. It then employs DeBERTa or ChatGPT to reason about the spatial relationships and contextual relevance of these objects to the target query, allowing it to prioritize exploration frontiers that are more likely to lead to the desired object.
+    - Perception and detection Backbone: GLIP --> 2D bounding boxes with class labels and confidence scores for zero shot object categories --> confidence-threshold dependent
+    - Probabilistic Soft Logic: proximity, co-occurrence, and spatial relationships between detected objects to reason about likely locations of target objects.
+
+    $$
+    P(F) = P(F \mid d_i^{t}, o^{t}, r^{t})
+    $$
+
+- 2. LGX:
+    - Integrates GPT-3 for language understanding, GLIP for detection, and BLIP for image captioning.
+    - Ranks exploration frontiers by combining visual and linguistic cues to guide navigation.
+- 3. CoW:
+    - Employs CLIP similarity scoring to evaluate the relevance of visual observations to the target object.
+    - Directs exploration towards regions with high semantic similarity to the input query.
+- 4. SemUtil:
+    - Combines Mask R-CNN for object detection, CLIP for semantic similarity, and BERT for reasoning about object relationships.
+    - Generates value maps to prioritize exploration towards areas likely to contain target objects.
+- 5. VLFM:
+    - Uses BLIP-2 for captioning, GroundingDINO for detection, and SAM for segmentation to identify and localize objects in the environment.
+    - Scores frontiers based on the likelihood of containing target objects derived from visual cues.
+
+These zero-shot and training-free approaches enable real-time semantic exploration without the need for extensive retraining, making them more adaptable to diverse environments. However, they often lack persistent memory mechanisms to retain knowledge of previously explored areas, which can limit their efficiency in multi-object search tasks.
+
 ## 2.3 Map Reconstruction and Persistent Semantic Mapping
 ## 2.4 Object Detection and Promptable Models
 

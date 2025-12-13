@@ -19,7 +19,7 @@ This chapter details the methods developed for semantic exploration, persistent 
 \end{figure}
 
 \section{Semantic Frontier Exploration} \label{sec:semantic_frontier}
-\section*{Exploration 2D Occupancy Map}
+\subsection*{Exploration 2D Occupancy Map}
 
 \begin{itemize}
     \item The SLAM map is used for navigation.
@@ -38,7 +38,7 @@ This chapter details the methods developed for semantic exploration, persistent 
     \end{itemize}
 \end{itemize}
 
-\section*{Frontier Detection and Calculation}
+\subsection*{Frontier Detection and Calculation}
 \begin{itemize}
     \item Detection of frontiers on a 2D occupancy grid to identify candidate regions for exploration.
     \item Application of classical frontier-based exploration algorithms extended with semantic information.
@@ -74,14 +74,14 @@ This chapter details the methods developed for semantic exploration, persistent 
 
 \section{Persistent Semantic 3D Mapping} \label{sec:persistent_mapping}
 
-\section*{Global Map Construction with Open-Fusion}
+\subsection*{Global Map Construction with Open-Fusion}
 \begin{itemize}
     \item Incremental creation of a global semantic point cloud map integrating RGB-D observations over time.
     \item Registration of observations using robot poses to maintain a consistent world representation.
     \item Association of semantic labels with 3D points based on query relevance scores.
 \end{itemize}
 
-\section*{Semantic Clustering and Graph Node Generation}
+\subsection*{Semantic Clustering and Graph Node Generation}
 \begin{itemize}
     \item Clustering of points with similar semantic labels to form object-level hypotheses.
     \item Construction of semantic graph nodes representing detected object instances with aggregated confidence scores.
@@ -98,17 +98,32 @@ This chapter details the methods developed for semantic exploration, persistent 
         \item Integration of both visual and textual information for robust detection.
         \item Pre-trained on large-scale datasets, enabling zero-shot generalization to unseen object categories.
     \end{itemize}
+    
+    \item Review of traditional and open-vocabulary object detection methods.
+    \item Analysis of grounding-capable detectors and segmentation models for zero-shot tasks.
+    \item Specific evaluation of the following models for their suitability in semantic multi-object search:
+    \begin{itemize}
+        \item YOLO-E
+        \item GroundingDINO
+        \item MobileSAM
+        \item GroundedSAM
+        \item SEEM
+        \item OWL-ViT
+        \item MaskDINO
+    \end{itemize}
+    \item Discussion of promptable vision-language models supporting multi-modal queries (text, image, audio).
+    \item Challenges with false positives in zero-shot settings and their implications for reliable multi-object detection.
 \end{itemize}
 
 
-\section*{Open-Vocabulary Object Detection with YOLO-E}
+\subsection*{Open-Vocabulary Object Detection with YOLO-E}
 \begin{itemize}
     \item Utilization of the YOLO-E model for open-vocabulary object detection based on text prompts.
     \item Extraction of 2D bounding boxes and associated confidence scores for detected objects.
     \item Segmentation of detected objects to isolate relevant pixels for 3D localization.
 \end{itemize}
 
-\section*{Depth-Based 3D Localization}
+\subsection*{Depth-Based 3D Localization}
 \begin{itemize}
     \item With camera intrinsics and depth information, the 2D bounding boxes ans segmentation masks are projected into 3D space.
     \item Calculation of 3D coordinates for each detected object using depth values within the bounding box.
@@ -125,7 +140,7 @@ This chapter details the methods developed for semantic exploration, persistent 
 
 
 \section{Fusion Strategy}\label{sec:fusion_strategy}
-\section*{Exploration–Memory Weighting}
+\subsection*{Exploration–Memory Weighting}
 \begin{itemize}
     \item Exploration and memory graph nodes are fused and weighted as follows:
     \begin{itemize}
@@ -135,7 +150,7 @@ This chapter details the methods developed for semantic exploration, persistent 
     \end{itemize}
 \end{itemize}
 
-\section*{Multi-Source Detection Fusion}
+\subsection*{Multi-Source Detection Fusion}
 \begin{itemize}
     \item Detection graph nodes are weighted based on:
     \begin{itemize}
@@ -145,7 +160,7 @@ This chapter details the methods developed for semantic exploration, persistent 
     \end{itemize}
 \end{itemize}
 
-\section*{Relevance Filtering and Node Suppression}
+\subsection*{Relevance Filtering and Node Suppression}
 \begin{itemize}
     \item Each source's graph nodes are filtered based on a relevance threshold to eliminate graph nodes within the fov map.
     \item Relevance map is build over time
@@ -168,7 +183,7 @@ This chapter details the methods developed for semantic exploration, persistent 
 
 \section{Behavior Tree for Semantic-Guided Exploration} \label{sec:behavior_tree}
 
-\section*{High-Level Task Structure}
+\subsection*{High-Level Task Structure}
 \begin{itemize}
     \item The behavior tree (BT) is designed to manage the high-level task structure for semantic-guided exploration.
     \item The BT consists of the following main components:
@@ -188,7 +203,7 @@ This chapter details the methods developed for semantic exploration, persistent 
     \label{fig:system_overview}
 \end{figure}
 
-\section*{Integration with Navigation Stack}
+\subsection*{Integration with Navigation Stack}
 \begin{itemize}
     \item Navigation stack used for low-level path planning and obstacle avoidance.
     \item Action used: navigate\_to\_pose, Spin
