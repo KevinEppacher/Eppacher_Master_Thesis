@@ -144,9 +144,9 @@ This chapter details the methods developed for semantic exploration, persistent 
 \begin{itemize}
     \item Exploration and memory graph nodes are fused and weighted as follows:
     \begin{itemize}
-        \item Proximity weighting: Nodes closer to the robot's current position are given higher weights.
-        \item Exploration vs Memory: Nodes from the exploration source are prioritized over memory nodes to encourage discovery of new information.
-        \item Costmap weighting: Nodes located in areas with lower navigation costs are favored to optimize path planning and navigation efficiency.
+        \item Proximity weighting: Nodes closer to the robot's current position are given higher weights, similar to~\cite{bourgaultInformationBasedAdaptive2002}.
+        \item Exploration vs Memory: Nodes from the exploration source are prioritized over memory nodes to encourage discovery of new information, similar to~\cite{ramakrishnanPONIPotentialFunctions2022}.
+        \item Costmap weighting: Nodes located in areas with lower navigation costs are favored to optimize path planning and navigation efficiency, similar to~\cite{bourgaultInformationBasedAdaptive2002}.
     \end{itemize}
 \end{itemize}
 

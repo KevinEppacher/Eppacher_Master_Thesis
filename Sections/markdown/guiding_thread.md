@@ -112,7 +112,39 @@ Core Gaps:
         - Disadvantages: No exploration in unknown areas, only goes back to places where it has seen similar objects during training (only intuition based on CLIP similarity and previously seen areas), Limited interpretability and no explicit semantic memory, retraining needed if environment changes significantly in visual style and sensor characteristics.
     - PIRLNav:
         - Combines behavior cloning with reinforcement learning to train a navigation policy.
-        - Utilizes DINO-based visual features to inform the policy about object locations and guide exploration.
+        - Stage 1: 
+            - Behavior Cloning from expert demonstrations to learn basic navigation skills on large human demonstration datasets.
+            - Observation Space:
+                - RGB image
+                - Pose (GPS + Compass from HM3D)
+                - One-hot encoded target object category
+                - Implicit memory via a recurrent network (GRU)
+            - Action Space (discrete):
+                - Forward, Turn Left, Turn Right, Stop, Look Up, Look Down
+            BC objective:
+                - $\theta^{*} = \arg\min_{\theta} \sum_{(o_t, a_t)} -\log \pi_{\theta}(a_t \mid o_t)$
+                - where $\pi_{\theta}$ is the policy network parameterized by $\theta$, and $(o_t, a_t)$ are observation-action pairs from expert demonstrations.
+                - $\theta^{*}$ are the learned parameters after minimizing the negative log-likelihood of expert actions given observations.
+                - This stage teaches human like navigation behavior.
+                - Output is a pretrained navigation policy which maps observations to actions with human like behavior.
+        - Stage 2:
+            - Contribution is that instead of training purely via RL, they fine-tune the BC pretrained policy using RL to adapt to the object-goal navigation task.
+            - The actor policy is initialized with the BC pretrained weights
+            - The value function critic network is trained first, while keeping the actor policy frozen.
+            - Both actor and critic are then jointly fine-tuned using PPO.
+            - $\pi^{*} = \arg\max_{\pi} \mathbb{E}_{\tau \sim \pi} \left[ \sum_{t=1}^{T} \gamma^{t-1} r_t \right]$
+            - Reward function:
+                - Sparse reward: 1 if stop is executed within 1m of target object and fov, else 0
+            - Object Detection:
+                - DINO is used as a image encoder, which converts RGB into feature vector
+                - Used as a backbone
+                - These features are then fed into the navigation policy network along with pose, target category and previous action.
+                - The DINO layer helps to extract semantic features from the RGB and provide the navigation policy with relevant information about the environment.
+        - Disadvantages:
+            - Limited interpretability due to end-to-end learning.
+            - No explicit semantic memory, retraining needed if environment changes significantly in visual style and sensor characteristics.
+            - Generalization depends on similarity between training and test environments
+
     - PONI:
         - Learns a potential-field network that predicts attractive and repulsive forces based on visual inputs to guide exploration towards target objects.
         - The potential-field network takes as input ...  and outputs ... during training.
@@ -165,7 +197,6 @@ How are pre-trained models used for zero-shot exploration?
 These zero-shot and training-free approaches enable real-time semantic exploration without the need for extensive retraining, making them more adaptable to diverse environments. However, they often lack persistent memory mechanisms to retain knowledge of previously explored areas, which can limit their efficiency in multi-object search tasks.
 
 ## 2.3 Map Reconstruction and Persistent Semantic Mapping
-## 2.4 Object Detection and Promptable Models
 
 # 3. Methods (22 S.)
 ## 3.1 System Overview
