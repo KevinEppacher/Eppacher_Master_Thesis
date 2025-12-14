@@ -24,11 +24,13 @@ However, all these methods are primarily designed for geometric exploration with
 
 \section{Vision-Language-Guided Exploration}
 
-% ---------------------- ZSON ----------------------
-
 In contrast to geometric exploration, which aims to maximize map coverage using the shortest possible path and time, semantic exploration focuses on efficiently locating specific objects or regions of interest described in high-level semantic terms. The objective is to minimize path length and exploration time while prioritizing areas likely to contain relevant targets rather than achieving complete spatial coverage.  
 
 Recent research has introduced \ac{DRL} and supervised learning approaches to train agents capable of performing semantic object search~\cite{majumdarZSONZeroShotObjectGoal2023,ramakrishnanPONIPotentialFunctions2022,ramrakhyaPIRLNavPretrainingImitation2023}.  
+These methods differ in architecture and learning paradigm but share a common goal of integrating visual understanding with navigation policies.
+
+% ---------------------- ZSON ----------------------
+
 \citeauthor{majumdarZSONZeroShotObjectGoal2023}~\cite{majumdarZSONZeroShotObjectGoal2023} proposed \ac{ZSON}, a zero-shot object navigation framework that leverages the multimodal embedding space of CLIP~\cite{radfordLearningTransferableVisual2021} to guide exploration policies trained via reinforcement learning.  
 During training, the agent’s observation space consists of previous actions and RGB images, while the navigation goal is represented by the CLIP embedding of an image containing the target object. The reward function is defined as:
 
@@ -46,9 +48,9 @@ The agent’s action space includes four discrete actions: \textit{move forward}
 
 While \ac{ZSON} demonstrates strong zero-shot generalization and effective object localization within trained domains, it lacks explicit mechanisms for structured exploration in unknown regions. Since the learned policy primarily directs the agent toward locations visually similar to previously encountered objects, it may become trapped in familiar areas and fail to discover new regions. Moreover, the reliance on \ac{DRL} training reduces interpretability and generalizability; retraining is often required when visual conditions, environment layouts, or sensor modalities differ significantly from the training distribution.
 
-% ---------------------- PirlNav ----------------------
+% ---------------------- PIRLNav ----------------------
 
-\citeauthor{ramrakhyaPIRLNavPretrainingImitation2023}~\cite{ramrakhyaPIRLNavPretrainingImitation2023} introduced \ac{PIRLNav}, a two-stage pretraining framework for vision-language navigation that combines \ac{BC} and \ac{RL} to learn generalizable exploration policies. The approach first leverages large-scale human demonstrations to imitate expert navigation behavior and subsequently fine-tunes the policy using \ac{RL} to optimize long-term performance.
+Building on this line of research, \citeauthor{ramrakhyaPIRLNavPretrainingImitation2023}~\cite{ramrakhyaPIRLNavPretrainingImitation2023} introduced \ac{PIRLNav}, a two-stage pretraining framework for vision-language navigation that combines \ac{BC} and \ac{RL} to learn generalizable exploration policies. The approach first leverages large-scale human demonstrations to imitate expert navigation behavior and subsequently fine-tunes the policy using \ac{RL} to optimize long-term performance.
 
 In the first stage, the policy network is pretrained via \ac{BC} on a dataset containing approximately 77,000 human expert demonstrations. The objective is to minimize the negative log-likelihood of actions given the corresponding observations, as defined by:
 
@@ -76,16 +78,15 @@ A reward of $r_t = 1$ is assigned when the agent stops within a defined range of
 
 While \ac{PIRLNav} achieves strong performance in simulated benchmarks, it inherits several limitations typical of end-to-end reinforcement learning systems. The policy exhibits limited interpretability and lacks explicit semantic memory, preventing long-term reasoning across multiple goals. Furthermore, retraining is required when the visual domain or sensor configuration changes significantly, and generalization strongly depends on the similarity between training and deployment environments.
 
-
 % ---------------------- PONI ----------------------
 
-\citeauthor{ramakrishnanPONIPotentialFunctions2022}~\cite{ramakrishnanPONIPotentialFunctions2022} proposed \ac{PONI}, a map-based object-goal navigation framework that decouples high-level exploration decisions from low-level navigation control. \ac{PONI} learns a potential-field network that operates on a partial allocentric semantic map, where free space, occupied space, unknown regions, and detected object categories are encoded in distinct semantic channels. The network predicts two dense potential fields aligned with the current map: an \textit{area potential} \(U_t^a\), which promotes the exploration of large unexplored regions, and an \textit{object potential} \(U_t^o\), which estimates the likelihood of proximity to the target object.
+To overcome the black-box nature of end-to-end policies, \citeauthor{ramakrishnanPONIPotentialFunctions2022}~\cite{ramakrishnanPONIPotentialFunctions2022} proposed \ac{PONI}, a map-based object-goal navigation framework that decouples high-level exploration decisions from low-level navigation control. \ac{PONI} learns a potential-field network that operates on a partial allocentric semantic map, where free space, occupied space, unknown regions, and detected object categories are encoded in distinct semantic channels. The network predicts two dense potential fields aligned with the current map: an \textit{area potential} \(U_t^a\), which promotes the exploration of large unexplored regions, and an \textit{object potential} \(U_t^o\), which estimates the likelihood of proximity to the target object.
 
 The potential-field network is trained in a fully supervised, interaction-free manner using annotated semantic maps from simulated environments. During training, ground-truth area and object potentials are computed offline by exploiting complete knowledge of free space and object locations. The model is optimized to regress these potentials using a pixel-wise loss applied to frontier cells.  
 At inference time, the network predicts both potentials from the current partial map without access to ground-truth information. Geometric frontiers are extracted from the occupancy map and scored by sampling the predicted potentials according to:
 
 \begin{equation}
-U_t(f) = \alpha \, U_t^a(f) + (1 - \alpha) \, U_t^o(f),    
+U_t(f) = \alpha \, U_t^a(f) + (1 - \alpha) \, U_t^o(f),
 \end{equation}
 
 where \(\alpha\) controls the trade-off between exploration and exploitation.  
@@ -93,10 +94,17 @@ The frontier with the highest score is selected as the next navigation goal, whi
 
 While \ac{PONI} achieves efficient and interpretable exploration behavior, it depends on category-level semantic inputs and assumes a fixed, closed set of object classes encountered during training. Consequently, it cannot generalize to unseen categories or open-vocabulary settings, and its reliance on dense semantic annotations limits applicability in real-world scenarios where such data are unavailable or noisy~\cite{ramakrishnanPONIPotentialFunctions2022}.
 
+% ---------------------- Discussion ----------------------
 
+Overall, these RL-based and supervised learning approaches illustrate the potential of combining semantic understanding with learned navigation policies but reveal persistent shortcomings that motivate the shift toward pretrained vision-language models.  
 
-
-
+\begin{itemize}
+    \item \textbf{Extensive training requirements:} Large datasets and prolonged training are needed, reducing adaptability to new environments.
+    \item \textbf{High computational demands:} Complex architectures hinder real-time operation on embedded systems.
+    \item \textbf{Closed-set semantics:} Models typically rely on a fixed set of object categories, limiting open-vocabulary reasoning.
+    \item \textbf{Lack of persistent memory:} No long-term spatial or semantic memory is maintained, causing redundant exploration.
+    \item \textbf{Limited interpretability:} End-to-end learning obscures decision-making and complicates integration with classical navigation frameworks.
+\end{itemize}
 
 
 
