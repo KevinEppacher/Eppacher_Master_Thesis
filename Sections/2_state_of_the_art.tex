@@ -106,17 +106,34 @@ Overall, these RL-based and supervised learning approaches illustrate the potent
     \item \textbf{Limited interpretability:} End-to-end learning obscures decision-making and complicates integration with classical navigation frameworks.
 \end{itemize}
 
-Therefore, recent research has shifted toward leveraging large-scale pretrained vision-language models that provide rich semantic representations and zero-shot generalization capabilities. By integrating these models into modular exploration frameworks, it is possible to overcome many of the limitations of learned policies while retaining the benefits of semantic reasoning for efficient multi-object search.
+Therefore, recent research has shifted toward leveraging large-scale pretrained vision-language models (\acp{VLM}) that provide rich semantic representations and zero-shot generalization capabilities. By integrating these models into modular exploration frameworks, it becomes possible to overcome many of the limitations associated with learned policies while retaining the benefits of semantic reasoning for efficient multi-object search.
 
-\cite{zhouESCExplorationSoft2023} proposed \ac{ESC}, an exploration framework that integrates semantic cues from \ac{VLM}`s into frontier-based exploration. The approach combines a pretrained \ac{GLIP}~\cite{liGroundedLanguageImagePretraining2022} object detector with a \ac{LLM} (ChatGPT or DeBERTa) to generate semantic priors and guide exploration decisions. It scores frontiers based on both geometric utility and semantic relevance to the target object, enabling more efficient search behavior, shown in Equation~\ref{eq:esc}:
+A representative example of this paradigm is the \ac{ESC} framework proposed by \citeauthor{zhouESCExplorationSoft2023}~\cite{zhouESCExplorationSoft2023}, which augments traditional frontier-based exploration with semantic cues derived from pretrained \acp{VLM}. Specifically, \ac{ESC} combines a grounded object detector, \ac{GLIP}~\cite{liGroundedLanguageImagePretraining2022}, with a \ac{LLM} (either ChatGPT or DeBERTa) to generate semantic priors that guide exploration decisions. Frontiers are scored based on both geometric utility and semantic relevance to the target object, as formulated in Equation~\ref{eq:esc}:
 
 \begin{equation}
 \label{eq:esc}
-P(F) = P(F \mid d_i^{t}, o^{t}, r^{t})
+P(F) = P(F \mid d_i^{t}, o^{t}, r^{t}),
 \end{equation}
 
-where \(P(F)\) is the probability of selecting frontier \(F\), conditioned on detected objects \(d_i^{t}\), current observations \(o^{t}\), and the robot's pose \(r^{t}\) at time \(t\). This called Probabilistic Soft Logic (PSL) scores frontiers by combining visual detections with language-derived priors about object co-occurrences and spatial relationships. The robot then selects frontiers with the highest semantic relevance for exploration. \cite{zhouESCExplorationSoft2023} uses \ac{GLIP} as a detection backbone, which computes 2D bounding boxes and class labels for objects in the robot's \ac{FOV} and a confidence score for each detection. Detection is also confidence-threshold dependent. Disadvantages of \ac{ESC} include the computational overhead from LLM inference and PSL optimization. It also relies heavily on the quality of object detections; false positives can mislead frontier scoring and exploration decisions. Also the commonsense prior can be incorrect or misleading. \cite{zhouESCExplorationSoft2023} mentions, due to ablations studies, that the object-object and object-room relation priors are misleading and that commonsense relations are probabilistic rather than deterministic. \ac{ESC} maintains a semantic map during navigation but does not explicitly model long-term semantic memory or belief accumulation across revisits. Once incorrect detections or priors are introduced, there is no learned mechanism to revise or down-weight them over time, as acknowledged indirectly in the discussion of detection-driven failures.
+where \(P(F)\) denotes the probability of selecting frontier \(F\), conditioned on detected objects \(d_i^{t}\), current observations \(o^{t}\), and the robot pose \(r^{t}\) at time \(t\). This formulation is implemented using Probabilistic Soft Logic (PSL), which fuses visual detections with language-derived priors about object co-occurrences and spatial relationships. The robot then selects the frontier with the highest combined score, balancing geometric and semantic information to improve search efficiency.
 
+In practice, \ac{ESC} employs \ac{GLIP} as the detection backbone to compute 2D bounding boxes, class labels, and confidence scores for objects within the robot’s \ac{FOV}. While effective in simulation, the approach introduces notable computational overhead due to repeated \ac{LLM} inference and PSL optimization. Moreover, its performance is highly dependent on the reliability of object detections-false positives can misguide frontier scoring, and incorrect commonsense priors may further bias exploration. 
+
+Through ablation studies, \citeauthor{zhouESCExplorationSoft2023} observed that object-object and object-room relational priors can occasionally degrade performance, as commonsense relationships are inherently probabilistic rather than deterministic. Additionally, while \ac{ESC} maintains a local semantic map during navigation, it lacks mechanisms for long-term memory or belief revision. Consequently, once an incorrect detection or prior is introduced, the framework has no learned means of down-weighting or correcting it over time, which can lead to persistent semantic inconsistencies during extended exploration.
+
+In contrast to such reasoning-heavy systems, \citeauthor{gadreCoWsPastureBaselines2022}~\cite{gadreCoWsPastureBaselines2022} proposed \ac{CoW}, a lightweight vision-language exploration framework that relies purely on image-text alignment from CLIP~\cite{radfordLearningTransferableVisual2021} without requiring explicit frontier detection, semantic mapping, or object segmentation. The method guides the robot toward directions with the highest cosine similarity between the current visual observation and the target object description, defined as:
+
+\begin{equation}
+\label{eq:cosine_similarity}
+\mathrm{\cos\_sim}(\mathbf{u}, \mathbf{v})
+=
+\frac{\mathbf{u} \cdot \mathbf{v}}
+{\lVert \mathbf{u} \rVert \, \lVert \mathbf{v} \rVert},
+\end{equation}
+
+where \(\mathbf{u}\) and \(\mathbf{v}\) denote the CLIP embeddings of the current image and the target text prompt, respectively. The robot moves forward when the similarity exceeds a predefined threshold and rotates otherwise to maximize alignment with the target.  
+
+By eliminating explicit detectors and handcrafted mapping, \ac{CoW} offers a computationally efficient and conceptually simple baseline for open-vocabulary navigation. However, this simplicity comes at the cost of robustness. The system is highly sensitive to viewpoint variations and clutter, as cosine similarity does not always correlate with true object presence. Without spatial memory or geometric reasoning, the robot may oscillate near false positives or become trapped in local minima. Moreover, because similarity scores vary across object categories, no universal threshold can be established for all targets, resulting in inconsistent stopping behavior and reduced reliability during multi-object search.
 
 \section{Map Reconstruction and Persistent Semantic Mapping}
 
