@@ -106,39 +106,17 @@ Overall, these RL-based and supervised learning approaches illustrate the potent
     \item \textbf{Limited interpretability:} End-to-end learning obscures decision-making and complicates integration with classical navigation frameworks.
 \end{itemize}
 
-\begin{itemize}
-    \item Review of methods targeting simultaneous or sequential search for multiple objects in unknown environments.
-    \item Analysis of \dots
-    \begin{itemize}
-        \item VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}
-        \item SemUtil~\cite{chen2023semutil}
-        \item ESC~\cite{liu2023esc}
-        \item LGX~\cite{shah2024lgx}
-        \item CoW~\cite{qi2023cow}
-        \item ZSON~\cite{shah2023zson}
-        \item PONI~\cite{qi2024poni}
-        \item PIRLNav~\cite{ma2024pirlnav}
-    \end{itemize}
+Therefore, recent research has shifted toward leveraging large-scale pretrained vision-language models that provide rich semantic representations and zero-shot generalization capabilities. By integrating these models into modular exploration frameworks, it is possible to overcome many of the limitations of learned policies while retaining the benefits of semantic reasoning for efficient multi-object search.
 
-    regarding aspects such as:
-    \begin{itemize}
-        \item Training Required (Pretrained vs. Fine-tuned)
-        \item Real-Time Capability
-        \item VRAM Requirements
-        \item Sensor Modalities (RGB, RGB-D, LiDAR)
-        \item Semantic reasoning (BLIP2, CLIP, GPT-4V, etc.)
-        \item Persistent Memory (None, 2D Map, 3D Map, Scene Graph)
-    \end{itemize}
+\cite{zhouESCExplorationSoft2023} proposed \ac{ESC}, an exploration framework that integrates semantic cues from \ac{VLM}`s into frontier-based exploration. The approach combines a pretrained \ac{GLIP}~\cite{liGroundedLanguageImagePretraining2022} object detector with a \ac{LLM} (ChatGPT or DeBERTa) to generate semantic priors and guide exploration decisions. It scores frontiers based on both geometric utility and semantic relevance to the target object, enabling more efficient search behavior, shown in Equation~\ref{eq:esc}:
 
-    \item Evaluation of performance metrics used in multi-object search:
-    \begin{itemize}
-        \item Success Rate (SR) 
-        \item Success weighted by Path Length (SPL)
-        \item MSR (Multi-object Success Rate)
-    \end{itemize}
-    \item Discussion of semantic exploration frameworks combining language models with spatial reasoning.
-    \item Challenges of maintaining semantic context across multiple targets.
-\end{itemize}
+\begin{equation}
+\label{eq:esc}
+P(F) = P(F \mid d_i^{t}, o^{t}, r^{t})
+\end{equation}
+
+where \(P(F)\) is the probability of selecting frontier \(F\), conditioned on detected objects \(d_i^{t}\), current observations \(o^{t}\), and the robot's pose \(r^{t}\) at time \(t\). This called Probabilistic Soft Logic (PSL) scores frontiers by combining visual detections with language-derived priors about object co-occurrences and spatial relationships. The robot then selects frontiers with the highest semantic relevance for exploration. \cite{zhouESCExplorationSoft2023} uses \ac{GLIP} as a detection backbone, which computes 2D bounding boxes and class labels for objects in the robot's \ac{FOV} and a confidence score for each detection. Detection is also confidence-threshold dependent. Disadvantages of \ac{ESC} include the computational overhead from LLM inference and PSL optimization. It also relies heavily on the quality of object detections; false positives can mislead frontier scoring and exploration decisions. Also the commonsense prior can be incorrect or misleading. \cite{zhouESCExplorationSoft2023} mentions, due to ablations studies, that the object-object and object-room relation priors are misleading and that commonsense relations are probabilistic rather than deterministic. \ac{ESC} maintains a semantic map during navigation but does not explicitly model long-term semantic memory or belief accumulation across revisits. Once incorrect detections or priors are introduced, there is no learned mechanism to revise or down-weight them over time, as acknowledged indirectly in the discussion of detection-driven failures.
+
 
 \section{Map Reconstruction and Persistent Semantic Mapping}
 
@@ -199,6 +177,7 @@ Overall, these RL-based and supervised learning approaches illustrate the potent
         \item SEEM
         \item OWL-ViT
         \item MaskDINO
+        \item GLIP
     \end{itemize}
     \item Discussion of promptable vision-language models supporting multi-modal queries (text, image, audio).
     \item Challenges with false positives in zero-shot settings and their implications for reliable multi-object detection.
