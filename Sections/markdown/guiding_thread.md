@@ -181,22 +181,69 @@ How are pre-trained models used for zero-shot exploration?
     P(F) = P(F \mid d_i^{t}, o^{t}, r^{t})
     $$
 
-- 2. LGX:
-    - Integrates GPT-3 for language understanding, GLIP for detection, and BLIP for image captioning.
+    - Disadvantages:
+        - Relies heavily on the accuracy of GLIP detections (40%), which can lead to false positives or mis-scoring frontiers due to false detections and reasoning about falsely detected objects.
+        - Commonsense priors can be incorrect or misleading. ESC assumes that object–room and object–object relations learned by language models reflect the actual environment. However, the paper notes that commonsense relations are probabilistic rather than deterministic, and can fail when objects are placed in atypical locations (e.g., beds outside bedrooms). This may bias exploration away from valid but uncommon object placements.
+        - Ablation studies show that removing the reasoning module only slightly degrades performance, indicating that the reasoning component may not significantly enhance exploration effectiveness compared to direct detection-based scoring.
+        - Computational overhead from LLM inference and PSL optimization. 
+        - ESC maintains a semantic map during navigation but does not explicitly model long-term semantic memory or belief accumulation across revisits. Once incorrect detections or priors are introduced, there is no learned mechanism to revise or down-weight them over time, as acknowledged indirectly in the discussion of detection-driven failures.
+
     - Ranks exploration frontiers by combining visual and linguistic cues to guide navigation.
-- 3. CoW:
+- 2. CoW:
     - Employs CLIP similarity scoring to evaluate the relevance of visual observations to the target object.
+    - $$S(I, T) = \frac{E_{img}(I) \cdot E_{text}(T)}{\|E_{img}(I)\| \|E_{text}(T)\|}$$
+    - where \(E_{img}(I)\) and \(E_{text}(T)\) are the CLIP embeddings for image \(I\) and text \(T\), respectively
+    - There is no explicit object detection component; instead, CoW relies solely on the global image-text similarity to guide exploration.
     - Directs exploration towards regions with high semantic similarity to the input query.
-- 4. SemUtil:
+    - Move forward if similrity high, else turn, stop if similarity above threshold
+    - No frontiers, no maps (3D or 3D), object detections, room reasoning, reinforcement learning, or persistent memory.
+    - Advantages:
+        - Simplicity and efficiency: CoW's reliance on CLIP similarity scoring allows for straightforward implementation without complex detection or reasoning modules.
+        - Zero-shot capability: Can handle arbitrary object categories without retraining, leveraging CLIP's extensive pretraining.
+    - Disadvantages:
+        - Lack of explicit object localization: Without object detection, CoW may struggle to accurately identify
+        - no memory
+        - no spatial reasoning
+        - Easily distracted by visually similar but irrelevant regions
+        - Similarity scores can be noisy and may not consistently correlate with actual object presence, leading to false detections.
+- 3. SemUtil:
     - Combines Mask R-CNN for object detection, CLIP for semantic similarity, and BERT for reasoning about object relationships.
     - Generates value maps to prioritize exploration towards areas likely to contain target objects.
-- 5. VLFM:
-    - Uses BLIP-2 for captioning, GroundingDINO for detection, and SAM for segmentation to identify and localize objects in the environment.
-    - Scores frontiers based on the likelihood of containing target objects derived from visual cues.
+    - Builds 2D occupancy grid map for frontier extraction
+    - Semantic object detections (2D projections) using Mask R-CNN for closed-set categories
+    - Semantic Utility Map Generation:
+        - Each map cell stores a utility score
+        - Utility is based on:
+            - CLIP similarity between detected object features and target text query embedding
+            - Spatial relationships between detected objects and target object inferred via BERT
+    - Builds a semantic memory, but utility policy does not leverage memory during exploration, only uses it for scoring frontiers.
+    - Disadvantages:
+        - Closed-set object perception: relies on Mask R-CNN, limiting generalization to unseen object categories.
+
+        - No persistent semantic memory: semantic evidence is accumulated only as utility values, without object-level or instance-level memory.
+
+        - 2D-only semantic representation: does not model full 3D structure or object geometry.
+
+        - Static semantic priors: object–object and object–goal relations are predefined and cannot adapt online.
+
+        - Sensitive to detection noise: incorrect detections directly corrupt the utility map.
+- 4. VLFM:
+    - Uses BLIP-2 for value map generation, GroundingDINO and YOLO-E for detection, and SAM for segmentation to identify and localize objects in the environment.
+    - VLFM computes with help of BLIP-2 a value map, which calculates the cosine similarity between the image regions and the target text query embedding
+    - The cosine similarity is projeected onto a 2D occupancy grid in a FOV mask, where towards the border of the image eg fov mask values are lower due to lower confidence of the detection (gaussian weighting)
+    - The value map serves as a mask to score frontiers during exploration, guiding the robot towards areas with high semantic relevance to the target query.
+    - If an object is detetced over a threshold by GroundingDINO or YOLOv7, the robot navigates directly towards the object instead of using the value map for exploration.
+    - No semantic memory, uses 4 models which is computationally expensive (16 GB VRAM needed for real-time deployment on mobile robot), due to only single source detection pipeline (either GroundingDINO or YOLOv7) can lead to false-positive detections and inefficient search.
 
 These zero-shot and training-free approaches enable real-time semantic exploration without the need for extensive retraining, making them more adaptable to diverse environments. However, they often lack persistent memory mechanisms to retain knowledge of previously explored areas, which can limit their efficiency in multi-object search tasks.
 
 ## 2.3 Map Reconstruction and Persistent Semantic Mapping
+### Semantic Scene Reconstruction
+
+### Persistent Semantic Mapping for Exploration
+
+## 2.4 Object Detection and Promptable Models
+
 
 # 3. Methods (22 S.)
 ## 3.1 System Overview

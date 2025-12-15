@@ -96,7 +96,7 @@ While \ac{PONI} achieves efficient and interpretable exploration behavior, it de
 
 % ---------------------- Discussion ----------------------
 
-Overall, these RL-based and supervised learning approaches illustrate the potential of combining semantic understanding with learned navigation policies but reveal persistent shortcomings that motivate the shift toward pretrained vision-language models.  
+Overall, these RL-based and supervised learning approaches illustrate the potential of combining semantic understanding with learned navigation policies but reveal persistent shortcomings that motivate the shift toward pretrained vision-language models. Key limitations include:
 
 \begin{itemize}
     \item \textbf{Extensive training requirements:} Large datasets and prolonged training are needed, reducing adaptability to new environments.
@@ -105,58 +105,6 @@ Overall, these RL-based and supervised learning approaches illustrate the potent
     \item \textbf{Lack of persistent memory:} No long-term spatial or semantic memory is maintained, causing redundant exploration.
     \item \textbf{Limited interpretability:} End-to-end learning obscures decision-making and complicates integration with classical navigation frameworks.
 \end{itemize}
-
-
-
-
-
-
-
-
-
-
-% \begin{table}[H]
-%     \centering
-%     \footnotesize
-%     \renewcommand{\arraystretch}{1.0}
-%     \setlength{\tabcolsep}{3pt}
-%     \begin{tabularx}{\textwidth}{
-%         |>{\raggedright\arraybackslash}X
-%         |>{\centering\arraybackslash}X
-%         |>{\centering\arraybackslash}X
-%         |>{\raggedright\arraybackslash}X
-%         |>{\raggedright\arraybackslash}X|}
-%         \hline
-%         \textbf{Approach} & \textbf{Training Required} & \textbf{Real-Time} & \textbf{Memory Representation} & \textbf{Exploration Integration} \\ \hline
-
-%     \end{tabularx}
-%     \caption{Overview of persistent or memory-based semantic mapping approaches.}
-%     \label{tab:introduction:semantic_navigation_overview}
-% \end{table}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 \begin{itemize}
     \item Review of methods targeting simultaneous or sequential search for multiple objects in unknown environments.
@@ -193,6 +141,8 @@ Overall, these RL-based and supervised learning approaches illustrate the potent
 \end{itemize}
 
 \section{Map Reconstruction and Persistent Semantic Mapping}
+
+\subsection*{Semantic Scene Reconstruction}
 \begin{itemize}
     \item Overview of approaches to build and update semantic maps during exploration:
     \begin{itemize}
@@ -230,4 +180,26 @@ Overall, these RL-based and supervised learning approaches illustrate the potent
     \end{itemize}
     as examples of global 3D semantic maps.
     \item Limitations in updating or correcting the map after wrong detections.
+\end{itemize}
+
+\subsection*{Persistent Semantic Mapping for Exploration}
+
+
+
+\section{Object Detection and Promptable Models}
+\begin{itemize}
+    \item Review of traditional and open-vocabulary object detection methods.
+    \item Analysis of grounding-capable detectors and segmentation models for zero-shot tasks.
+    \item Specific evaluation of the following models for their suitability in semantic multi-object search:
+    \begin{itemize}
+        \item YOLO-E
+        \item GroundingDINO
+        \item MobileSAM
+        \item GroundedSAM
+        \item SEEM
+        \item OWL-ViT
+        \item MaskDINO
+    \end{itemize}
+    \item Discussion of promptable vision-language models supporting multi-modal queries (text, image, audio).
+    \item Challenges with false positives in zero-shot settings and their implications for reliable multi-object detection.
 \end{itemize}
