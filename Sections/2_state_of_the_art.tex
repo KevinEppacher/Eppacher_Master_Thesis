@@ -117,7 +117,7 @@ P(F) = P(F \mid d_i^{t}, o^{t}, r^{t}),
 
 where \(P(F)\) denotes the probability of selecting frontier \(F\), conditioned on detected objects \(d_i^{t}\), current observations \(o^{t}\), and the robot pose \(r^{t}\) at time \(t\). This formulation is implemented using Probabilistic Soft Logic (PSL), which fuses visual detections with language-derived priors about object co-occurrences and spatial relationships. The robot then selects the frontier with the highest combined score, balancing geometric and semantic information to improve search efficiency.
 
-In practice, \ac{ESC} employs \ac{GLIP} as the detection backbone to compute 2D bounding boxes, class labels, and confidence scores for objects within the robot’s \ac{FOV}. While effective in simulation, the approach introduces notable computational overhead due to repeated \ac{LLM} inference and PSL optimization. Moreover, its performance is highly dependent on the reliability of object detections-false positives can misguide frontier scoring, and incorrect commonsense priors may further bias exploration. 
+In practice, \ac{ESC} employs \ac{GLIP}~\cite{liGroundedLanguageImagePretraining2022} as the detection backbone to compute 2D bounding boxes, class labels, and confidence scores for objects within the robot’s \ac{FOV}. While effective in simulation, the approach introduces notable computational overhead due to repeated \ac{LLM} inference and PSL optimization. Moreover, its performance is highly dependent on the reliability of object detections-false positives can misguide frontier scoring, and incorrect commonsense priors may further bias exploration. 
 
 Through ablation studies, \citeauthor{zhouESCExplorationSoft2023} observed that object-object and object-room relational priors can occasionally degrade performance, as commonsense relationships are inherently probabilistic rather than deterministic. Additionally, while \ac{ESC} maintains a local semantic map during navigation, it lacks mechanisms for long-term memory or belief revision. Consequently, once an incorrect detection or prior is introduced, the framework has no learned means of down-weighting or correcting it over time, which can lead to persistent semantic inconsistencies during extended exploration.
 
@@ -165,7 +165,27 @@ Furthermore, since the framework lacks belief revision or memory-based fusion,
 false detections persist until they leave the robot’s current field of view, 
 reducing consistency and efficiency in long-term navigation.
 
-Unlike ~\cite{chenHowNotTrain2023}, which converts classes of detection into a value map, and possibly loosing information or adding misinformation,\ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023} directly uses the image-text similarity to compute the from the entire image. The cosine similarity \ref{eq:cosine_similarity}~\cite{gadreCoWsPastureBaselines2022} is computed with a pre-trained VLM from BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023} between the current observation and the target text query. The similarity values are then projected onto a 2D occupancy grid in a \ac{FOV} mask, where towards the border of the image \ac{FOV} mask values are lower due to lower confidence of the detection (gaussian weighting). The resulting value map is then masked with a geometric frontier map to select the next exploration goal. \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023} uses GroundingDINO~\cite{liuGroundingDINOMarrying2024}, for zero-shot detection or YOLOv7 for COCO \cite{linMicrosoftCOCOCommon2015} trained classes, as object detectors to detect objects in the current observation, which are then segmented with SAM~\cite{kirillovSegmentAnything2023} to get precise object masks. The detected objects are then used to determine if the target object is in the current observation and stop the exploration and navigate towards the object. The results are promising, however, \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023} also suffers from false positives in the zero-shot detection setting, which can lead to wrong stopping decisions, due to only either having a single source of detection pipeline (GroundingDINO~\cite{liuGroundingDINOMarrying2024} or YOLOv7). The value map is episodic and not persistent over time, which can lead to revisiting already explored areas, which is inefficient for multi-object search. \ac{VLFM} has real-time properties, but due to using 4 different models (BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023}, GroundingDINO~\cite{liuGroundingDINOMarrying2024}/YOLOv7, SAM~\cite{kirillovSegmentAnything2023}), it uses 16 GB VRAM on an NVIDIA RTX 4090 GPU, which is quite high for real-time applications on mobile robots.
+Unlike \citeauthor{chenHowNotTrain2023}~\cite{chenHowNotTrain2023}, who construct a utility map from class-based detections and semantic projections that are recomputed each step, thereby risking information loss or semantic inconsistency, \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023} directly leverages pretrained vision-language models to compute semantic value maps from raw RGB observations. Rather than relying on symbolic object classes, \ac{VLFM} computes a continuous image-text similarity score between the robot’s current observation and the target text prompt using BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023}, as formulated through the cosine similarity function in Equation~\ref{eq:cosine_similarity}~\cite{gadreCoWsPastureBaselines2022}.  
+
+The resulting similarity values are spatially projected onto a top-down occupancy grid according to the robot’s \ac{FOV}, forming a \textit{value map} that quantifies the semantic likelihood of each region leading toward the target object. To account for reduced reliability near the image periphery, a Gaussian weighting function attenuates confidence values based on angular distance from the optical axis (see Fig.~3 in the original paper~\cite{yokoyamaVLFMVisionLanguageFrontier2023}). This value map is continuously updated through a weighted averaging scheme that fuses new and previous similarity scores according to their confidence weights, enabling smooth map updates and spatial consistency across frames.  
+
+During exploration, the \ac{VLFM} system fuses this value map with a geometrically extracted frontier map to select the next exploration goal, the frontier with the highest semantic value is chosen as the next waypoint. Target object detection is performed using YOLOv7~\cite{linMicrosoftCOCOCommon2015} for \ac{COCO} categories and GroundingDINO~\cite{liuGroundingDINOMarrying2024} for open-vocabulary detection. Once an object matching the target query is detected, SAM~\cite{kirillovSegmentAnything2023} is applied to generate an accurate mask, and the system transitions from exploration to goal navigation.  
+
+This modular framework achieves state-of-the-art performance on the Gibson, HM3D, and Matterport3D benchmarks, outperforming prior zero-shot approaches such as \ac{ESC}, \ac{SemUtil}, and \ac{CoW} in both \ac{SR} and \ac{SPL} \cite{yokoyamaVLFMVisionLanguageFrontier2023}. Despite its efficiency and interpretability, several limitations remain. \ac{VLFM} relies on a single-source detection pipeline, either GroundingDINO or YOLOv7, making it prone to false positives in open-vocabulary scenarios, which can result in premature stopping behavior. Furthermore, the value map is episodic rather than persistent: it resets after each navigation episode and does not maintain long-term semantic memory, leading to redundant revisits during multi-object search tasks. While the system operates in real time, the use of multiple large-scale pretrained models (BLIP-2, GroundingDINO/YOLOv7, and SAM) demands substantial computational resources, consuming approximately 16~GB of VRAM on an NVIDIA RTX~4090 GPU during deployment, which limits scalability on embedded robotic platforms.
+
+These zero-shot and training-free approaches enable real-time semantic exploration without the need for extensive retraining, making them more adaptable to diverse environments. However, they often lack persistent memory mechanisms to retain knowledge of previously explored areas, which can limit their efficiency in multi-object search tasks.
+
+\section{Map Reconstruction and Persistent Semantic Mapping}
+\subsection*{Persistent Semantic Mapping for Exploration}
+\begin{itemize}
+\item OneMap
+\item ConceptGraphs
+\item SemExp
+\item VLMaps
+\item Pigeon
+\item CLIP-Fields
+\end{itemize}
+
 
 \subsection*{Semantic Scene Reconstruction}
 \begin{itemize}
@@ -192,22 +212,16 @@ Unlike ~\cite{chenHowNotTrain2023}, which converts classes of detection into a v
     \end{itemize}
     \item Discussion of \dots
     \begin{itemize}
-        \item ConceptGraphs
-        \item ConceptGraph-Online
         \item OpenFusion
         \item Clio
-        \item OpenScene
         \item GeFF
         \item CLIP-Fields
         \item ConceptFusion
-        \item VLMaps
         \item LERF
     \end{itemize}
     as examples of global 3D semantic maps.
     \item Limitations in updating or correcting the map after wrong detections.
 \end{itemize}
-
-\subsection*{Persistent Semantic Mapping for Exploration}
 
 
 
