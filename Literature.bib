@@ -262,6 +262,40 @@
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/JYLEZSMP/Kanso et al. - 2025 - Semantic SLAM A comprehensive survey of methods and applications.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/2C2DQTME/S2667305325001176.html}
 }
 
+@online{kirillovSegmentAnything2023,
+  title = {Segment {{Anything}}},
+  author = {Kirillov, Alexander and Mintun, Eric and Ravi, Nikhila and Mao, Hanzi and Rolland, Chloe and Gustafson, Laura and Xiao, Tete and Whitehead, Spencer and Berg, Alexander C. and Lo, Wan-Yen and Dollár, Piotr and Girshick, Ross},
+  date = {2023-04-05},
+  eprint = {2304.02643},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2304.02643},
+  url = {http://arxiv.org/abs/2304.02643},
+  urldate = {2025-12-15},
+  abstract = {We introduce the Segment Anything (SA) project: a new task, model, and dataset for image segmentation. Using our efficient model in a data collection loop, we built the largest segmentation dataset to date (by far), with over 1 billion masks on 11M licensed and privacy respecting images. The model is designed and trained to be promptable, so it can transfer zero-shot to new image distributions and tasks. We evaluate its capabilities on numerous tasks and find that its zero-shot performance is impressive -- often competitive with or even superior to prior fully supervised results. We are releasing the Segment Anything Model (SAM) and corresponding dataset (SA-1B) of 1B masks and 11M images at https://segment-anything.com to foster research into foundation models for computer vision.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning},
+  note = {Comment: Project web-page: https://segment-anything.com},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/TWTA6NG6/Kirillov et al. - 2023 - Segment Anything.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/ZTAF3529/2304.html}
+}
+
+@online{liBLIP2BootstrappingLanguageImage2023,
+  title = {{{BLIP-2}}: {{Bootstrapping Language-Image Pre-training}} with {{Frozen Image Encoders}} and {{Large Language Models}}},
+  shorttitle = {{{BLIP-2}}},
+  author = {Li, Junnan and Li, Dongxu and Savarese, Silvio and Hoi, Steven},
+  date = {2023-06-15},
+  eprint = {2301.12597},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2301.12597},
+  url = {http://arxiv.org/abs/2301.12597},
+  urldate = {2025-12-15},
+  abstract = {The cost of vision-and-language pre-training has become increasingly prohibitive due to end-to-end training of large-scale models. This paper proposes BLIP-2, a generic and efficient pre-training strategy that bootstraps vision-language pre-training from off-the-shelf frozen pre-trained image encoders and frozen large language models. BLIP-2 bridges the modality gap with a lightweight Querying Transformer, which is pre-trained in two stages. The first stage bootstraps vision-language representation learning from a frozen image encoder. The second stage bootstraps vision-to-language generative learning from a frozen language model. BLIP-2 achieves state-of-the-art performance on various vision-language tasks, despite having significantly fewer trainable parameters than existing methods. For example, our model outperforms Flamingo80B by 8.7\% on zero-shot VQAv2 with 54x fewer trainable parameters. We also demonstrate the model's emerging capabilities of zero-shot image-to-text generation that can follow natural language instructions.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/CK7EWWUD/Li et al. - 2023 - BLIP-2 Bootstrapping Language-Image Pre-training with Frozen Image Encoders and Large Language Mode.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/EA8SKWTP/2301.html}
+}
+
 @online{liGroundedLanguageImagePretraining2022,
   title = {Grounded {{Language-Image Pre-training}}},
   author = {Li, Liunian Harold and Zhang, Pengchuan and Zhang, Haotian and Yang, Jianwei and Li, Chunyuan and Zhong, Yiwu and Wang, Lijuan and Yuan, Lu and Zhang, Lei and Hwang, Jenq-Neng and Chang, Kai-Wei and Gao, Jianfeng},
@@ -295,6 +329,24 @@
   keywords = {Computer Science - Computer Vision and Pattern Recognition},
   note = {Comment: 1) updated annotation pipeline description and figures; 2) added new section describing datasets splits; 3) updated author list},
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/I5ATQM2D/Lin et al. - 2015 - Microsoft COCO Common Objects in Context.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/RZ8JVYSE/1405.html}
+}
+
+@online{liuGroundingDINOMarrying2024,
+  title = {Grounding {{DINO}}: {{Marrying DINO}} with {{Grounded Pre-Training}} for {{Open-Set Object Detection}}},
+  shorttitle = {Grounding {{DINO}}},
+  author = {Liu, Shilong and Zeng, Zhaoyang and Ren, Tianhe and Li, Feng and Zhang, Hao and Yang, Jie and Jiang, Qing and Li, Chunyuan and Yang, Jianwei and Su, Hang and Zhu, Jun and Zhang, Lei},
+  date = {2024-07-19},
+  eprint = {2303.05499},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2303.05499},
+  url = {http://arxiv.org/abs/2303.05499},
+  urldate = {2025-12-15},
+  abstract = {In this paper, we present an open-set object detector, called Grounding DINO, by marrying Transformer-based detector DINO with grounded pre-training, which can detect arbitrary objects with human inputs such as category names or referring expressions. The key solution of open-set object detection is introducing language to a closed-set detector for open-set concept generalization. To effectively fuse language and vision modalities, we conceptually divide a closed-set detector into three phases and propose a tight fusion solution, which includes a feature enhancer, a language-guided query selection, and a cross-modality decoder for cross-modality fusion. While previous works mainly evaluate open-set object detection on novel categories, we propose to also perform evaluations on referring expression comprehension for objects specified with attributes. Grounding DINO performs remarkably well on all three settings, including benchmarks on COCO, LVIS, ODinW, and RefCOCO/+/g. Grounding DINO achieves a \$52.5\$ AP on the COCO detection zero-shot transfer benchmark, i.e., without any training data from COCO. It sets a new record on the ODinW zero-shot benchmark with a mean \$26.1\$ AP. Code will be available at \textbackslash url\{https://github.com/IDEA-Research/GroundingDINO\}.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition},
+  note = {Comment: Code will be available at https://github.com/IDEA-Research/GroundingDINO},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/TB8JHP9D/Liu et al. - 2024 - Grounding DINO Marrying DINO with Grounded Pre-Training for Open-Set Object Detection.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/JM9R998B/2303.html}
 }
 
 @article{lluviaActiveMappingRobot2021,
