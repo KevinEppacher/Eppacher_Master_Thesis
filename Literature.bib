@@ -51,6 +51,41 @@
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/SZWDGPE5/Bourgault et al. - 2002 - Information Based Adaptive Robotic Exploration.pdf}
 }
 
+@online{brohanRT2VisionLanguageActionModels2023,
+  title = {{{RT-2}}: {{Vision-Language-Action Models Transfer Web Knowledge}} to {{Robotic Control}}},
+  shorttitle = {{{RT-2}}},
+  author = {Brohan, Anthony and Brown, Noah and Carbajal, Justice and Chebotar, Yevgen and Chen, Xi and Choromanski, Krzysztof and Ding, Tianli and Driess, Danny and Dubey, Avinava and Finn, Chelsea and Florence, Pete and Fu, Chuyuan and Arenas, Montse Gonzalez and Gopalakrishnan, Keerthana and Han, Kehang and Hausman, Karol and Herzog, Alexander and Hsu, Jasmine and Ichter, Brian and Irpan, Alex and Joshi, Nikhil and Julian, Ryan and Kalashnikov, Dmitry and Kuang, Yuheng and Leal, Isabel and Lee, Lisa and Lee, Tsang-Wei Edward and Levine, Sergey and Lu, Yao and Michalewski, Henryk and Mordatch, Igor and Pertsch, Karl and Rao, Kanishka and Reymann, Krista and Ryoo, Michael and Salazar, Grecia and Sanketi, Pannag and Sermanet, Pierre and Singh, Jaspiar and Singh, Anikait and Soricut, Radu and Tran, Huong and Vanhoucke, Vincent and Vuong, Quan and Wahid, Ayzaan and Welker, Stefan and Wohlhart, Paul and Wu, Jialin and Xia, Fei and Xiao, Ted and Xu, Peng and Xu, Sichun and Yu, Tianhe and Zitkovich, Brianna},
+  date = {2023-07-28},
+  eprint = {2307.15818},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2307.15818},
+  url = {http://arxiv.org/abs/2307.15818},
+  urldate = {2026-01-02},
+  abstract = {We study how vision-language models trained on Internet-scale data can be incorporated directly into end-to-end robotic control to boost generalization and enable emergent semantic reasoning. Our goal is to enable a single end-to-end trained model to both learn to map robot observations to actions and enjoy the benefits of large-scale pretraining on language and vision-language data from the web. To this end, we propose to co-fine-tune state-of-the-art vision-language models on both robotic trajectory data and Internet-scale vision-language tasks, such as visual question answering. In contrast to other approaches, we propose a simple, general recipe to achieve this goal: in order to fit both natural language responses and robotic actions into the same format, we express the actions as text tokens and incorporate them directly into the training set of the model in the same way as natural language tokens. We refer to such category of models as vision-language-action models (VLA) and instantiate an example of such a model, which we call RT-2. Our extensive evaluation (6k evaluation trials) shows that our approach leads to performant robotic policies and enables RT-2 to obtain a range of emergent capabilities from Internet-scale training. This includes significantly improved generalization to novel objects, the ability to interpret commands not present in the robot training data (such as placing an object onto a particular number or icon), and the ability to perform rudimentary reasoning in response to user commands (such as picking up the smallest or largest object, or the one closest to another object). We further show that incorporating chain of thought reasoning allows RT-2 to perform multi-stage semantic reasoning, for example figuring out which object to pick up for use as an improvised hammer (a rock), or which type of drink is best suited for someone who is tired (an energy drink).},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Computation and Language,Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning,Computer Science - Robotics},
+  note = {Comment: Website: https://robotics-transformer.github.io/},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/WF5428KW/Brohan et al. - 2023 - RT-2 Vision-Language-Action Models Transfer Web Knowledge to Robotic Control.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/U3KCFQT5/2307.html}
+}
+
+@online{brownLanguageModelsAre2020,
+  title = {Language {{Models}} Are {{Few-Shot Learners}}},
+  author = {Brown, Tom B. and Mann, Benjamin and Ryder, Nick and Subbiah, Melanie and Kaplan, Jared and Dhariwal, Prafulla and Neelakantan, Arvind and Shyam, Pranav and Sastry, Girish and Askell, Amanda and Agarwal, Sandhini and Herbert-Voss, Ariel and Krueger, Gretchen and Henighan, Tom and Child, Rewon and Ramesh, Aditya and Ziegler, Daniel M. and Wu, Jeffrey and Winter, Clemens and Hesse, Christopher and Chen, Mark and Sigler, Eric and Litwin, Mateusz and Gray, Scott and Chess, Benjamin and Clark, Jack and Berner, Christopher and McCandlish, Sam and Radford, Alec and Sutskever, Ilya and Amodei, Dario},
+  date = {2020-07-22},
+  eprint = {2005.14165},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2005.14165},
+  url = {http://arxiv.org/abs/2005.14165},
+  urldate = {2026-01-02},
+  abstract = {Recent work has demonstrated substantial gains on many NLP tasks and benchmarks by pre-training on a large corpus of text followed by fine-tuning on a specific task. While typically task-agnostic in architecture, this method still requires task-specific fine-tuning datasets of thousands or tens of thousands of examples. By contrast, humans can generally perform a new language task from only a few examples or from simple instructions - something which current NLP systems still largely struggle to do. Here we show that scaling up language models greatly improves task-agnostic, few-shot performance, sometimes even reaching competitiveness with prior state-of-the-art fine-tuning approaches. Specifically, we train GPT-3, an autoregressive language model with 175 billion parameters, 10x more than any previous non-sparse language model, and test its performance in the few-shot setting. For all tasks, GPT-3 is applied without any gradient updates or fine-tuning, with tasks and few-shot demonstrations specified purely via text interaction with the model. GPT-3 achieves strong performance on many NLP datasets, including translation, question-answering, and cloze tasks, as well as several tasks that require on-the-fly reasoning or domain adaptation, such as unscrambling words, using a novel word in a sentence, or performing 3-digit arithmetic. At the same time, we also identify some datasets where GPT-3's few-shot learning still struggles, as well as some datasets where GPT-3 faces methodological issues related to training on large web corpora. Finally, we find that GPT-3 can generate samples of news articles which human evaluators have difficulty distinguishing from articles written by humans. We discuss broader societal impacts of this finding and of GPT-3 in general.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Computation and Language},
+  note = {Comment: 40+32 pages},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/VFZNX4TP/Brown et al. - 2020 - Language Models are Few-Shot Learners.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/FJG4YT6J/2005.html}
+}
+
 @online{buschOneMapFind2025,
   title = {One {{Map}} to {{Find Them All}}: {{Real-time Open-Vocabulary Mapping}} for {{Zero-shot Multi-Object Navigation}}},
   shorttitle = {One {{Map}} to {{Find Them All}}},
@@ -100,6 +135,23 @@
   keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning,Computer Science - Robotics},
   note = {Comment: Winner of the CVPR 2020 AI-Habitat Object Goal Navigation Challenge. See the project webpage at https://devendrachaplot.github.io/projects/semantic-exploration.html},
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/JYXR23T8/Chaplot et al. - 2020 - Object Goal Navigation using Goal-Oriented Semantic Exploration.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/PU8J83TN/2007.html}
+}
+
+@online{chaplotObjectGoalNavigation2020b,
+  title = {Object {{Goal Navigation}} Using {{Goal-Oriented Semantic Exploration}}},
+  author = {Chaplot, Devendra Singh and Gandhi, Dhiraj and Gupta, Abhinav and Salakhutdinov, Ruslan},
+  date = {2020-07-02},
+  eprint = {2007.00643},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2007.00643},
+  url = {http://arxiv.org/abs/2007.00643},
+  urldate = {2026-01-03},
+  abstract = {This work studies the problem of object goal navigation which involves navigating to an instance of the given object category in unseen environments. End-to-end learning-based navigation methods struggle at this task as they are ineffective at exploration and long-term planning. We propose a modular system called, `Goal-Oriented Semantic Exploration' which builds an episodic semantic map and uses it to explore the environment efficiently based on the goal object category. Empirical results in visually realistic simulation environments show that the proposed model outperforms a wide range of baselines including end-to-end learning-based methods as well as modular map-based methods and led to the winning entry of the CVPR-2020 Habitat ObjectNav Challenge. Ablation analysis indicates that the proposed model learns semantic priors of the relative arrangement of objects in a scene, and uses them to explore efficiently. Domain-agnostic module design allow us to transfer our model to a mobile robot platform and achieve similar performance for object goal navigation in the real-world.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning,Computer Science - Robotics},
+  note = {Comment: Winner of the CVPR 2020 AI-Habitat Object Goal Navigation Challenge. See the project webpage at https://devendrachaplot.github.io/projects/semantic-exploration.html},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/U5XWI5MD/Chaplot et al. - 2020 - Object Goal Navigation using Goal-Oriented Semantic Exploration.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/WLZEGYWZ/2007.html}
 }
 
 @online{chenHowNotTrain2023,
@@ -227,6 +279,24 @@
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/G4DABBR7/Huang et al. - 2023 - Visual Language Maps for Robot Navigation.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/DVA7KMXT/2210.html}
 }
 
+@online{jatavallabhulaConceptFusionOpensetMultimodal2023,
+  title = {{{ConceptFusion}}: {{Open-set Multimodal 3D Mapping}}},
+  shorttitle = {{{ConceptFusion}}},
+  author = {Jatavallabhula, Krishna Murthy and Kuwajerwala, Alihusein and Gu, Qiao and Omama, Mohd and Chen, Tao and Maalouf, Alaa and Li, Shuang and Iyer, Ganesh and Saryazdi, Soroush and Keetha, Nikhil and Tewari, Ayush and Tenenbaum, Joshua B. and family=Melo, given=Celso Miguel, prefix=de, useprefix=false and Krishna, Madhava and Paull, Liam and Shkurti, Florian and Torralba, Antonio},
+  date = {2023-10-23},
+  eprint = {2302.07241},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2302.07241},
+  url = {http://arxiv.org/abs/2302.07241},
+  urldate = {2026-01-03},
+  abstract = {Building 3D maps of the environment is central to robot navigation, planning, and interaction with objects in a scene. Most existing approaches that integrate semantic concepts with 3D maps largely remain confined to the closed-set setting: they can only reason about a finite set of concepts, pre-defined at training time. Further, these maps can only be queried using class labels, or in recent work, using text prompts. We address both these issues with ConceptFusion, a scene representation that is (1) fundamentally open-set, enabling reasoning beyond a closed set of concepts and (ii) inherently multimodal, enabling a diverse range of possible queries to the 3D map, from language, to images, to audio, to 3D geometry, all working in concert. ConceptFusion leverages the open-set capabilities of today's foundation models pre-trained on internet-scale data to reason about concepts across modalities such as natural language, images, and audio. We demonstrate that pixel-aligned open-set features can be fused into 3D maps via traditional SLAM and multi-view fusion approaches. This enables effective zero-shot spatial reasoning, not needing any additional training or finetuning, and retains long-tailed concepts better than supervised approaches, outperforming them by more than 40\% margin on 3D IoU. We extensively evaluate ConceptFusion on a number of real-world datasets, simulated home environments, a real-world tabletop manipulation task, and an autonomous driving platform. We showcase new avenues for blending foundation models with 3D open-set multimodal mapping. For more information, visit our project page https://concept-fusion.github.io or watch our 5-minute explainer video https://www.youtube.com/watch?v=rkXgws8fiDs},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computer Vision and Pattern Recognition,Computer Science - Robotics},
+  note = {Comment: RSS 2023. Project page: https://concept-fusion.github.io Explainer video: https://www.youtube.com/watch?v=rkXgws8fiDs Code: https://github.com/concept-fusion/concept-fusion},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/5FVLK83F/Jatavallabhula et al. - 2023 - ConceptFusion Open-set Multimodal 3D Mapping.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/9222GTMG/2302.html}
+}
+
 @online{jiangCLIPDINOVisual2024,
   title = {From {{CLIP}} to {{DINO}}: {{Visual Encoders Shout}} in {{Multi-modal Large Language Models}}},
   shorttitle = {From {{CLIP}} to {{DINO}}},
@@ -331,6 +401,21 @@
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/I5ATQM2D/Lin et al. - 2015 - Microsoft COCO Common Objects in Context.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/RZ8JVYSE/1405.html}
 }
 
+@book{liu3DPointCloud2021,
+  title = {{{3D Point Cloud Analysis}}: {{Traditional}}, {{Deep Learning}}, and {{Explainable Machine Learning Methods}}},
+  shorttitle = {{{3D Point Cloud Analysis}}},
+  author = {Liu, Shan and Zhang, Min and Kadam, Pranav and Kuo, C.-C. Jay},
+  date = {2021},
+  publisher = {Springer International Publishing},
+  location = {Cham},
+  doi = {10.1007/978-3-030-89180-0},
+  url = {https://link.springer.com/10.1007/978-3-030-89180-0},
+  urldate = {2026-01-03},
+  isbn = {978-3-030-89179-4 978-3-030-89180-0},
+  langid = {english},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/G3D7SSDB/Liu et al. - 2021 - 3D Point Cloud Analysis Traditional, Deep Learning, and Explainable Machine Learning Methods.pdf}
+}
+
 @online{liuGroundingDINOMarrying2024,
   title = {Grounding {{DINO}}: {{Marrying DINO}} with {{Grounded Pre-Training}} for {{Open-Set Object Detection}}},
   shorttitle = {Grounding {{DINO}}},
@@ -347,6 +432,24 @@
   keywords = {Computer Science - Computer Vision and Pattern Recognition},
   note = {Comment: Code will be available at https://github.com/IDEA-Research/GroundingDINO},
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/TB8JHP9D/Liu et al. - 2024 - Grounding DINO Marrying DINO with Grounded Pre-Training for Open-Set Object Detection.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/JM9R998B/2303.html}
+}
+
+@online{liuGroundingDINOMarrying2024a,
+  title = {Grounding {{DINO}}: {{Marrying DINO}} with {{Grounded Pre-Training}} for {{Open-Set Object Detection}}},
+  shorttitle = {Grounding {{DINO}}},
+  author = {Liu, Shilong and Zeng, Zhaoyang and Ren, Tianhe and Li, Feng and Zhang, Hao and Yang, Jie and Jiang, Qing and Li, Chunyuan and Yang, Jianwei and Su, Hang and Zhu, Jun and Zhang, Lei},
+  date = {2024-07-19},
+  eprint = {2303.05499},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2303.05499},
+  url = {http://arxiv.org/abs/2303.05499},
+  urldate = {2026-01-03},
+  abstract = {In this paper, we present an open-set object detector, called Grounding DINO, by marrying Transformer-based detector DINO with grounded pre-training, which can detect arbitrary objects with human inputs such as category names or referring expressions. The key solution of open-set object detection is introducing language to a closed-set detector for open-set concept generalization. To effectively fuse language and vision modalities, we conceptually divide a closed-set detector into three phases and propose a tight fusion solution, which includes a feature enhancer, a language-guided query selection, and a cross-modality decoder for cross-modality fusion. While previous works mainly evaluate open-set object detection on novel categories, we propose to also perform evaluations on referring expression comprehension for objects specified with attributes. Grounding DINO performs remarkably well on all three settings, including benchmarks on COCO, LVIS, ODinW, and RefCOCO/+/g. Grounding DINO achieves a \$52.5\$ AP on the COCO detection zero-shot transfer benchmark, i.e., without any training data from COCO. It sets a new record on the ODinW zero-shot benchmark with a mean \$26.1\$ AP. Code will be available at \textbackslash url\{https://github.com/IDEA-Research/GroundingDINO\}.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition},
+  note = {Comment: Code will be available at https://github.com/IDEA-Research/GroundingDINO},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/DW4ZL8U7/Liu et al. - 2024 - Grounding DINO Marrying DINO with Grounded Pre-Training for Open-Set Object Detection.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/WDYGMMKN/2303.html}
 }
 
 @article{lluviaActiveMappingRobot2021,
@@ -457,6 +560,22 @@
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/WBDSAGZM/Radford et al. - 2021 - Learning Transferable Visual Models From Natural Language Supervision.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/QHYY9RBJ/2103.html}
 }
 
+@online{radfordLearningTransferableVisual2021a,
+  title = {Learning {{Transferable Visual Models From Natural Language Supervision}}},
+  author = {Radford, Alec and Kim, Jong Wook and Hallacy, Chris and Ramesh, Aditya and Goh, Gabriel and Agarwal, Sandhini and Sastry, Girish and Askell, Amanda and Mishkin, Pamela and Clark, Jack and Krueger, Gretchen and Sutskever, Ilya},
+  date = {2021-02-26},
+  eprint = {2103.00020},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2103.00020},
+  url = {http://arxiv.org/abs/2103.00020},
+  urldate = {2026-01-02},
+  abstract = {State-of-the-art computer vision systems are trained to predict a fixed set of predetermined object categories. This restricted form of supervision limits their generality and usability since additional labeled data is needed to specify any other visual concept. Learning directly from raw text about images is a promising alternative which leverages a much broader source of supervision. We demonstrate that the simple pre-training task of predicting which caption goes with which image is an efficient and scalable way to learn SOTA image representations from scratch on a dataset of 400 million (image, text) pairs collected from the internet. After pre-training, natural language is used to reference learned visual concepts (or describe new ones) enabling zero-shot transfer of the model to downstream tasks. We study the performance of this approach by benchmarking on over 30 different existing computer vision datasets, spanning tasks such as OCR, action recognition in videos, geo-localization, and many types of fine-grained object classification. The model transfers non-trivially to most tasks and is often competitive with a fully supervised baseline without the need for any dataset specific training. For instance, we match the accuracy of the original ResNet-50 on ImageNet zero-shot without needing to use any of the 1.28 million training examples it was trained on. We release our code and pre-trained model weights at https://github.com/OpenAI/CLIP.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/XUIE3LLL/Radford et al. - 2021 - Learning Transferable Visual Models From Natural Language Supervision.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/2A2BP49U/2103.html}
+}
+
 @online{ramakrishnanPONIPotentialFunctions2022,
   title = {{{PONI}}: {{Potential Functions}} for {{ObjectGoal Navigation}} with {{Interaction-free Learning}}},
   shorttitle = {{{PONI}}},
@@ -517,6 +636,53 @@
   abstract = {This paper proposes a taxonomy of semantic information in robot-assisted disaster response. Robots are increasingly being used in hazardous environment industries and emergency response teams to perform various tasks. Operational decision-making in such applications requires a complex semantic understanding of environments that are remote from the human operator. Low-level sensory data from the robot is transformed into perception and informative cognition. Currently, such cognition is predominantly performed by a human expert, who monitors remote sensor data such as robot video feeds. This engenders a need for AI-generated semantic understanding capabilities on the robot itself. Current work on semantics and AI lies towards the relatively academic end of the research spectrum, hence relatively removed from the practical realities of first responder teams. We aim for this paper to be a step towards bridging this divide. We first review common robot tasks in disaster response and the types of information such robots must collect. We then organize the types of semantic features and understanding that may be useful in disaster operations into a taxonomy of semantic information. We also briefly review the current state-of-the-art semantic understanding techniques. We highlight potential synergies, but we also identify gaps that need to be bridged to apply these ideas. We aim to stimulate the research that is needed to adapt, robustify, and implement state-of-the-art AI semantics methods in the challenging conditions of disasters and first responder scenarios.},
   keywords = {Computer Science - Robotics},
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/BF73MJ3E/Ruan et al. - 2022 - A Taxonomy of Semantic Information in Robot-Assisted Disaster Response.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/JBWAHDQ4/2210.html}
+}
+
+@online{schwaigerUGVCBRNUnmannedGround2024,
+  title = {{{UGV-CBRN}}: {{An Unmanned Ground Vehicle}} for {{Chemical}}, {{Biological}}, {{Radiological}}, and {{Nuclear Disaster Response}}},
+  shorttitle = {{{UGV-CBRN}}},
+  author = {Schwaiger, Simon and Muster, Lucas and Novotny, Georg and Schebek, Michael and Wöber, Wilfried and Thalhammer, Stefan and Böhm, Christoph},
+  date = {2024-09-20},
+  eprint = {2406.14385},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2406.14385},
+  url = {http://arxiv.org/abs/2406.14385},
+  urldate = {2026-01-02},
+  abstract = {Robotic search and rescue (SAR) supports response teams by accelerating disaster assessment and by keeping operators away from hazardous environments. In the event of a chemical, biological, radiological, and nuclear (CBRN) disaster, robots are deployed to identify and locate radiation sources. Human responders then assess the situation and neutralize the danger. The presented system takes a step toward enhanced integration of robots into SAR teams. Integrating autonomous radiation mapping with semi-autonomous substance sampling and online analysis of the CBRN threat lets the human operator localize and assess the threat from a safe distance. Two LiDARs, an IMU, and a Geiger counter are used for mapping the surrounding area and localizing potential radiation sources. A mobile manipulator with six Degrees of Freedom manipulates valves and samples substances that are analyzed by an onboard Raman spectrometer. The human operator monitors the mission's progression from a remote location defining target locations and directing the semi-autonomous manipulation processes. Diverse recovery behaviours aid robot deployment, system state monitoring, as well as recovery of hard- and software. Field tests showcase the capabilities of the presented system during trials at the CBRN disaster response challenge European Robotics Hackathon (EnRicH). We provide recorded sensor data and implemented software through a GitHub repository: https://github.com/TW-Robotics/search-and-rescue-robot-2024.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Robotics},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/SYKUFV7W/Schwaiger et al. - 2024 - UGV-CBRN An Unmanned Ground Vehicle for Chemical, Biological, Radiological, and Nuclear Disaster Re.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/IMLX46I7/2406.html}
+}
+
+@online{tellaroliFrontierBasedExplorationMultiRobot2024,
+  title = {Frontier-{{Based Exploration}} for {{Multi-Robot Rendezvous}} in {{Communication-Restricted Unknown Environments}}},
+  author = {Tellaroli, Mauro and Luperto, Matteo and Antonazzi, Michele and Basilico, Nicola},
+  date = {2024-07-19},
+  eprint = {2403.11617},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2403.11617},
+  url = {http://arxiv.org/abs/2403.11617},
+  urldate = {2026-01-03},
+  abstract = {Multi-robot rendezvous and exploration are fundamental challenges in the domain of mobile robotic systems. This paper addresses multi-robot rendezvous within an initially unknown environment where communication is only possible after the rendezvous. Traditionally, exploration has been focused on rapidly mapping the environment, often leading to suboptimal rendezvous performance in later stages. We adapt a standard frontier-based exploration technique to integrate exploration and rendezvous into a unified strategy, with a mechanism that allows robots to re-visit previously explored regions thus enhancing rendezvous opportunities. We validate our approach in 3D realistic simulations using ROS, showcasing its effectiveness in achieving faster rendezvous times compared to exploration strategies.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Robotics},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/CXSQP73T/Tellaroli et al. - 2024 - Frontier-Based Exploration for Multi-Robot Rendezvous in Communication-Restricted Unknown Environmen.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/XB62J83R/2403.html}
+}
+
+@book{thrunProbabilisticRobotics2006,
+  title = {Probabilistic Robotics},
+  author = {Thrun, Sebastian and Burgard, Wolfram and Fox, Dieter},
+  date = {2006},
+  series = {Intelligent Robotics and Autonomous Agents},
+  publisher = {MIT Press},
+  location = {Cambridge, Massachusetts London},
+  abstract = {An introduction to the techniques and algorithms of the newest field in robotics. Probabilistic robotics is a new and growing area in robotics, concerned with perception and control in the face of uncertainty. Building on the field of mathematical statistics, probabilistic robotics endows robots with a new level of robustness in real-world situations. This book introduces the reader to a wealth of techniques and algorithms in the field. All algorithms are based on a single overarching mathematical foundation. Each chapter provides example implementations in pseudo code, detailed mathematical derivations, discussions from a practitioner's perspective, and extensive lists of exercises and class projects. The book's Web site, www.probabilistic-robotics.org, has additional material. The book is relevant for anyone involved in robotic software development and scientific research. It will also be of interest to applied statisticians and engineers dealing with real-world sensor data},
+  isbn = {978-0-262-20162-9 978-0-262-30380-4},
+  langid = {english},
+  pagetotal = {1},
+  note = {Description based on publisher supplied metadata and other sources}
 }
 
 @online{topiwalaFrontierBasedExploration2018,
@@ -581,6 +747,23 @@
   pubstate = {prepublished},
   version = {1},
   keywords = {Artificial Intelligence (cs.AI),FOS: Computer and information sciences,Robotics (cs.RO)}
+}
+
+@online{zareianOpenVocabularyObjectDetection2021,
+  title = {Open-{{Vocabulary Object Detection Using Captions}}},
+  author = {Zareian, Alireza and Rosa, Kevin Dela and Hu, Derek Hao and Chang, Shih-Fu},
+  date = {2021-03-14},
+  eprint = {2011.10678},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2011.10678},
+  url = {http://arxiv.org/abs/2011.10678},
+  urldate = {2026-01-03},
+  abstract = {Despite the remarkable accuracy of deep neural networks in object detection, they are costly to train and scale due to supervision requirements. Particularly, learning more object categories typically requires proportionally more bounding box annotations. Weakly supervised and zero-shot learning techniques have been explored to scale object detectors to more categories with less supervision, but they have not been as successful and widely adopted as supervised models. In this paper, we put forth a novel formulation of the object detection problem, namely open-vocabulary object detection, which is more general, more practical, and more effective than weakly supervised and zero-shot approaches. We propose a new method to train object detectors using bounding box annotations for a limited set of object categories, as well as image-caption pairs that cover a larger variety of objects at a significantly lower cost. We show that the proposed method can detect and localize objects for which no bounding box annotation is provided during training, at a significantly higher accuracy than zero-shot approaches. Meanwhile, objects with bounding box annotation can be detected almost as accurately as supervised methods, which is significantly better than weakly supervised baselines. Accordingly, we establish a new state of the art for scalable object detection.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning},
+  note = {Comment: To be presented at CVPR 2021 (oral paper)},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/2Z46A547/Zareian et al. - 2021 - Open-Vocabulary Object Detection Using Captions.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/GNF5RLZW/2011.html}
 }
 
 @article{zhanSemanticExplorationDense2025,

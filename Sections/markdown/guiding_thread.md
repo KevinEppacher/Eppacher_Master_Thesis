@@ -228,7 +228,7 @@ How are pre-trained models used for zero-shot exploration?
 
         - Sensitive to detection noise: incorrect detections directly corrupt the utility map.
 - 4. VLFM:
-    - Uses BLIP-2 for value map generation, GroundingDINO and YOLO-E for detection, and SAM for segmentation to identify and localize objects in the environment.
+    - Uses BLIP-2 for value map generation, GroundingDINO and YOLOv7 for detection, and SAM for segmentation to identify and localize objects in the environment.
     - VLFM computes with help of BLIP-2 a value map, which calculates the cosine similarity between the image regions and the target text query embedding
     - The cosine similarity is projeected onto a 2D occupancy grid in a FOV mask, where towards the border of the image eg fov mask values are lower due to lower confidence of the detection (gaussian weighting)
     - The value map serves as a mask to score frontiers during exploration, guiding the robot towards areas with high semantic relevance to the target query.
