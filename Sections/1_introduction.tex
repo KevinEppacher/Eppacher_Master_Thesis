@@ -190,33 +190,40 @@ dorbalaCanEmbodiedAgent2024,yokoyamaVLFMVisionLanguageFrontier2023}.
 
 \section{Scientific Contribution}
 
-This work contributes to the state of the art by introducing a hybrid semantic exploration framework that integrates zero-shot semantic frontier scoring with persistent 3D scene representation, enabling autonomous search guided by open-vocabulary text queries. The system combines real-time semantic reasoning during exploration with a long-term spatial memory, allowing the robot to dynamically balance between discovering new information and exploiting previously acquired knowledge.
+This work contributes to the state of the art by introducing a hybrid semantic exploration framework that integrates zero-shot semantic frontier scoring with persistent 3D scene representation, enabling autonomous robotic search guided by open-vocabulary text queries. The proposed method combines real-time semantic reasoning during exploration with a long-term spatial memory, allowing the robot to dynamically balance between discovering new information and exploiting previously acquired knowledge.
 
-Unlike previous approaches that focus exclusively on either geometric frontiers or static semantic maps, the proposed framework continuously fuses information from multiple semantic sources to maintain a unified, confidence-based world model. Adaptive weighting enables the robot to adjust its behavior between exploration and exploitation according to the reliability of recent observations and the stability of stored semantic memory.
+Unlike previous approaches that focus exclusively on either geometric frontiers or static semantic maps, the proposed framework continuously fuses information from multiple semantic sources to maintain a unified, confidence-based semantic world representation. Adaptive weighting enables the robot to adjust its behavior between exploration and exploitation according to the reliability of recent observations and the stability of stored semantic memory.
 
-The framework further investigates how the quality and granularity of the underlying semantic information influence task success, navigation efficiency, and robustness. By systematically varying the trust between exploration and memory components, this work provides new insights into how semantic reasoning and persistent mapping can be effectively combined for open-vocabulary, multi-object search in dynamic environments.
+The proposed method is evaluated with respect to how the quality and granularity of the underlying semantic information influence task success, navigation efficiency, and robustness. By systematically varying the trust between exploration and memory components, this thesis provides new insights into how semantic reasoning and persistent mapping can be effectively combined for open-vocabulary, multi-object search in dynamic environments.
 
-To evaluate the contribution of the proposed system, the following research questions are formulated:
+To evaluate the contribution of the proposed method, the following research questions are formulated:
 
 \begin{enumerate}
     \item \textbf{How does integrating zero-shot semantic exploration and persistent 3D semantic mapping affect multi-object search performance and navigation efficiency compared to existing methods?} \\
-    \textit{Metrics:} Performance is quantified in terms of task success and path efficiency, measured through \ac{SR}, \ac{SPL}, and \ac{MSR} relative to representative state-of-the-art systems such as \ac{OneMap}~\cite{buschOneMapFind2025}, \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, and Pigeon~\cite{PIGEONVLMDrivenObject}.
+    Performance is quantified with respect to task success and path efficiency, measured through \ac{SR}, \ac{SPL}, and \ac{MSR} relative to representative state-of-the-art systems such as \ac{OneMap}~\cite{buschOneMapFind2025}, \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, and Pigeon~\cite{PIGEONVLMDrivenObject}.
     
     \item \textbf{How does the interaction between live exploration and accumulated semantic memory influence overall system performance?} \\
-    \textit{Metrics:} The weighting factor between exploration and memory is varied during graph node fusion to assess impacts on \ac{SR} and \ac{SPL}, identifying optimal trade-offs between reactivity and exploitation.
+    The weighting factor between exploration and memory is varied during graph node fusion to assess impacts on \ac{SR} and \ac{SPL}, identifying optimal trade-offs between reactivity and exploitation.
     
-    \item \textbf{How does the granularity of semantic map retrieval affect map quality, and can dynamic weighting between exploration and memory compensate for potential noise?} \\
-    \textit{Metrics:} The semantic granularity in the 3D semantic mapper is varied while adjusting exploration weight to evaluate effects on \ac{SR} and \ac{SPL}\@.
+    \item \textbf{How does the granularity of semantic map retrieval affect map quality, and can dynamic weighting between exploration and memory compensate for potential measurement noise?} \\
+    The semantic granularity in the 3D semantic mapper is varied while adjusting exploration weight to evaluate effects on \ac{SR} and \ac{SPL}\@.
     
-    \item \textbf{How does multi-source fusion of detection confidence, semantic similarity, and memory confidence impact detection robustness and false-positive suppression during exploration?} \\
-    \textit{Metrics:} Precision, Recall, F1-Score, Confusion Matrix, and \ac{SR} under different fusion weight configurations across \ac{COCO}, open-vocabulary, and zero-shot classes.
-    
-    \item \textbf{What is the computational footprint and real-world robustness of the hybrid framework?} \\
-    \textit{Metrics:} \ac{FPS}, GPU/CPU usage, inference latency, and detection stability under sensor noise during physical deployment on a mobile robot.
-\end{enumerate}
+    \item \textbf{How does multi-source fusion of detection confidence, semantic similarity, and
+    memory confidence impact detection robustness and false-positive suppression during exploration?} \\
+    This question is evaluated by analyzing Precision, Recall, F1-Score, the Confusion Matrix,
+    and Success Rate (\ac{SR}) under different fusion weight configurations across \ac{COCO},
+    open-vocabulary, and zero-shot object classes.
 
-These research questions guide the design of the experimental evaluation, where each question is systematically addressed through targeted ablation studies, comparative benchmarks, and real-world validation presented in Chapter~\ref{ch:results}.
+    \item \textbf{What is the computational footprint and real-world robustness of the hybrid
+    framework?} \\
+    This aspect is assessed using \ac{FPS}, GPU and CPU utilization,
+    inference latency, and detection stability under sensor noise during physical deployment
+    on a mobile robot.
+
+\end{enumerate}
 
 \section{Thesis Structure}
 
-This work is structured as follows: Chapter~\ref{ch:sota} describes the state-of-the-art in semantic exploration, persistent mapping, and object detection. Chapter~\ref{ch:methods} describes the methods used, for hybrid semantic exploration, persistent 3D mapping, promptable zero-shot detection, and multi-source fusion strategies. Chapter ~\ref{ch:implementation} details the practical implementation of the proposed approach, covering the simulation and real-world setup, datasets, software stack, and hardware configuration. Chapter~\ref{ch:results} presents the experimental evaluation, including ablation studies, comparative benchmarks, and real-world validation. Finally, Chapter~\ref{ch:conclusion} concludes the thesis with a summary of findings, discussion of limitations, and suggestions for future research directions.
+This work is structured as follows. Chapter~\ref{ch:sota} describes the state-of-the-art in semantic exploration, persistent mapping, and object detection. Chapter~\ref{ch:methods} describes the methods used, for hybrid semantic exploration, persistent 3D mapping, promptable zero-shot detection, and multi-source fusion strategies. Chapter ~\ref{ch:implementation} details the practical implementation of the proposed approach, covering the simulation and real-world setup, datasets, software stack, and hardware configuration. Chapter~\ref{ch:results} presents the experimental evaluation, including ablation studies, comparative benchmarks, and real-world validation. Finally, Chapter~\ref{ch:conclusion} concludes the thesis with a summary of findings, discussion of limitations, and suggestions for future research directions.
+
+\newpage

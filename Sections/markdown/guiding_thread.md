@@ -165,6 +165,27 @@ Limitations of RL-based or supervised learning approaches:
     - Computationally intensive, hindering real-time deployment on resource-constrained robots.
     - Often rely on closed-set object categories, reducing effectiveness in open-world scenarios.
 
+Summary Table:
+capabilities:methods: DRL, BC, Supervised, CLIP, DINO, Discrete Action Space, Continous AS 
+Limited interpretability 
+Semantic Memory 
+Zero-Shot Capability 
+Object Detector 
+Closed-set object categories 
+Hyperparameter for exploration or exploitation
+
+| **Capabilities\Method** | **DRL** | **BC** | **Supervised** | **CLIP** | **DINO** | **Discrete Action Space** | **Continuous Action Space** |
+| :----------------------- | :------: | :----: | :-------------: | :---------: | :-------: | :-----------------------: | :-------------------------: |
+| **Limited interpretability** |
+| **Semantic Memory** | 
+| **Zero-Shot Capability** | 
+| **Object Detector** |
+| **Closed-set object categories** |
+| **Hyperparameter for exploration or exploitation** | 
+
+✓
+
+
 - 2. Method - Zero-Shot and Training-Free Approaches
     - Leverage pretrained vision-language models or LLMs to perform semantic reasoning without additional training.
     - Examples: VLFM, SemUtil, ESC, LGX, CoW

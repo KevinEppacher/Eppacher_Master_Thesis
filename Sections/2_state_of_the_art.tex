@@ -3,12 +3,37 @@
 \chapter{State of the Art}
 \label{ch:sota}
 
+This work introduces a hybrid semantic exploration framework that combines open-vocabulary
+semantic perception with autonomous exploration and persistent spatial memory, which combines the fields of geometric exploration, vision-language-guided exploration, and semantic mapping based on the successes encountered by incorporating semantic information from large pretrained foundation models into traditional exploration and mapping pipelines. However, these novel semantic methods still rely on design and data representation patterns derived from classic geometric exploration and mapping methods.
 
-In this chapter, the current state of research in semantic multi-object search, map reconstruction, and object detection is reviewed. The goal is to identify strengths and limitations of existing methods and establish the technological context for the proposed hybrid approach. The chapter is divided into three key areas: approaches for searching multiple objects semantically, techniques for building and maintaining persistent semantic maps, and recent advances in object detection and promptable models for open-vocabulary tasks.
+Semantic exploration approaches differ fundamentally in how exploration behavior is generated.
+Some methods learn end-to-end navigation policies using reinforcement learning or imitation learning,
+where exploration strategies are implicitly encoded in a trained policy optimized via task-specific
+reward functions~\cite{majumdarZSONZeroShotObjectGoal2023,ramrakhyaPIRLNavPretrainingImitation2023}. Other approaches adopt modular architectures that integrate pretrained vision-language models with classical mapping and planning techniques~\cite{yokoyamaVLFMVisionLanguageFrontier2023, buschOneMapFind2025,gadreCoWsPastureBaselines2022}.
 
-\section{Geometric Exploration}
+Reinforcement learning and imitation learning approaches have demonstrated promising results in
+semantic object search tasks by training agents to navigate toward target objects based on high-level
+semantic cues~\cite{majumdarZSONZeroShotObjectGoal2023}, primarily within simulated environments. Their main advantage lies in avoiding hand-designed exploration heuristics, as complex behaviors can be learned directly from data through reward optimization~\cite{ghasemiComprehensiveSurveyReinforcement2025}. However, such policies typically require extensive training on large datasets (e.g. Replica~\cite{straubReplicaDatasetDigital2019}, Habitat~\cite{savvaHabitatPlatformEmbodied2019}), exhibit limited generalization to unseen environments or object~\cite{majumdarZSONZeroShotObjectGoal2023,ramrakhyaPIRLNavPretrainingImitation2023} categories, and lack interpretability due to their black-box nature~\cite{ghasemiComprehensiveSurveyReinforcement2025}.
 
-A \textit{frontier} is defined as the boundary between known free space and unknown regions of the environment~\cite{lluviaActiveMappingRobot2021}. Frontier-based exploration relies on the principle that unexplored areas adjacent to known free regions provide the highest potential information gain. To identify such frontiers, the robot must maintain a global representation of the environment, typically an occupancy grid or voxel map, where each cell is classified as \textit{free}, \textit{occupied}, or \textit{unknown}, based on sensor observations from \ac{LiDAR} or RGB-D cameras. The robot then iteratively selects and navigates to frontiers to expand its knowledge of the environment.
+In contrast, modular approaches leverage semantic representations provided by large-scale
+pretrained \acp{VLM} to guide exploration decisions without task-specific retraining~\cite{alamaRayFrontsOpenSetSemantic2025}.
+By combining explicit geometric mapping with semantic reasoning derived from foundation models,
+these systems can achieve zero-shot generalization to novel objects and environments while retaining
+interpretability and adaptability~\cite{yokoyamaVLFMVisionLanguageFrontier2023}. Several works extend this paradigm by constructing persistent semantic maps that retain knowledge of previously explored areas~\cite{buschOneMapFind2025,huangVisualLanguageMaps2023}, enabling more efficient multi-object search and the integration of high-level natural language instructions~\cite{guConceptGraphsOpenVocabulary3D2023}.
+
+Finally, object detection and promptable vision-language models play a crucial role in enabling
+open-vocabulary semantic understanding for exploration tasks. Recent advances in grounding-capable
+detectors and segmentation models facilitate zero-shot object recognition based on text prompts,
+allowing robots to identify and localize previously unseen objects~\cite{wangYOLOERealTimeSeeing2025,liGroundedLanguageImagePretraining2022,liuGroundingDINOMarrying2024}. These models form the semantic
+foundation upon which hybrid exploration systems are built, enabling flexible object
+search in diverse real-world environments.
+
+
+% Accordingly, this chapter reviews relevant prior work at the intersection of geometric exploration, vision-language-guided exploration, semantic mapping and object detectors. First, approaches to geometric exploration and vision-language-guided exploration are discussed, highlighting how semantic cues are incorporated into exploration strategies. Second, methods for building and maintaining persistent semantic maps are examined, with a focus on representation choices and long-term memory. Finally, recent advances in object detection and promptable vision-language models are reviewed, providing the semantic foundations upon which hybrid exploration systems are built.
+
+\section{Frontier-Based Exploration}
+
+Frontier-based exploration is a classical and commonly used approach for autonomous mapping and navigation in unknown environments~\cite{lluviaActiveMappingRobot2021}. A \textit{frontier} is defined as the boundary between known free space and unknown regions of the environment~\cite{lluviaActiveMappingRobot2021}. Frontier-based exploration relies on the principle that unexplored areas adjacent to known free regions provide the highest potential information gain. To identify such frontiers, the robot must maintain a global representation of the environment, typically an occupancy grid or voxel map, where each cell is classified as \textit{free}, \textit{occupied}, or \textit{unknown}, based on sensor observations from \ac{LiDAR} or RGB-D cameras. The robot then iteratively selects and navigates to frontiers to expand its knowledge of the environment.
 
 \citeauthor{quinApproachesEfficientlyDetecting2021}~\cite{quinApproachesEfficientlyDetecting2021} evaluated three commonly used frontier extraction methods that differ primarily in computational efficiency and scalability.  
 The first approach, known as the \textit{Naïve Active Area (NaïveAA)} method, evaluates every cell in the occupancy grid to determine whether it is free and has at least one unknown neighbor. Although this approach is conceptually simple and accurate for small-scale maps, it becomes computationally expensive for larger environments and often produces small, fragmented frontier clusters.
@@ -22,12 +47,12 @@ To address these trade-offs, \citeauthor{bourgaultInformationBasedAdaptive2002}~
 
 However, all these methods are primarily designed for geometric exploration without incorporating semantic understanding. As a result, they are optimized for complete map coverage rather than goal-directed exploration tasks. In scenarios where a robot must locate specific objects or regions based on semantic cues, purely geometric frontier selection often leads to inefficient search behavior and unnecessary traversal. This motivates the integration of semantic reasoning into the frontier-based exploration process, where frontiers can be prioritized not only by geometric utility but also by their semantic relevance to the task objective.
 
-\section{Vision-Language-Guided Exploration}
+\section{RL-based Semantic Exploration}
 
 In contrast to geometric exploration, which aims to maximize map coverage using the shortest possible path and time, semantic exploration focuses on efficiently locating specific objects or regions of interest described in high-level semantic terms. The objective is to minimize path length and exploration time while prioritizing areas likely to contain relevant targets rather than achieving complete spatial coverage.  
 
 Recent research has introduced \ac{DRL} and supervised learning approaches to train agents capable of performing semantic object search~\cite{majumdarZSONZeroShotObjectGoal2023,ramakrishnanPONIPotentialFunctions2022,ramrakhyaPIRLNavPretrainingImitation2023}.  
-These methods differ in architecture and learning paradigm but share a common goal of integrating visual understanding with navigation policies.
+These methods differ in architecture and learning paradigm but share a common goal deriving navigation policies from semantic visual understanding..
 
 % ---------------------- ZSON ----------------------
 
@@ -94,8 +119,6 @@ The frontier with the highest score is selected as the next navigation goal, whi
 
 While \ac{PONI} achieves efficient and interpretable exploration behavior, it depends on category-level semantic inputs and assumes a fixed, closed set of object classes encountered during training. Consequently, it cannot generalize to unseen categories or open-vocabulary settings, and its reliance on dense semantic annotations limits applicability in real-world scenarios where such data are unavailable or noisy~\cite{ramakrishnanPONIPotentialFunctions2022}.
 
-% ---------------------- Discussion ----------------------
-
 Overall, these RL-based and supervised learning approaches illustrate the potential of combining semantic understanding with learned navigation policies but reveal persistent shortcomings that motivate the shift toward pretrained vision-language models. Key limitations include:
 
 \begin{itemize}
@@ -105,6 +128,134 @@ Overall, these RL-based and supervised learning approaches illustrate the potent
     \item \textbf{Lack of persistent memory:} No long-term spatial or semantic memory is maintained, causing redundant exploration.
     \item \textbf{Limited interpretability:} End-to-end learning obscures decision-making and complicates integration with classical navigation frameworks.
 \end{itemize}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{6pt}
+\begin{tabularx}{\textwidth}{
+|l|c|c|c|c|c|c|c}
+\hline
+\textbf{Capability / Method} &
+\textbf{DRL} &
+\textbf{BC} &
+\textbf{Supervised} &
+\textbf{CLIP} &
+\textbf{DINO} &
+\textbf{DAS} &
+\textbf{CAS} \\
+\hline
+
+Limited policy-level interpretability
+& \cite{majumdarZSONZeroShotObjectGoal2023}
+& \cite{ramrakhyaPIRLNavPretrainingImitation2023}
+& \xmark
+& \xmark
+& \xmark
+& \cite{majumdarZSONZeroShotObjectGoal2023}
+& \xmark \\
+\hline
+
+Explicit semantic memory
+& \xmark
+& \xmark
+& \xmark
+& \xmark
+& \xmark
+& \xmark
+& \xmark \\
+\hline
+
+Zero-shot capability
+& \xmark
+& \xmark
+& \xmark
+& \cite{majumdarZSONZeroShotObjectGoal2023}
+& \xmark
+& \xmark
+& \xmark \\
+\hline
+
+Explicit object detection module
+& \xmark
+& \xmark
+& \xmark
+& \xmark
+& \xmark
+& \xmark
+& \xmark \\
+\hline
+
+Closed-set object categories
+& \cite{ramakrishnanPONIPotentialFunctions2022}
+& \cite{ramrakhyaPIRLNavPretrainingImitation2023}
+& \cite{ramakrishnanPONIPotentialFunctions2022}
+& \xmark
+& \cite{ramrakhyaPIRLNavPretrainingImitation2023}
+& \xmark
+& \xmark \\
+\hline
+
+% Explicit exploration--exploitation trade-off
+% & \xmark
+% & \xmark
+% & \cite{ramakrishnanPONIPotentialFunctions2022}
+% & \xmark
+% & \xmark
+% & \xmark
+% & \xmark \\
+% \hline
+
+Requires retraining for domain shift
+& \cite{majumdarZSONZeroShotObjectGoal2023}
+& \cite{ramrakhyaPIRLNavPretrainingImitation2023}
+& \cite{ramakrishnanPONIPotentialFunctions2022}
+& \xmark
+& \xmark
+& \xmark
+& \xmark \\
+\hline
+
+Exploration strategy learned
+& \cite{majumdarZSONZeroShotObjectGoal2023}
+& \cite{ramrakhyaPIRLNavPretrainingImitation2023}
+& \xmark
+& \xmark
+& \xmark
+& \xmark
+& \xmark \\
+\hline
+
+Exploration strategy explicit
+& \xmark
+& \xmark
+& \cite{ramakrishnanPONIPotentialFunctions2022}
+& \xmark
+& \xmark
+& \xmark
+& \xmark \\
+\hline
+
+Planner-based navigation
+& \xmark
+& \xmark
+& \cite{ramakrishnanPONIPotentialFunctions2022}
+& \xmark
+& \xmark
+& \xmark
+& \xmark \\
+\hline
+
+\end{tabularx}
+\caption{Capability--implementation matrix for learning-based semantic exploration approaches.
+Rows indicate key system properties or limitations, while columns denote architectural or learning
+mechanisms through which these properties arise. Each cell lists representative works that
+exhibit the corresponding association.}
+\label{tab:sota:learning_capability_matrix}
+\end{table}
+
+\section{Foundation-Model Exploration}
 
 Therefore, recent research has shifted toward leveraging large-scale pretrained vision-language models (\acp{VLM}) that provide rich semantic representations and zero-shot generalization capabilities. By integrating these models into modular exploration frameworks, it becomes possible to overcome many of the limitations associated with learned policies while retaining the benefits of semantic reasoning for efficient multi-object search.
 
