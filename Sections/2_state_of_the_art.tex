@@ -28,9 +28,6 @@ allowing robots to identify and localize previously unseen objects~\cite{wangYOL
 foundation upon which hybrid exploration systems are built, enabling flexible object
 search in diverse real-world environments.
 
-
-% Accordingly, this chapter reviews relevant prior work at the intersection of geometric exploration, vision-language-guided exploration, semantic mapping and object detectors. First, approaches to geometric exploration and vision-language-guided exploration are discussed, highlighting how semantic cues are incorporated into exploration strategies. Second, methods for building and maintaining persistent semantic maps are examined, with a focus on representation choices and long-term memory. Finally, recent advances in object detection and promptable vision-language models are reviewed, providing the semantic foundations upon which hybrid exploration systems are built.
-
 \section{Frontier-Based Exploration}
 
 Frontier-based exploration is a classical and commonly used approach for autonomous mapping and navigation in unknown environments~\cite{lluviaActiveMappingRobot2021}. A \textit{frontier} is defined as the boundary between known free space and unknown regions of the environment~\cite{lluviaActiveMappingRobot2021}. Frontier-based exploration relies on the principle that unexplored areas adjacent to known free regions provide the highest potential information gain. To identify such frontiers, the robot must maintain a global representation of the environment, typically an occupancy grid or voxel map, where each cell is classified as \textit{free}, \textit{occupied}, or \textit{unknown}, based on sensor observations from \ac{LiDAR} or RGB-D cameras. The robot then iteratively selects and navigates to frontiers to expand its knowledge of the environment.
@@ -48,156 +45,176 @@ To address these trade-offs, \citeauthor{bourgaultInformationBasedAdaptive2002}~
 However, all these methods are primarily designed for geometric exploration without incorporating semantic understanding. As a result, they are optimized for complete map coverage rather than goal-directed exploration tasks. In scenarios where a robot must locate specific objects or regions based on semantic cues, purely geometric frontier selection often leads to inefficient search behavior and unnecessary traversal. This motivates the integration of semantic reasoning into the frontier-based exploration process, where frontiers can be prioritized not only by geometric utility but also by their semantic relevance to the task objective.
 
 \section{RL-based Semantic Exploration}
+\label{sec:sota:rl_semantic_exploration}
 
 In contrast to geometric exploration, which aims to maximize map coverage using the shortest possible path and time, semantic exploration focuses on efficiently locating specific objects or regions of interest described in high-level semantic terms. The objective is to minimize path length and exploration time while prioritizing areas likely to contain relevant targets rather than achieving complete spatial coverage.  
 
-Recent research has introduced \ac{DRL} and supervised learning approaches to train agents capable of performing semantic object search~\cite{majumdarZSONZeroShotObjectGoal2023,ramakrishnanPONIPotentialFunctions2022,ramrakhyaPIRLNavPretrainingImitation2023}.  
-These methods differ in architecture and learning paradigm but share a common goal deriving navigation policies from semantic visual understanding..
+Semantic exploration approaches differ fundamentally in how exploration behavior is generated and optimized. \ac{RL} and imitation learning methods have demonstrated promising results by training agents to navigate toward target objects based on high-level semantic cues~\cite{majumdarZSONZeroShotObjectGoal2023,ramrakhyaPIRLNavPretrainingImitation2023,ramakrishnanPONIPotentialFunctions2022}. In these approaches, an agent learns a policy that maps high-dimensional sensory observations to low-level control actions by optimizing a task-specific reward function, rather than relying on explicitly designed exploration heuristics~\cite{ghasemiComprehensiveSurveyReinforcement2025}.
+
+In the context of semantic exploration, \ac{RL}-based methods are typically formulated as Markov Decision Processes or, more commonly in embodied navigation, as partially observable Markov Decision Processes (\acp{POMDP})~\cite{thrunProbabilisticRobotics2006}. At an abstract level, a \ac{POMDP} can be defined as a tuple $(\mathcal{S}, \mathcal{A}, P, R, \gamma)$, where $\mathcal{S}$ denotes the latent environment states, $\mathcal{A}$ the set of possible actions (e.g., move forward, turn left/right), $P: \mathcal{S} \times \mathcal{A} \times \mathcal{S} \rightarrow [0,1]$ the state transition probability function, $R: \mathcal{S} \times \mathcal{A} \rightarrow \mathbb{R}$ the reward function, and $\gamma \in [0,1)$ the discount factor. The agent does not observe the full state directly but instead receives high-dimensional, partial observations (e.g., RGB images, depth measurements, or semantic representations), from which it must infer an internal belief about the environment~\cite{ghasemiComprehensiveSurveyReinforcement2025}.
+
+The reward function encodes task objectives such as reaching a target object, minimizing
+path length, or maintaining correct orientation, thereby implicitly shaping the agent’s
+exploration behavior~\cite{ghasemiComprehensiveSurveyReinforcement2025}.
+This paradigm has been successfully applied to semantic object-goal navigation, where agents
+are trained to locate objects specified by high-level semantic descriptions
+(e.g., object categories or language embeddings)~\cite{majumdarZSONZeroShotObjectGoal2023,ramrakhyaPIRLNavPretrainingImitation2023,ramakrishnanPONIPotentialFunctions2022}.
+
+A key advantage of \ac{RL}-based semantic exploration lies in its flexibility. Complex navigation behaviors can be learned directly from interaction data without manually designing exploration strategies. However, this flexibility comes at the cost of extensive training requirements, limited interpretability, and reduced robustness to domain shifts, as policies often overfit to the visual statistics and dynamics of the training environments~\cite{ghasemiComprehensiveSurveyReinforcement2025,majumdarZSONZeroShotObjectGoal2023}. As a result, many such approaches are primarily evaluated in simulation and struggle to generalize to previously seen scenes, object appearances, or sensor configurations. Commonly, \ac{RL} algorithms are optimized via policy gradient methods~\cite{thomasPolicyGradientMethods2017}, which directly adjust the policy parameters $\theta$ to maximize the expected cumulative reward $J(\theta)$:
+
+\begin{equation}
+\nabla_{\theta} J(\theta) =
+\mathbb{E}_{\tau \sim \pi_{\theta}}
+\left[
+\sum_{t=0}^{T}
+\nabla_{\theta} \log \pi_{\theta}(a_t \mid o_t) \, R(\tau)
+\right],
+\end{equation}
+
+where $\tau$ denotes trajectories sampled from the policy $\pi_{\theta}$, $a_t$ and $o_t$ are the action and observation at time $t$, respectively, and $R(\tau)$ is the cumulative reward obtained over trajectory $\tau$.
 
 % ---------------------- ZSON ----------------------
 
-\citeauthor{majumdarZSONZeroShotObjectGoal2023}~\cite{majumdarZSONZeroShotObjectGoal2023} proposed \ac{ZSON}, a zero-shot object navigation framework that leverages the multimodal embedding space of CLIP~\cite{radfordLearningTransferableVisual2021} to guide exploration policies trained via reinforcement learning.  
-During training, the agent’s observation space consists of previous actions and RGB images, while the navigation goal is represented by the CLIP embedding of an image containing the target object. The reward function is defined as:
+\citeauthor{majumdarZSONZeroShotObjectGoal2023}~\cite{majumdarZSONZeroShotObjectGoal2023} proposed \ac{ZSON}, a zero-shot object navigation framework that leverages the shared embedding space of CLIP~\cite{radfordLearningTransferableVisual2021} to guide navigation policies trained via \ac{RL}. 
+During training, the agent observes RGB images and previous actions, while the navigation goal is specified by the CLIP embedding of an image containing the target object. 
+The policy is optimized using a shaped reward function:
 
 \begin{equation}
 r_t = r_{\text{success}} + r_{\text{angle-success}} - \Delta d_{tg} - \Delta a_{tg} + r_{\text{slack}},
 \end{equation}
 
-where $r_{\text{success}}$ provides a large positive reward for successfully locating the target object,  
-$r_{\text{angle-success}}$ rewards correct orientation toward the object,  
-$\Delta d_{tg}$ penalizes increased distance to the target,  
-$\Delta a_{tg}$ penalizes angular deviation,  
-and $r_{\text{slack}}$ applies a small negative reward to encourage efficiency.  
-At inference time, the image-based embedding is replaced by the CLIP embedding of a text description of the target object, enabling zero-shot generalization to unseen objects.  
-The agent’s action space includes four discrete actions: \textit{move forward}, \textit{turn left}, \textit{turn right}, and \textit{stop}.
+where $r_{\text{success}}$ rewards successful target localization, $r_{\text{angle-success}}$ encourages correct orientation, $\Delta d_{tg}$ and $\Delta a_{tg}$ penalize distance and angular deviation, respectively, and $r_{\text{slack}}$ promotes efficient navigation. 
+At inference time, the image-based goal embedding is replaced by the CLIP embedding of a textual object description, enabling zero-shot generalization to unseen object categories. 
+The action space is discrete and consists of \textit{move forward}, \textit{turn left}, \textit{turn right}, and \textit{stop}. The reward function is used exclusively during training to learn the navigation policy during inference, the agent selects actions solely based on the learned policy without
+access to the reward signal.
 
-While \ac{ZSON} demonstrates strong zero-shot generalization and effective object localization within trained domains, it lacks explicit mechanisms for structured exploration in unknown regions. Since the learned policy primarily directs the agent toward locations visually similar to previously encountered objects, it may become trapped in familiar areas and fail to discover new regions. Moreover, the reliance on \ac{DRL} training reduces interpretability and generalizability; retraining is often required when visual conditions, environment layouts, or sensor modalities differ significantly from the training distribution.
+While \ac{ZSON} demonstrates strong zero-shot object generalization, exploration behavior remains implicitly encoded in the learned policy, which makes it difficult to interpret or adapt to new scenarios. As a consequence, the agent tends to revisit visually familiar regions and lacks explicit mechanisms for systematic exploration of unknown space. Furthermore, the end-to-end \ac{RL} formulation reduces interpretability and necessitates retraining when visual conditions or environment layouts deviate from the training distribution. Nevertheless, \ac{ZSON} represents a significant step toward flexible and generalizable semantic exploration by integrating vision-language models with reinforcement learning.
 
 % ---------------------- PIRLNav ----------------------
 
-Building on this line of research, \citeauthor{ramrakhyaPIRLNavPretrainingImitation2023}~\cite{ramrakhyaPIRLNavPretrainingImitation2023} introduced \ac{PIRLNav}, a two-stage pretraining framework for vision-language navigation that combines \ac{BC} and \ac{RL} to learn generalizable exploration policies. The approach first leverages large-scale human demonstrations to imitate expert navigation behavior and subsequently fine-tunes the policy using \ac{RL} to optimize long-term performance.
-
-In the first stage, the policy network is pretrained via \ac{BC} on a dataset containing approximately 77,000 human expert demonstrations. The objective is to minimize the negative log-likelihood of actions given the corresponding observations, as defined by:
+\citeauthor{ramrakhyaPIRLNavPretrainingImitation2023}~\cite{ramrakhyaPIRLNavPretrainingImitation2023} introduced \ac{PIRLNav}, a two-stage framework that combines behavior cloning (\ac{BC}) with \ac{RL} to improve generalization in semantic navigation tasks. In the first stage, a navigation policy is pretrained via imitation learning on large-scale human demonstrations, learning to reproduce expert actions from observations that include RGB images, pose information, and a categorical goal representation. This pretraining stage provides a strong initialization, which reduces the training time and sample complexity required for subsequent reinforcement learning. Furthermore, with respect to interpretability, the use of \ac{BC} allows for some insight into the learned behavior, as it is directly derived from human demonstrations. The pre-trained ObjectNav humand demonstraded policy is trained using supervised learning to minimize the cross-entropy loss between predicted and expert actions:
 
 \begin{equation}
-\label{eq:pirlnav_bc}
-\theta^{*} = \arg\min_{\theta} \sum_{(o_t, a_t)} -\log \pi_{\theta}(a_t \mid o_t),
+\mathcal{L}_{\text{BC}} = - \sum_{t=1}^{T} \log \pi(a_t^* \mid s_t),
 \end{equation}
 
-where $\theta$ denotes the parameters of the policy network, and $(o_t, a_t)$ are observation-action pairs derived from expert trajectories.  
-The observation space $o_t$ includes RGB images, GPS and compass pose information (HM3D coordinates), a one-hot encoded target object category, and an implicit temporal memory implemented via a gated recurrent unit (GRU).  
-The action space is discrete and consists of \textit{move forward}, \textit{turn left}, \textit{turn right}, and \textit{stop}.  
-This pretraining phase enables the agent to acquire human-like navigation behavior, producing a policy that maps high-dimensional sensory inputs to navigation commands.
+where \(a_t^*\) denotes the expert action at time \(t\) and \(s_t\) represents the agent's observation. The ObjectNav policy is trained with a CNN+RNN Network, in which a pre-trained vision backbone, \ac{DINO}, extracts visual features from RGB images and feeds into the nav policy network along with pose and goal information.
 
-In the second stage, the pretrained policy is fine-tuned using \ac{DRL} to maximize long-term rewards associated with successful object-goal navigation. The actor network is initialized with the weights obtained from the BC stage, while the critic (value function) is first trained independently to stabilize learning before both networks are optimized jointly using \ac{PPO}.  
-The overall objective is to maximize the expected cumulative discounted reward over trajectories sampled from the policy:
+In the second stage, the pretrained policy is fine-tuned using \ac{RL}, where the objective is to maximize the expected discounted reward:
 
 \begin{equation}
-\label{eq:pirlnav_drl}
 \pi^{*} = \arg\max_{\pi} \mathbb{E}_{\tau \sim \pi} 
-\left[ \sum_{t=1}^{T} \gamma^{t-1} r_t \right],
+\left[ \sum_{t=1}^{T} \gamma^{t-1} r_t \right].
 \end{equation}
 
-where $\tau$ represents trajectories of observations, actions, and rewards generated under policy $\pi$, $r_t$ is the scalar reward at time step $t$, and $\gamma$ is the discount factor.  
-A reward of $r_t = 1$ is assigned when the agent stops within a defined range of the target and the object is within its \ac{FOV}. Notably, \ac{PIRLNav} does not employ an explicit object detector; instead, object recognition is implicitly encoded in the policy through visual representations learned from pretrained \ac{DINO}~\cite{jiangCLIPDINOVisual2024} features during pretraining.
-
-While \ac{PIRLNav} achieves strong performance in simulated benchmarks, it inherits several limitations typical of end-to-end reinforcement learning systems. The policy exhibits limited interpretability and lacks explicit semantic memory, preventing long-term reasoning across multiple goals. Furthermore, retraining is required when the visual domain or sensor configuration changes significantly, and generalization strongly depends on the similarity between training and deployment environments.
+where \(\tau\) denotes trajectories sampled from the policy \(\pi\), \(r_t\) is the reward at time \(t\), and \(\gamma\) is the discount factor. Although this hybrid training strategy improves sample efficiency and navigation robustness in simulation, the resulting policy remains a black-box model. 
+It does not maintain an explicit semantic memory and requires retraining to adapt to new visual domains or sensor modalities.
 
 % ---------------------- PONI ----------------------
 
-To overcome the black-box nature of end-to-end policies, \citeauthor{ramakrishnanPONIPotentialFunctions2022}~\cite{ramakrishnanPONIPotentialFunctions2022} proposed \ac{PONI}, a map-based object-goal navigation framework that decouples high-level exploration decisions from low-level navigation control. \ac{PONI} learns a potential-field network that operates on a partial allocentric semantic map, where free space, occupied space, unknown regions, and detected object categories are encoded in distinct semantic channels. The network predicts two dense potential fields aligned with the current map: an \textit{area potential} \(U_t^a\), which promotes the exploration of large unexplored regions, and an \textit{object potential} \(U_t^o\), which estimates the likelihood of proximity to the target object.
-
-The potential-field network is trained in a fully supervised, interaction-free manner using annotated semantic maps from simulated environments. During training, ground-truth area and object potentials are computed offline by exploiting complete knowledge of free space and object locations. The model is optimized to regress these potentials using a pixel-wise loss applied to frontier cells.  
-At inference time, the network predicts both potentials from the current partial map without access to ground-truth information. Geometric frontiers are extracted from the occupancy map and scored by sampling the predicted potentials according to:
+To address the limited interpretability of end-to-end policies, \citeauthor{ramakrishnanPONIPotentialFunctions2022}~\cite{ramakrishnanPONIPotentialFunctions2022} proposed \ac{PONI}, a supervised, map-based semantic exploration framework. Rather than learning low-level actions, \ac{PONI} predicts high-level exploration objectives in the form of potential fields defined over a partial semantic map. Two complementary potentials are estimated: an area potential that encourages exploration of unknown space, and an object potential that estimates proximity to the target category. Exploration decisions are derived by scoring geometric frontiers according to a weighted combination of these potentials:
 
 \begin{equation}
 U_t(f) = \alpha \, U_t^a(f) + (1 - \alpha) \, U_t^o(f),
 \end{equation}
 
-where \(\alpha\) controls the trade-off between exploration and exploitation.  
-The frontier with the highest score is selected as the next navigation goal, which is then reached using a deterministic path planner rather than a learned action policy.  
+where $\alpha$ explicitly controls the trade-off between exploration and exploitation. 
+This formulation yields interpretable and stable exploration behavior and decouples high-level decision-making from low-level navigation, which is handled by a classical navigation planner.
 
-While \ac{PONI} achieves efficient and interpretable exploration behavior, it depends on category-level semantic inputs and assumes a fixed, closed set of object classes encountered during training. Consequently, it cannot generalize to unseen categories or open-vocabulary settings, and its reliance on dense semantic annotations limits applicability in real-world scenarios where such data are unavailable or noisy~\cite{ramakrishnanPONIPotentialFunctions2022}.
+However, \ac{PONI} relies on dense semantic annotations and assumes a fixed, closed set of object categories encountered during training.~\cite{ramakrishnanPONIPotentialFunctions2022} used Mask~R-CNN~\cite{heMaskRCNN2018} to generate semantic maps with 80 object classes from the \ac{COCO} dataset~\cite{linMicrosoftCOCOCommon2015}, which was finetuned within the Gibson dataset~\cite{xiaGibsonEnvRealWorld2018}. As a result, it does not support open-vocabulary or zero-shot object search and remains sensitive to annotation noise and domain shifts.
 
-Overall, these RL-based and supervised learning approaches illustrate the potential of combining semantic understanding with learned navigation policies but reveal persistent shortcomings that motivate the shift toward pretrained vision-language models. Key limitations include:
+RL-based and supervised semantic exploration methods demonstrate the feasibility of learning navigation behavior from semantic cues, but they exhibit recurring limitations that motivate alternative approaches. These include extensive training requirements, limited interpretability, closed-set semantics, lack of persistent semantic memory, and reduced robustness to domain changes. 
+These structural shortcomings have motivated recent work toward modular exploration frameworks that integrate pretrained vision-language models, which are discussed in the following section.
 
-\begin{itemize}
-    \item \textbf{Extensive training requirements:} Large datasets and prolonged training are needed, reducing adaptability to new environments.
-    \item \textbf{High computational demands:} Complex architectures hinder real-time operation on embedded systems.
-    \item \textbf{Closed-set semantics:} Models typically rely on a fixed set of object categories, limiting open-vocabulary reasoning.
-    \item \textbf{Lack of persistent memory:} No long-term spatial or semantic memory is maintained, causing redundant exploration.
-    \item \textbf{Limited interpretability:} End-to-end learning obscures decision-making and complicates integration with classical navigation frameworks.
-\end{itemize}
+% \begin{table}[H]
+% \centering
+% \footnotesize
+% \renewcommand{\arraystretch}{1.2}
+% \setlength{\tabcolsep}{6pt}
+% \begin{tabularx}{\textwidth}{
+% |l|c|c|c|c|c|c|c}
+% \hline
+% \textbf{Capability / Method} &
+% \textbf{DRL} &
+% \textbf{BC} &
+% \textbf{Supervised} &
+% \textbf{CLIP} &
+% \textbf{DINO} &
+% \textbf{DAS} &
+% \textbf{CAS} \\
+% \hline
 
-\begin{table}[H]
-\centering
-\footnotesize
-\renewcommand{\arraystretch}{1.2}
-\setlength{\tabcolsep}{6pt}
-\begin{tabularx}{\textwidth}{
-|l|c|c|c|c|c|c|c}
-\hline
-\textbf{Capability / Method} &
-\textbf{DRL} &
-\textbf{BC} &
-\textbf{Supervised} &
-\textbf{CLIP} &
-\textbf{DINO} &
-\textbf{DAS} &
-\textbf{CAS} \\
-\hline
+% Limited policy-level interpretability
+% & \cite{majumdarZSONZeroShotObjectGoal2023}
+% & \cite{ramrakhyaPIRLNavPretrainingImitation2023}
+% & \xmark
+% & \xmark
+% & \xmark
+% & \cite{majumdarZSONZeroShotObjectGoal2023}
+% & \xmark \\
+% \hline
 
-Limited policy-level interpretability
-& \cite{majumdarZSONZeroShotObjectGoal2023}
-& \cite{ramrakhyaPIRLNavPretrainingImitation2023}
-& \xmark
-& \xmark
-& \xmark
-& \cite{majumdarZSONZeroShotObjectGoal2023}
-& \xmark \\
-\hline
+% Explicit semantic memory
+% & \xmark
+% & \xmark
+% & \xmark
+% & \xmark
+% & \xmark
+% & \xmark
+% & \xmark \\
+% \hline
 
-Explicit semantic memory
-& \xmark
-& \xmark
-& \xmark
-& \xmark
-& \xmark
-& \xmark
-& \xmark \\
-\hline
+% Zero-shot capability
+% & \xmark
+% & \xmark
+% & \xmark
+% & \cite{majumdarZSONZeroShotObjectGoal2023}
+% & \xmark
+% & \xmark
+% & \xmark \\
+% \hline
 
-Zero-shot capability
-& \xmark
-& \xmark
-& \xmark
-& \cite{majumdarZSONZeroShotObjectGoal2023}
-& \xmark
-& \xmark
-& \xmark \\
-\hline
+% Explicit object detection module
+% & \xmark
+% & \xmark
+% & \xmark
+% & \xmark
+% & \xmark
+% & \xmark
+% & \xmark \\
+% \hline
 
-Explicit object detection module
-& \xmark
-& \xmark
-& \xmark
-& \xmark
-& \xmark
-& \xmark
-& \xmark \\
-\hline
+% Closed-set object categories
+% & \cite{ramakrishnanPONIPotentialFunctions2022}
+% & \cite{ramrakhyaPIRLNavPretrainingImitation2023}
+% & \cite{ramakrishnanPONIPotentialFunctions2022}
+% & \xmark
+% & \cite{ramrakhyaPIRLNavPretrainingImitation2023}
+% & \xmark
+% & \xmark \\
+% \hline
 
-Closed-set object categories
-& \cite{ramakrishnanPONIPotentialFunctions2022}
-& \cite{ramrakhyaPIRLNavPretrainingImitation2023}
-& \cite{ramakrishnanPONIPotentialFunctions2022}
-& \xmark
-& \cite{ramrakhyaPIRLNavPretrainingImitation2023}
-& \xmark
-& \xmark \\
-\hline
+% Requires retraining for domain shift
+% & \cite{majumdarZSONZeroShotObjectGoal2023}
+% & \cite{ramrakhyaPIRLNavPretrainingImitation2023}
+% & \cite{ramakrishnanPONIPotentialFunctions2022}
+% & \xmark
+% & \xmark
+% & \xmark
+% & \xmark \\
+% \hline
 
-% Explicit exploration--exploitation trade-off
+% Exploration strategy learned
+% & \cite{majumdarZSONZeroShotObjectGoal2023}
+% & \cite{ramrakhyaPIRLNavPretrainingImitation2023}
+% & \xmark
+% & \xmark
+% & \xmark
+% & \xmark
+% & \xmark \\
+% \hline
+
+% Exploration strategy explicit
 % & \xmark
 % & \xmark
 % & \cite{ramakrishnanPONIPotentialFunctions2022}
@@ -207,53 +224,23 @@ Closed-set object categories
 % & \xmark \\
 % \hline
 
-Requires retraining for domain shift
-& \cite{majumdarZSONZeroShotObjectGoal2023}
-& \cite{ramrakhyaPIRLNavPretrainingImitation2023}
-& \cite{ramakrishnanPONIPotentialFunctions2022}
-& \xmark
-& \xmark
-& \xmark
-& \xmark \\
-\hline
+% Planner-based navigation
+% & \xmark
+% & \xmark
+% & \cite{ramakrishnanPONIPotentialFunctions2022}
+% & \xmark
+% & \xmark
+% & \xmark
+% & \xmark \\
+% \hline
 
-Exploration strategy learned
-& \cite{majumdarZSONZeroShotObjectGoal2023}
-& \cite{ramrakhyaPIRLNavPretrainingImitation2023}
-& \xmark
-& \xmark
-& \xmark
-& \xmark
-& \xmark \\
-\hline
-
-Exploration strategy explicit
-& \xmark
-& \xmark
-& \cite{ramakrishnanPONIPotentialFunctions2022}
-& \xmark
-& \xmark
-& \xmark
-& \xmark \\
-\hline
-
-Planner-based navigation
-& \xmark
-& \xmark
-& \cite{ramakrishnanPONIPotentialFunctions2022}
-& \xmark
-& \xmark
-& \xmark
-& \xmark \\
-\hline
-
-\end{tabularx}
-\caption{Capability--implementation matrix for learning-based semantic exploration approaches.
-Rows indicate key system properties or limitations, while columns denote architectural or learning
-mechanisms through which these properties arise. Each cell lists representative works that
-exhibit the corresponding association.}
-\label{tab:sota:learning_capability_matrix}
-\end{table}
+% \end{tabularx}
+% \caption{Capability--implementation matrix for learning-based semantic exploration approaches.
+% Rows indicate key system properties or limitations, while columns denote architectural or learning
+% mechanisms through which these properties arise. Each cell lists representative works that
+% exhibit the corresponding association.}
+% \label{tab:sota:learning_capability_matrix}
+% \end{table}
 
 \section{Foundation-Model Exploration}
 

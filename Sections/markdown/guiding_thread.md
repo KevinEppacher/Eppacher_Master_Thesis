@@ -110,6 +110,7 @@ Core Gaps:
         - Action Space: Forward, Turn Left, Turn Right, Stop --> discrete action space
         - Observation Space: RGB image + Semantic Goal Embedding + Previous Action (LSTM)
         - Disadvantages: No exploration in unknown areas, only goes back to places where it has seen similar objects during training (only intuition based on CLIP similarity and previously seen areas), Limited interpretability and no explicit semantic memory, retraining needed if environment changes significantly in visual style and sensor characteristics.
+        
     - PIRLNav:
         - Combines behavior cloning with reinforcement learning to train a navigation policy.
         - Stage 1: 
