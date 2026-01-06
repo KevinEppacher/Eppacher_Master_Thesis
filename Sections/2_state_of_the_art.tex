@@ -246,6 +246,64 @@ These structural shortcomings have motivated recent work toward modular explorat
 
 Therefore, recent research has shifted toward leveraging large-scale pretrained vision-language models (\acp{VLM}) that provide rich semantic representations and zero-shot generalization capabilities. By integrating these models into modular exploration frameworks, it becomes possible to overcome many of the limitations associated with learned policies while retaining the benefits of semantic reasoning for efficient multi-object search.
 
+
+\begin{table}[H]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{
+|l|X|X|X|X|X|}
+\hline
+\textbf{Method} 
+& \textbf{Semantic signal source} 
+& \textbf{Fusion with geometry} 
+& \textbf{Detection confidence handling} 
+& \textbf{Semantic representation} 
+& \textbf{Primary failure mode} \\
+\hline
+
+\textbf{ESC}
+& Object detections + LLM priors
+& Probabilistic frontier scoring (PSL)
+& Single-step confidence, no revision
+& Local symbolic semantic map
+& False positives amplified by reasoning priors \\
+\hline
+
+\textbf{CoW}
+& Image--text similarity (CLIP)
+& No explicit geometric fusion
+& Threshold-based similarity
+& No explicit map
+& Oscillation and local minima near false positives \\
+\hline
+
+\textbf{SemUtil}
+& Closed-set detections + CLIP similarity
+& Utility map over geometric frontiers
+& No confidence decay or belief update
+& Semantic point cloud + scene graph
+& Persistent corruption from misdetections \\
+\hline
+
+\textbf{VLFM}
+& Dense image--text similarity (BLIP-2)
+& Semantic value fused with frontier map
+& Weighted averaging over observations
+& Episodic semantic value map
+& False positives persist across episode \\
+\hline
+
+\end{tabularx}
+\caption{Design patterns and limitations of foundation-model-based semantic exploration frameworks.
+The table emphasizes how semantic information is sourced, fused with geometric exploration, and
+maintained over time, highlighting recurring failure modes across approaches.}
+\label{tab:sota:foundation_design_patterns}
+\end{table}
+
+
+
 A representative example of this paradigm is the \ac{ESC} framework proposed by \citeauthor{zhouESCExplorationSoft2023}~\cite{zhouESCExplorationSoft2023}, which augments traditional frontier-based exploration with semantic cues derived from pretrained \acp{VLM}. Specifically, \ac{ESC} combines a grounded object detector, \ac{GLIP}~\cite{liGroundedLanguageImagePretraining2022}, with a \ac{LLM} (either ChatGPT or DeBERTa) to generate semantic priors that guide exploration decisions. Frontiers are scored based on both geometric utility and semantic relevance to the target object, as formulated in Equation~\ref{eq:esc}:
 
 \begin{equation}
