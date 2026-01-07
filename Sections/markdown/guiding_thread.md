@@ -184,12 +184,6 @@ Limitations of RL-based or supervised learning approaches:
 | **VLFM** |
 ✓
 
-| **Method** | **Pre-mapping required** | **Single source detection** | **Zero shot capability** | **VLM Model** | **Semantic Reasoning** | **Semantic Data Representation** |
-| :----------------------- | :------------------: | :------------------: | :------------------: | :--------------: | :---------------------: | :---------------------: |
-| **OneMap** | 
-| **ConceptGraphs** |
-| **VLMaps** | 
-
 
 - 2. Method - Zero-Shot and Training-Free Approaches
     - Leverage pretrained vision-language models or LLMs to perform semantic reasoning without additional training.
@@ -264,9 +258,73 @@ How are pre-trained models used for zero-shot exploration?
 These zero-shot and training-free approaches enable real-time semantic exploration without the need for extensive retraining, making them more adaptable to diverse environments. However, they often lack persistent memory mechanisms to retain knowledge of previously explored areas, which can limit their efficiency in multi-object search tasks.
 
 ## 2.3 Map Reconstruction and Persistent Semantic Mapping
-### Semantic Scene Reconstruction
-
 ### Persistent Semantic Mapping for Exploration
+
+1. OneMap:
+    - Object-Level Open-Vocabulary Belief Map:
+        - Represents the environment as a 2D grid where each cell contains a probabilistic belief over object categories based on language embeddings.
+        - Uses CLIP embeddings to encode object categories, allowing for open-vocabulary representation.
+        - Saves per grid cell a probability distribution over object categories based on CLIP embeddings.
+    - Pipeline:
+        - 1. Visual embedding extraction:
+            - uses CLIP to extract image features from RGB input
+        - Projection into the map:
+            - Projects image features into the 2D grid map based on the robot's pose and camera parameters.
+        - 3. Belief update (Uncertainty-weighted fusion):
+            - Updates the belief in each grid cell using a Bayesian update rule that incorporates the confidence of the current observation.
+            - This allows the map to accumulate evidence over time while accounting for uncertainty in detections.
+            - High-confidence observations dominate the belief update, while low-confidence ones have less impact.
+            - Old beliefs are not overwritten, only updated
+        - Query mechanism:
+            - For each grid cell, the system can query the most probable object category based on the accumulated belief.
+        - Result:
+            - No fixed closed-set object categories, can represent arbitrary objects via CLIP embeddings.
+                -> zero-shot open-vocabulary mapping
+            - No language query during mapping, only during exploration
+        - Detection:
+            - No explicit object detection component; relies on CLIP embeddings to represent semantic content.
+        - Strenghts:
+            - Efficient probabilistic representation enables robust accumulation of semantic evidence over time.
+            - Persistent semantic memory allows revisiting and refining knowledge about previously explored areas.
+            - Uncertainty-weighted fusion mitigates the impact of noisy observations.
+        - Limitations:
+            - 2D representation lacks full 3D spatial context, which can limit reasoning about object locations in complex environments.
+            - Relies solely on CLIP embeddings, which may not capture fine-grained object distinctions.
+            - No explicit object instance modeling; only category-level beliefs are stored.
+            - Exploration strategy is frontier-based but does not incorporate semantic reasoning beyond the value map.
+            - High cosine similarity in CLIP space does not always correspond to actual object presence, leading to potential false positives in the belief map and detection --> semantic hallucinations
+            - Robot says found, if CLIP map cell exceeds threshold to the nearby cells, even if no object is present.
+            - No multi-source detection fusion, only CLIP embeddings used for semantic representation.
+
+2. VLMaps:
+    - Pipeline:
+        - 1. Input: RGB-D image + robot/camera pose
+        - 2. Image gets processed by LSeg or CLIP to extract dense per-pixel language embeddings (3D pcl with language features)
+        - 3. Projection into 2D grid map by taking the average of all features that project into each grid cell
+        - 4. PCL which get projected onto the same grid, get averaged (loss of information, multiple hypotheses get averaged)
+        - 5. Similarity map is combined with occupancy and classical frontier extraction to guide exploration
+        - 6. A* path planning to the selected frontier
+        - 7. No belief revision, only accumulative fusion (averaging) --> noisy maps
+    - Detection:
+        - No explicit object detection component; relies on dense language embeddings to represent semantic content.
+    - Strengths:
+        - Dense per-cell language embeddings enable open-vocabulary semantic representation.
+        - Integration with classical exploration techniques allows for efficient navigation.
+        - Uses LLM for higher-task level planning and calling pre-defined functions.
+    - Limitations:
+        - Accumulative feature averaging can lead to semantic noise and ambiguity, especially in dynamic environments.
+        - No belief revision mechanism to correct erroneous semantic memories.
+        - 2.5D representation lacks full 3D spatial context.
+
+3. SemExp:
+
+4. ConceptGraphs:
+
+5. Pigeon:
+
+6. DualMap:
+
+### Semantic Scene Reconstruction
 
 ## 2.4 Object Detection and Promptable Models
 

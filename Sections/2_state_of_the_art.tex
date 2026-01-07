@@ -242,92 +242,117 @@ These structural shortcomings have motivated recent work toward modular explorat
 % \label{tab:sota:learning_capability_matrix}
 % \end{table}
 
-\section{Foundation-Model Exploration}
+\section{Foundation-Model-Based Semantic Exploration}
+\label{sec:sota:foundation_models}
 
-Therefore, recent research has shifted toward leveraging large-scale pretrained vision-language models (\acp{VLM}) that provide rich semantic representations and zero-shot generalization capabilities. By integrating these models into modular exploration frameworks, it becomes possible to overcome many of the limitations associated with learned policies while retaining the benefits of semantic reasoning for efficient multi-object search.
+In contrast to reinforcement learning-based approaches, which derive navigation behavior through task-specific training, a second line of work leverages large-scale pretrained \acp{VLM} as semantic priors within modular exploration systems. These approaches shift the learning burden away from navigation policy optimization toward semantic perception and reasoning, enabling zero-shot generalization to novel objects and environments without task-specific retraining.
 
+\acp{VLM} are large pretrained image-text models that learn joint representations of visual and linguistic data from massive web-scale datasets~\cite{radfordLearningTransferableVisual2021,liGroundedLanguageImagePretraining2022}. Their core principle is to embed images and text into a shared latent space, in which semantically
+related visual and linguistic concepts are mapped to nearby representations.
+A \ac{VLM} defines two embedding functions,
+\(
+f_I(\cdot)
+\)
+and
+\(
+f_T(\cdot),
+\)
+which map an image \(I\) and a text prompt \(T\) to a common embedding space
+\(\mathbb{R}^d\):
+
+\begin{equation}
+\mathbf{e}_I = f_I(I), \qquad \mathbf{e}_T = f_T(T),
+\end{equation}
+
+where \(\mathbf{e}_I, \mathbf{e}_T \in \mathbb{R}^d\) are high-dimensional feature vectors encoding semantic information. Text inputs are tokenized and processed using transformer-based language encoders, while visual
+inputs are decomposed into patches or regions and encoded by a vision backbone (e.g., \ac{CNN} or transformer-based architectures), depending on the model design~\cite{vaswaniAttentionAllYou2023,liBLIP2BootstrappingLanguageImage2023,liGroundedLanguageImagePretraining2022}. Semantic alignment between image and text embeddings is commonly quantified using cosine similarity, which measures the angular similarity between vectors in the shared embedding space (Equation~\ref{eq:vlm_cosine_similarity}):
+
+\begin{equation}
+\label{eq:vlm_cosine_similarity}
+\mathrm{sim}(I, T)
+=
+\frac{\mathbf{e}_I \cdot \mathbf{e}_T}
+{\lVert \mathbf{e}_I \rVert \, \lVert \mathbf{e}_T \rVert}.
+\end{equation}
+
+A higher similarity score indicates stronger semantic correspondence between the visual observation
+and the textual query. This representation enables open-vocabulary reasoning, as arbitrary object descriptions can be
+matched against visual observations without retraining, forming the foundation for zero-shot semantic perception in exploration tasks.
+
+The defining characteristic of foundation-model-based exploration is the explicit separation between geometric navigation and semantic understanding. Geometric structure is typically handled by classical mapping and planning components (e.g., frontier-based exploration), while semantic relevance is inferred from pretrained models such as CLIP, BLIP-2, or grounding-capable detectors~\cite{gadreCoWsPastureBaselines2022,yokoyamaVLFMVisionLanguageFrontier2023,liuGroundingDINOMarrying2024}. This modularity improves interpretability and adaptability, but introduces new challenges related to uncertainty handling, semantic consistency, and long-term memory.
+
+Table~\ref{tab:sota:foundation_design_patterns} summarizes representative foundation-model-based exploration frameworks in five categories: the source of semantic signals, the mechanism used to fuse semantics with geometric exploration, the handling of detection confidence and uncertainty, the underlying semantic data representation, and the dominant failure causalities observed in practice.
 
 \begin{table}[H]
-\centering
-\footnotesize
-\renewcommand{\arraystretch}{1.2}
-\setlength{\tabcolsep}{4pt}
-\begin{tabularx}{\textwidth}{
-|l|X|X|X|X|X|}
-\hline
-\textbf{Method} 
-& \textbf{Semantic signal source} 
-& \textbf{Fusion with geometry} 
-& \textbf{Detection confidence handling} 
-& \textbf{Semantic representation} 
-& \textbf{Primary failure mode} \\
-\hline
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.2}
+    \setlength{\tabcolsep}{4pt}
+    \begin{tabularx}{\textwidth}{
+    |l|X|X|X|X|X|}
+    \hline
+    \textbf{Method} 
+    & \textbf{Semantic signal source} 
+    & \textbf{Fusion with geometry} 
+    & \textbf{Detection confidence handling} 
+    & \textbf{Semantic representation} 
+    & \textbf{Primary failure causality} \\
+    \hline
 
-\textbf{ESC}
-& Object detections + LLM priors
-& Probabilistic frontier scoring (PSL)
-& Single-step confidence, no revision
-& Local symbolic semantic map
-& False positives amplified by reasoning priors \\
-\hline
+    \textbf{ESC}
+    & Object detections + \ac{LLM} priors
+    & Probabilistic frontier scoring (PSL)
+    & Single-step confidence, no revision
+    & Local symbolic semantic map
+    & False positives amplified by reasoning priors \\
+    \hline
 
-\textbf{CoW}
-& Image--text similarity (CLIP)
-& No explicit geometric fusion
-& Threshold-based similarity
-& No explicit map
-& Oscillation and local minima near false positives \\
-\hline
+    \textbf{CoW}
+    & Image-text similarity \ac{CLIP}
+    & No explicit geometric fusion
+    & Threshold-based similarity
+    & No explicit map
+    & Oscillation and local minima near false positives \\
+    \hline
 
-\textbf{SemUtil}
-& Closed-set detections + CLIP similarity
-& Utility map over geometric frontiers
-& No confidence decay or belief update
-& Semantic point cloud + scene graph
-& Persistent corruption from misdetections \\
-\hline
+    \textbf{SemUtil}
+    & Closed-set detections + \ac{CLIP} similarity
+    & Utility map over geometric frontiers
+    & No confidence decay or belief update
+    & Semantic point cloud + scene graph
+    & Persistent corruption from misdetections \\
+    \hline
 
-\textbf{VLFM}
-& Dense image--text similarity (BLIP-2)
-& Semantic value fused with frontier map
-& Weighted averaging over observations
-& Episodic semantic value map
-& False positives persist across episode \\
-\hline
+    \textbf{VLFM}
+    & Dense image-text similarity~\ac{BLIP}
+    & Semantic value-map fused with frontier map
+    & Weighted averaging over observations
+    & Episodic semantic value map
+    & False positives persist across episode \\
+    \hline
 
-\end{tabularx}
-\caption{Design patterns and limitations of foundation-model-based semantic exploration frameworks.
-The table emphasizes how semantic information is sourced, fused with geometric exploration, and
-maintained over time, highlighting recurring failure modes across approaches.}
-\label{tab:sota:foundation_design_patterns}
+    \end{tabularx}
+    \caption{Design patterns and limitations of foundation-model-based semantic exploration frameworks.
+    The table compares how different methods obtain semantic signals, integrate them with geometric exploration,
+    handle uncertainty over time, and represent semantic information, revealing recurring failure modes
+    that motivate the need for persistent semantic memory and belief revision.}
+    \label{tab:sota:foundation_design_patterns}
 \end{table}
 
-
-
-A representative example of this paradigm is the \ac{ESC} framework proposed by \citeauthor{zhouESCExplorationSoft2023}~\cite{zhouESCExplorationSoft2023}, which augments traditional frontier-based exploration with semantic cues derived from pretrained \acp{VLM}. Specifically, \ac{ESC} combines a grounded object detector, \ac{GLIP}~\cite{liGroundedLanguageImagePretraining2022}, with a \ac{LLM} (either ChatGPT or DeBERTa) to generate semantic priors that guide exploration decisions. Frontiers are scored based on both geometric utility and semantic relevance to the target object, as formulated in Equation~\ref{eq:esc}:
+A representative example of this paradigm is the \ac{ESC} framework proposed by \citeauthor{zhouESCExplorationSoft2023}~\cite{zhouESCExplorationSoft2023}, which augments traditional frontier-based exploration with semantic cues derived from pretrained \acp{VLM}. Specifically, \ac{ESC} combines a grounded object detector, \ac{GLIP}~\cite{liGroundedLanguageImagePretraining2022}, with a \ac{LLM} (either ChatGPT or DeBERTa) to generate semantic priors that guide exploration decisions. Frontiers are scored based on both geometric utility and semantic relevance to the target object (see Equation~\ref{eq:esc}).
 
 \begin{equation}
 \label{eq:esc}
-P(F) = P(F \mid d_i^{t}, o^{t}, r^{t}),
+P(F) = P(F \mid d_i^{t}, o^{t}, r^{t})
 \end{equation}
 
-where \(P(F)\) denotes the probability of selecting frontier \(F\), conditioned on detected objects \(d_i^{t}\), current observations \(o^{t}\), and the robot pose \(r^{t}\) at time \(t\). This formulation is implemented using Probabilistic Soft Logic (PSL), which fuses visual detections with language-derived priors about object co-occurrences and spatial relationships. The robot then selects the frontier with the highest combined score, balancing geometric and semantic information to improve search efficiency.
+\(P(F)\) denotes the probability of selecting frontier \(F\), conditioned on detected objects \(d_i^{t}\), current image observations \(o^{t}\), and the robot pose \(r^{t}\) at time \(t\). This formulation is implemented using \ac{PSL}, which fuses visual detections with language-derived priors about object co-occurrences and spatial relationships. The robot then selects the frontier with the highest combined score, balancing geometric and semantic information to improve search efficiency. For navigating toward target objects, a classical \ac{A*} planner is employed to compute collision-free paths based on the occupancy map.
 
-In practice, \ac{ESC} employs \ac{GLIP}~\cite{liGroundedLanguageImagePretraining2022} as the detection backbone to compute 2D bounding boxes, class labels, and confidence scores for objects within the robot’s \ac{FOV}. While effective in simulation, the approach introduces notable computational overhead due to repeated \ac{LLM} inference and PSL optimization. Moreover, its performance is highly dependent on the reliability of object detections-false positives can misguide frontier scoring, and incorrect commonsense priors may further bias exploration. 
+~\citeauthor{zhouESCExplorationSoft2023} employs \ac{GLIP}~\cite{liGroundedLanguageImagePretraining2022} as the detection backbone to compute 2D bounding boxes, class labels, and confidence scores for objects within the robot’s \ac{FOV}. While effective in simulation, the approach introduces notable computational overhead due to repeated \ac{LLM} inference and PSL optimization. As a consequence of relying on single-step detections and static commonsense priors, errors introduced by false positives are not attenuated over time. Once a misleading semantic hypothesis is introduced, the probabilistic reasoning layer tends to reinforce rather than correct it, leading to persistent semantic bias during exploration.
 
 Through ablation studies, \citeauthor{zhouESCExplorationSoft2023} observed that object-object and object-room relational priors can occasionally degrade performance, as commonsense relationships are inherently probabilistic rather than deterministic. Additionally, while \ac{ESC} maintains a local semantic map during navigation, it lacks mechanisms for long-term memory or belief revision. Consequently, once an incorrect detection or prior is introduced, the framework has no learned means of down-weighting or correcting it over time, which can lead to persistent semantic inconsistencies during extended exploration.
 
-In contrast to such reasoning-heavy systems, \citeauthor{gadreCoWsPastureBaselines2022}~\cite{gadreCoWsPastureBaselines2022} proposed \ac{CoW}, a lightweight vision-language exploration framework that relies purely on image-text alignment from CLIP~\cite{radfordLearningTransferableVisual2021} without requiring explicit frontier detection, semantic mapping, or object segmentation. The method guides the robot toward directions with the highest cosine similarity between the current visual observation and the target object description, defined as:
-
-\begin{equation}
-\label{eq:cosine_similarity}
-\mathrm{\cos\_sim}(\mathbf{u}, \mathbf{v})
-=
-\frac{\mathbf{u} \cdot \mathbf{v}}
-{\lVert \mathbf{u} \rVert \, \lVert \mathbf{v} \rVert},
-\end{equation}
-
-where \(\mathbf{u}\) and \(\mathbf{v}\) denote the CLIP embeddings of the current image and the target text prompt, respectively. The robot moves forward when the similarity exceeds a predefined threshold and rotates otherwise to maximize alignment with the target.  
+In contrast to such \ac{LLM} reasoning-based systems, \citeauthor{gadreCoWsPastureBaselines2022}~\cite{gadreCoWsPastureBaselines2022} proposed \ac{CoW}, a lightweight vision-language exploration framework that relies purely on image-text alignment from CLIP~\cite{radfordLearningTransferableVisual2021} without requiring explicit frontier detection, semantic mapping, or object segmentation. The method guides the robot toward directions with the highest cosine similarity (see Equation~\ref{eq:vlm_cosine_similarity}) between the current visual observation and the target object description.
 
 By eliminating explicit detectors and handcrafted mapping, \ac{CoW} offers a computationally efficient and conceptually simple baseline for open-vocabulary navigation. However, this simplicity comes at the cost of robustness. The system is highly sensitive to viewpoint variations and clutter, as cosine similarity does not always correlate with true object presence. Without spatial memory or geometric reasoning, the robot may oscillate near false positives or become trapped in local minima. Moreover, because similarity scores vary across object categories, no universal threshold can be established for all targets, resulting in inconsistent stopping behavior and reduced reliability during multi-object search.
 
@@ -348,39 +373,109 @@ For each map cell, a \textit{utility score} is computed by combining the geometr
 the CLIP-based cosine similarity between the current observation and the target object description, 
 and the semantic cues from the 3D point cloud (e.g., class IDs from Mask~R-CNN). 
 This results in a utility map that prioritizes frontiers both spatially and semantically,
-as illustrated in Figure~3 of the original paper (showing the interaction between geometric and semantic utilities)~\cite{chenHowNotTrain2023}.
+as illustrated in Figure~3 of the original paper (showing the interaction between geometric and semantic utilities)~\cite{chenHowNotTrain2023}. \ac{SemUtil} solves the oscillation issues observed in \ac{CoW} by explicitly extracting frontiers from the occupancy map and scoring them based on their semantic utility, rather than relying solely on raw similarity scores. This structured approach enables more stable exploration behavior and reduces the likelihood of becoming trapped near false positives, which also applies to other works, which combine \acp{VLM} with frontier-based exploration~\cite{yokoyamaVLFMVisionLanguageFrontier2023}.
  
-Importantly, the utility map in \ac{SemUtil} is not persistent, it is recomputed at every timestep based solely on the current observation 
-and semantic point cloud, without maintaining a long-term memory of past detections or map updates. 
-While this design simplifies computation and eliminates the need for training, 
-it also limits the system’s ability to reason over time or correct previous errors. 
-The reliance on a closed-set detector (Mask~R-CNN) restricts open-vocabulary generalization, 
-and any incorrect detection directly corrupts the semantic point cloud, 
-thereby distorting the frontier scoring and leading to suboptimal exploration decisions.  
-Furthermore, since the framework lacks belief revision or memory-based fusion, 
-false detections persist until they leave the robot’s current field of view, 
-reducing consistency and efficiency in long-term navigation.
+Importantly, the utility map in \ac{SemUtil} is not persistent, it is recomputed at every timestep based solely on the current observation and semantic point cloud, without maintaining a long-term memory of past detections or map updates. While this design simplifies computation and eliminates the need for training, it also limits the system’s ability to reason over time or correct previous errors. The reliance on a closed-set detector (Mask~R-CNN) restricts open-vocabulary generalization, and any incorrect detection directly corrupts the semantic point cloud, thereby distorting the frontier scoring and leading to suboptimal exploration decisions.  Furthermore, since the framework lacks belief revision or memory-based fusion, false detections persist until they leave the robot’s current field of view, reducing consistency and efficiency in long-term navigation.
 
-Unlike \citeauthor{chenHowNotTrain2023}~\cite{chenHowNotTrain2023}, who construct a utility map from class-based detections and semantic projections that are recomputed each step, thereby risking information loss or semantic inconsistency, \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023} directly leverages pretrained vision-language models to compute semantic value maps from raw RGB observations. Rather than relying on symbolic object classes, \ac{VLFM} computes a continuous image-text similarity score between the robot’s current observation and the target text prompt using BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023}, as formulated through the cosine similarity function in Equation~\ref{eq:cosine_similarity}~\cite{gadreCoWsPastureBaselines2022}.  
+Unlike \citeauthor{chenHowNotTrain2023}~\cite{chenHowNotTrain2023}, who construct a utility map from class-based detections and semantic projections that are recomputed each step, thereby risking information loss or semantic inconsistency, \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023} directly leverages pretrained vision-language models to compute semantic value maps from raw RGB observations. Rather than relying on symbolic object classes, \ac{VLFM} computes a continuous image-text similarity score between the robot’s current observation and the target text prompt using BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023}, as formulated through the cosine similarity function in Equation~\ref{eq:vlm_cosine_similarity}~\cite{gadreCoWsPastureBaselines2022}.  
 
-The resulting similarity values are spatially projected onto a top-down occupancy grid according to the robot’s \ac{FOV}, forming a \textit{value map} that quantifies the semantic likelihood of each region leading toward the target object. To account for reduced reliability near the image periphery, a Gaussian weighting function attenuates confidence values based on angular distance from the optical axis (see Fig.~3 in the original paper~\cite{yokoyamaVLFMVisionLanguageFrontier2023}). This value map is continuously updated through a weighted averaging scheme that fuses new and previous similarity scores according to their confidence weights, enabling smooth map updates and spatial consistency across frames.  
+The resulting similarity values are spatially projected onto a top-down occupancy grid according to the robot’s \ac{FOV}, forming a \textit{value map} that quantifies the semantic likelihood of each region leading toward the target object. To account for reduced reliability near the image periphery, a Gaussian weighting function attenuates confidence values based on angular distance from the optical axis (see Fig.~3 in the original paper~\cite{yokoyamaVLFMVisionLanguageFrontier2023}). This value map is continuously updated through a weighted averaging scheme that fuses new and previous similarity scores according to their confidence weights, enabling smooth map updates and spatial consistency across frames. \ac{BLIP-2} is not used for caption generation, but rather for retrieving text-image embeddings to compute similarity scores~\cite{liBLIP2BootstrappingLanguageImage2023,yokoyamaVLFMVisionLanguageFrontier2023}.
 
-During exploration, the \ac{VLFM} system fuses this value map with a geometrically extracted frontier map to select the next exploration goal, the frontier with the highest semantic value is chosen as the next waypoint. Target object detection is performed using YOLOv7~\cite{linMicrosoftCOCOCommon2015} for \ac{COCO} categories and GroundingDINO~\cite{liuGroundingDINOMarrying2024} for open-vocabulary detection. Once an object matching the target query is detected, SAM~\cite{kirillovSegmentAnything2023} is applied to generate an accurate mask, and the system transitions from exploration to goal navigation.  
+During exploration, \ac{VLFM} fuses this value map with a geometrically extracted frontier map to select the next exploration goal, the frontier with the highest semantic value is chosen as the next waypoint. Target object detection is performed using YOLOv7~\cite{wangYOLOv7TrainableBagoffreebies2022} for \ac{COCO}~\cite{linMicrosoftCOCOCommon2015} categories and GroundingDINO~\cite{liuGroundingDINOMarrying2024} for open-vocabulary detection. Once an object matching the target query is detected, SAM~\cite{kirillovSegmentAnything2023} is applied to generate an accurate mask, and the system transitions from exploration to goal navigation.  
 
-This modular framework achieves state-of-the-art performance on the Gibson, HM3D, and Matterport3D benchmarks, outperforming prior zero-shot approaches such as \ac{ESC}, \ac{SemUtil}, and \ac{CoW} in both \ac{SR} and \ac{SPL} \cite{yokoyamaVLFMVisionLanguageFrontier2023}. Despite its efficiency and interpretability, several limitations remain. \ac{VLFM} relies on a single-source detection pipeline, either GroundingDINO or YOLOv7, making it prone to false positives in open-vocabulary scenarios, which can result in premature stopping behavior. Furthermore, the value map is episodic rather than persistent: it resets after each navigation episode and does not maintain long-term semantic memory, leading to redundant revisits during multi-object search tasks. While the system operates in real time, the use of multiple large-scale pretrained models (BLIP-2, GroundingDINO/YOLOv7, and SAM) demands substantial computational resources, consuming approximately 16~GB of VRAM on an NVIDIA RTX~4090 GPU during deployment, which limits scalability on embedded robotic platforms.
+This modular framework achieves state-of-the-art performance on the Gibson~\cite{xiaGibsonEnvRealWorld2018}, HM3D, and Matterport3D~\cite{changMatterport3DLearningRGBD2017} benchmarks, outperforming prior zero-shot approaches such as \ac{ESC}, \ac{SemUtil}, and \ac{CoW} in both \ac{SR} and \ac{SPL} \cite{yokoyamaVLFMVisionLanguageFrontier2023}. Despite its efficiency and interpretability, several limitations remain. \ac{VLFM} relies on a single-source detection pipeline, either GroundingDINO or YOLOv7, making it prone to false positives in open-vocabulary scenarios, which can result in premature stopping behavior. Furthermore, the value map is episodic rather than persistent: it resets after each navigation episode and does not maintain long-term semantic memory, leading to redundant revisits during multi-object search tasks. While the system operates in real time, the use of multiple large-scale pretrained models (BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023}, GroundingDINO/YOLOv7~\cite{liuGroundingDINOMarrying2024,wangYOLOv7TrainableBagoffreebies2022}, and SAM~\cite{kirillovSegmentAnything2023}) demands substantial computational resources, consuming approximately 16~GB of VRAM on an NVIDIA RTX~4090 GPU during deployment, which limits scalability on embedded robotic platforms.
 
-These zero-shot and training-free approaches enable real-time semantic exploration without the need for extensive retraining, making them more adaptable to diverse environments. However, they often lack persistent memory mechanisms to retain knowledge of previously explored areas, which can limit their efficiency in multi-object search tasks.
+Foundation-model-based exploration approaches enable zero-shot semantic navigation without the need for task-specific training and offer improved interpretability compared to learned policies. However, across all reviewed methods, semantic information is either transient, episodic, or locally scoped. None of the approaches maintain a persistent semantic belief that can be revised over time as new evidence is accumulated. This lack of long-term semantic memory leads to repeated exploration, sensitivity to false detections, and inconsistent behavior in multi-object search scenarios.
+
+These recurring limitations motivate the development of exploration frameworks that combine
+open-vocabulary semantic perception with persistent, revisable semantic memory, which is the focus of this work.
 
 \section{Map Reconstruction and Persistent Semantic Mapping}
+This section reviews state-of-the-art methods for persistent semantic mapping both exploration-driven and mapping-centric settings. Existing methods of saving semantic information within different spatial representations are discussed, along with techniques for updating and revising semantic beliefs over time, with the aim of improving efficiency in multi-object exploration tasks.
+
 \subsection*{Persistent Semantic Mapping for Exploration}
-\begin{itemize}
-\item OneMap
-\item ConceptGraphs
-\item SemExp
-\item VLMaps
-\item Pigeon
-\item CLIP-Fields
-\end{itemize}
+Table~\ref{tab:sota:persistent_mapping_exploration} summarizes recent approaches to persistent semantic mapping for exploration tasks. The table highlights how different methods store semantic information, update it over time, and whether they support belief revision, revealing a common lack of mechanisms for correcting erroneous semantic memories.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{
+|l|X|X|c|X|c|X|}
+\hline
+\textbf{Method}
+& \textbf{Semantic Memory Type}
+& \textbf{Spatial Representation}
+& \textbf{Open-Vocab}
+& \textbf{Update Mechanism}
+& \textbf{Belief Revision}
+& \textbf{Primary Limitation} \\
+\hline
+
+\textbf{OneMap~\cite{buschOneMapFind2025}}
+& Open-Vocabulary Belief Map (\ac{CLIP} features)
+& 2.5D top-down grid map
+& \cmark
+& Uncertainty-weighted accumulative fusion
+& \xmark
+& Irreversible belief fusion leads to semantic drift \\
+\hline
+
+\textbf{VLMaps~\cite{huangVisualLanguageMaps2023}}
+& Dense per-cell language embeddings (\ac{CLIP}-based~\cite{radfordLearningTransferableVisual2021})
+& 2.5D top-down grid map
+& \cmark
+& Multi-view feature averaging (accumulative fusion)
+& \xmark
+& Irreversible feature averaging causes semantic noise and ambiguity \\
+\hline
+
+\textbf{ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023}}
+& Object-centric scene graph
+& Graph + metric map
+& \cmark
+& Graph augmentation
+& \xmark
+& No uncertainty-aware belief correction \\
+\hline
+
+\textbf{SemExp~\cite{chaplotObjectGoalNavigation2020}}
+& Closed-set object categories
+& Top-down grid map
+& \xmark
+& Overwrite / accumulate
+& \xmark
+& Closed-set semantics limit generalization \\
+\hline
+
+\textbf{Pigeon~\cite{PIGEONVLMDrivenObject}}
+& Language-conditioned episodic object memory
+& Hybrid map + memory buffer
+& \cmark
+& Episodic memory aggregation
+& \xmark
+& No persistent belief across episodes \\
+\hline
+
+\textbf{DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025}}
+& Dual semantic maps (short-term + long-term)
+& 2D grid maps
+& \cmark
+& Dual-stream accumulative fusion
+& \xmark
+& Long-term map cannot correct early semantic errors \\
+\hline
+
+\end{tabularx}
+\caption{Comparison of persistent semantic mapping approaches for exploration.
+The table highlights how different methods store semantic information, update it over time,
+and whether they support belief revision, revealing a common lack of mechanisms for correcting
+erroneous semantic memories.}
+\label{tab:sota:persistent_mapping_exploration}
+\end{table}
+
+
 
 
 \subsection*{Semantic Scene Reconstruction}
