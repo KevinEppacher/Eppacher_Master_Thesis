@@ -126,122 +126,6 @@ However, \ac{PONI} relies on dense semantic annotations and assumes a fixed, clo
 RL-based and supervised semantic exploration methods demonstrate the feasibility of learning navigation behavior from semantic cues, but they exhibit recurring limitations that motivate alternative approaches. These include extensive training requirements, limited interpretability, closed-set semantics, lack of persistent semantic memory, and reduced robustness to domain changes. 
 These structural shortcomings have motivated recent work toward modular exploration frameworks that integrate pretrained vision-language models, which are discussed in the following section.
 
-% \begin{table}[H]
-% \centering
-% \footnotesize
-% \renewcommand{\arraystretch}{1.2}
-% \setlength{\tabcolsep}{6pt}
-% \begin{tabularx}{\textwidth}{
-% |l|c|c|c|c|c|c|c}
-% \hline
-% \textbf{Capability / Method} &
-% \textbf{DRL} &
-% \textbf{BC} &
-% \textbf{Supervised} &
-% \textbf{CLIP} &
-% \textbf{DINO} &
-% \textbf{DAS} &
-% \textbf{CAS} \\
-% \hline
-
-% Limited policy-level interpretability
-% & \cite{majumdarZSONZeroShotObjectGoal2023}
-% & \cite{ramrakhyaPIRLNavPretrainingImitation2023}
-% & \xmark
-% & \xmark
-% & \xmark
-% & \cite{majumdarZSONZeroShotObjectGoal2023}
-% & \xmark \\
-% \hline
-
-% Explicit semantic memory
-% & \xmark
-% & \xmark
-% & \xmark
-% & \xmark
-% & \xmark
-% & \xmark
-% & \xmark \\
-% \hline
-
-% Zero-shot capability
-% & \xmark
-% & \xmark
-% & \xmark
-% & \cite{majumdarZSONZeroShotObjectGoal2023}
-% & \xmark
-% & \xmark
-% & \xmark \\
-% \hline
-
-% Explicit object detection module
-% & \xmark
-% & \xmark
-% & \xmark
-% & \xmark
-% & \xmark
-% & \xmark
-% & \xmark \\
-% \hline
-
-% Closed-set object categories
-% & \cite{ramakrishnanPONIPotentialFunctions2022}
-% & \cite{ramrakhyaPIRLNavPretrainingImitation2023}
-% & \cite{ramakrishnanPONIPotentialFunctions2022}
-% & \xmark
-% & \cite{ramrakhyaPIRLNavPretrainingImitation2023}
-% & \xmark
-% & \xmark \\
-% \hline
-
-% Requires retraining for domain shift
-% & \cite{majumdarZSONZeroShotObjectGoal2023}
-% & \cite{ramrakhyaPIRLNavPretrainingImitation2023}
-% & \cite{ramakrishnanPONIPotentialFunctions2022}
-% & \xmark
-% & \xmark
-% & \xmark
-% & \xmark \\
-% \hline
-
-% Exploration strategy learned
-% & \cite{majumdarZSONZeroShotObjectGoal2023}
-% & \cite{ramrakhyaPIRLNavPretrainingImitation2023}
-% & \xmark
-% & \xmark
-% & \xmark
-% & \xmark
-% & \xmark \\
-% \hline
-
-% Exploration strategy explicit
-% & \xmark
-% & \xmark
-% & \cite{ramakrishnanPONIPotentialFunctions2022}
-% & \xmark
-% & \xmark
-% & \xmark
-% & \xmark \\
-% \hline
-
-% Planner-based navigation
-% & \xmark
-% & \xmark
-% & \cite{ramakrishnanPONIPotentialFunctions2022}
-% & \xmark
-% & \xmark
-% & \xmark
-% & \xmark \\
-% \hline
-
-% \end{tabularx}
-% \caption{Capability--implementation matrix for learning-based semantic exploration approaches.
-% Rows indicate key system properties or limitations, while columns denote architectural or learning
-% mechanisms through which these properties arise. Each cell lists representative works that
-% exhibit the corresponding association.}
-% \label{tab:sota:learning_capability_matrix}
-% \end{table}
-
 \section{Foundation-Model-Based Semantic Exploration}
 \label{sec:sota:foundation_models}
 
@@ -299,7 +183,7 @@ Table~\ref{tab:sota:foundation_design_patterns} summarizes representative founda
     & \textbf{Primary failure causality} \\
     \hline
 
-    \textbf{ESC}
+    \textbf{ESC~\cite{zhouESCExplorationSoft2023}}
     & Object detections + \ac{LLM} priors
     & Probabilistic frontier scoring (PSL)
     & Single-step confidence, no revision
@@ -307,7 +191,7 @@ Table~\ref{tab:sota:foundation_design_patterns} summarizes representative founda
     & False positives amplified by reasoning priors \\
     \hline
 
-    \textbf{CoW}
+    \textbf{CoW~\cite{gadreCoWsPastureBaselines2022}}
     & Image-text similarity \ac{CLIP}
     & No explicit geometric fusion
     & Threshold-based similarity
@@ -315,7 +199,7 @@ Table~\ref{tab:sota:foundation_design_patterns} summarizes representative founda
     & Oscillation and local minima near false positives \\
     \hline
 
-    \textbf{SemUtil}
+    \textbf{SemUtil~\cite{chenHowNotTrain2023}}
     & Closed-set detections + \ac{CLIP} similarity
     & Utility map over geometric frontiers
     & No confidence decay or belief update
@@ -323,7 +207,7 @@ Table~\ref{tab:sota:foundation_design_patterns} summarizes representative founda
     & Persistent corruption from misdetections \\
     \hline
 
-    \textbf{VLFM}
+    \textbf{VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}}
     & Dense image-text similarity~\ac{BLIP}
     & Semantic value-map fused with frontier map
     & Weighted averaging over observations
@@ -431,6 +315,15 @@ Table~\ref{tab:sota:persistent_mapping_exploration} summarizes recent approaches
 & Irreversible feature averaging causes semantic noise and ambiguity \\
 \hline
 
+\textbf{PIGEON~\cite{PIGEONVLMDrivenObject}}
+& Language-conditioned episodic visual memory (\ac{PoI} snapshots)
+& 2D geometric exploration map + episodic \ac{PoI} memory
+& \cmark
+& Episodic accumulation of visual evidence (per episode)
+& \xmark
+& No persistent semantic belief state or belief revision mechanism \\
+\hline
+
 \textbf{DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025}}
 & Dual semantic maps (short-term + long-term)
 & 2D grid maps
@@ -440,31 +333,15 @@ Table~\ref{tab:sota:persistent_mapping_exploration} summarizes recent approaches
 & Long-term map cannot correct early semantic errors \\
 \hline
 
-\textbf{ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023}}
-& Object-centric scene graph
-& Graph + metric map
-& \cmark
-& Graph augmentation
-& \xmark
-& No uncertainty-aware belief correction \\
-\hline
-
-\textbf{Pigeon~\cite{PIGEONVLMDrivenObject}}
-& Language-conditioned episodic object memory
-& Hybrid map + memory buffer
-& \cmark
-& Episodic memory aggregation
-& \xmark
-& No persistent belief across episodes \\
-\hline
-
 \end{tabularx}
-\caption{Comparison of persistent semantic mapping approaches for exploration.
+\caption{Comparison of semantic memory representations for exploration.
 The table highlights how different methods store semantic information, update it over time,
 and whether they support belief revision, revealing a common lack of mechanisms for correcting
 erroneous semantic memories.}
 \label{tab:sota:persistent_mapping_exploration}
 \end{table}
+
+% ---------------------- OneMap, VLMaps ----------------------
 
 A representative approach to building persistent open-vocabulary semantic maps during exploration
 is presented by \citeauthor{buschOneMapFind2025}~\cite{buschOneMapFind2025} and
@@ -500,72 +377,216 @@ Furthermore, the projection of semantic information onto a 2.5D grid discards ve
 and instance-level geometry, limiting semantic fidelity in complex environments and preventing
 accurate 3D object localization for downstream tasks such as manipulation or grasp planning~\cite{guConceptGraphsOpenVocabulary3D2023}.
 
-~\citeauthor{jiangDualMapOnlineOpenVocabulary2025} introduced DualMap, a framework that maintains two complementary semantic maps during exploration: a short-term map that captures recent observations and a long-term map that aggregates persistent semantic knowledge~\cite{jiangDualMapOnlineOpenVocabulary2025}. Unlike \ac{OneMap}~\cite{buschOneMapFind2025} and \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, rely on pixel-wise feature extraction, DualMap first segments and crops objects from the \ac{RGB}-image via YOLO-World~\cite{chengYOLOWorldRealTimeOpenVocabulary2024} and with this cropped image it computes the visual embedding vector using CLIP~\cite{radfordLearningTransferableVisual2021}. If the segmneted object also includes a textual label, the text embedding is computed using CLIP's text encoder. The final object embedding is calculated in Equation~\ref{eq:feature_fusion}:
+% Pigeon
+
+\citeauthor{PIGEONVLMDrivenObject}~\cite{PIGEONVLMDrivenObject} introduced \textit{PIGEON}, a vision-language-model-driven exploration framework that replaces
+persistent dense semantic maps with an episodic, object-centric memory abstraction.
+Instead of maintaining a globally consistent semantic map, PIGEON represents the environment
+as a set of semantically meaningful \textit{\acp{PoI}}, corresponding to geometrically salient
+observation locations enriched with visual context.
+
+At each \ac{PoI}, the robot stores a small set of \ac{RGB} observations captured from multiple
+viewpoints~\cite{PIGEONVLMDrivenObject}.
+Semantic evaluation is deferred to query time, where a vision-language model jointly reasons over the language query and the stored \ac{RGB} observations to assess the semantic relevance of each \ac{PoI}.
+These relevance assessments are used to guide \ac{PoI} selection, while low-level navigation between \acp{PoI} is handled by a classical planner. Reinforcement learning is employed to fine-tune the VLM’s \ac{PoI} selection behavior, rather than to directly select navigation actions.
+
+Formally, each \ac{PoI} $p_i$ is defined by a spatial location $\mathbf{x}_i$ and an associated
+set of \ac{RGB} observations $\mathcal{I}_i = \{I_{i,1}, \dots, I_{i,K}\}$ captured from different
+viewpoints at that location~\cite{PIGEONVLMDrivenObject}.
+No semantic labels, object identities, or belief states are stored; semantic interpretation is
+performed on demand and is not consolidated into a persistent semantic world model.
+
+In contrast to dense mapping approaches such as \ac{OneMap}~\cite{buschOneMapFind2025} and
+\ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, PIGEON does not perform accumulative fusion of
+semantic features into a persistent spatial representation.
+As a result, it is less susceptible to semantic drift caused by irreversible belief fusion, but
+does not support belief revision or long-term semantic consistency across multiple object-search
+tasks~\cite{PIGEONVLMDrivenObject}.
+
+Methodologically, PIGEON occupies an intermediate position between dense semantic mapping and
+object-centric persistent representations such as DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025}
+and ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023}.
+It combines episodic visual memory with query-conditioned semantic scoring and reinforcement
+learning-based navigation, while deliberately avoiding persistent semantic state estimation.
+
+% ---------------------- DualMap ----------------------
+
+\citeauthor{jiangDualMapOnlineOpenVocabulary2025}~\cite{jiangDualMapOnlineOpenVocabulary2025}
+introduced \textit{DualMap}, an object-centric framework for online open-vocabulary exploration
+that explicitly separates short-term perceptual observations from long-term semantic memory.
+Unlike dense feature-map approaches such as \ac{OneMap}~\cite{buschOneMapFind2025} and
+\ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, which store pixel-wise or cell-wise language
+embeddings, DualMap reasons over discrete object instances and their spatial relations.
+
+At each timestep, objects are detected and segmented from the RGB image using
+YOLO-World~\cite{chengYOLOWorldRealTimeOpenVocabulary2024}.
+For each segmented object, a visual embedding is computed from the cropped image using
+CLIP’s image encoder~\cite{radfordLearningTransferableVisual2021}.
+If a textual label is available, an additional text embedding is obtained from CLIP’s text encoder.
+The final object-level semantic representation is computed as a weighted fusion of image and
+text embeddings:
 
 \begin{equation}
-\mathbf{f}_t = \alpha \, \mathbf{f}^{\text{img}}_t + (1 - \alpha) \, \mathbf{f}^{\text{text}}_t,
-\quad \text{with } \alpha = 0.7
+\mathbf{f}_t
+=
+\alpha \, \mathbf{f}^{\text{img}}_t
++
+(1 - \alpha) \, \mathbf{f}^{\text{text}}_t,
+\qquad \alpha = 0.7,
 \label{eq:feature_fusion}
 \end{equation}
 
-where \(\mathbf{f}^{\text{img}}_t\) and \(\mathbf{f}^{\text{text}}_t\) are the image and text embeddings at time \(t\), respectively, and \(\alpha\) balances their contributions. This allows ...
 
-DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025} has two semantic maps: a short-term (Local Concrete Map) map that captures recent observations and a long-term map (Abstract Map) that aggregates persistent semantic knowledge. The short-term map is updated frequently with new observations, while the long-term map is updated if the confidence in the short-term map exceeds a certain threshold. This dual-map structure aims to balance adaptability to new information with stability of long-term knowledge. A object is either added or updated depending on how similar the new observation is to existing objects and the \ac{IoU} over the observed pointcloud to the existing object pointcloud in the long-term map. The concrete maps stores actual object instances in 3D space, while the abstract map stores stable smeantic landmarkds for navigation. Objects are splitted into two main categories: \textit{anchors} (e.g., furniture) that are static and \textit{volatile objects} (e.g., small items) that can be moved. The long-term map only stores anchors to ensure stability. Each anchor in the long-term map has a list of associated volatile objects observed nearby in the short-term map, allowing the system to reason about object co-occurrences without permanently storing potentially transient items. In the case for searching a Mug, it doesnt compare each pointcloud in the long-term map to the current observation, but rather it checks which anchors have mugs associated with them and navigates to those anchors. During exploration, the robot navigates with a classical A* Planner to the likiest anchor in the abstract map, until the object is detected in the short-term map.
+where $\mathbf{f}^{\text{img}}_t$ and $\mathbf{f}^{\text{text}}_t$ denote the image-based and
+text-based embeddings at time $t$, respectively.
+This object-centric representation enables open-vocabulary semantic reasoning without
+requiring dense per-pixel feature storage.
+
+DualMap maintains two complementary semantic maps.
+The \textit{local concrete map} stores recently observed object instances as 3D point clouds
+with associated semantic embeddings, enabling rapid adaptation to new observations.
+In contrast, the \textit{abstract map} serves as a long-term semantic memory and stores only
+stable object instances, referred to as \textit{anchors} (e.g., tables, desks, counters),
+which are unlikely to change location over time.
+Smaller or movable objects are treated as \textit{volatile} and are not permanently stored
+in the abstract map~\cite{buschOneMapFind2025}.
+
+Objects are added to or updated in the maps based on a combination of semantic similarity
+between embeddings and geometric overlap, measured via the 3D \ac{IoU}
+between observed point clouds.
+An object is updated from the local concrete map to the abstract map only when its
+confidence exceeds a predefined threshold, thereby balancing adaptability with long-term
+stability.
+Each anchor in the abstract map maintains a list of associated volatile objects that have
+been observed in its vicinity, allowing the system to reason about object co-occurrence
+without permanently storing potentially transient items~\cite{buschOneMapFind2025}.
+
+During object-goal exploration, DualMap does not directly search the entire map for the target
+object. Instead, the language query is embedded using CLIP and matched against the semantic
+representations of anchors and their associated volatile objects.
+Anchors with high semantic relevance are prioritized as navigation goals, and the robot
+navigates toward them using a classical \ac{A*} planner~\cite{kabirEnhancedRobotMotion2023} on the occupancy map. Once the target object is detected again in the local concrete map, exploration terminates.
+
+By separating short-term perceptual memory from long-term semantic anchors, DualMap achieves more structured and interpretable language-guided navigation than dense feature-map approaches. However, semantic information in DualMap is primarily used for exploitation of previously observed anchors, while exploration itself remains purely geometry-driven. The framework does not provide a mechanism or hyperparameter to explicitly balance semantic exploration and exploitation, as semantic reasoning is only applied after anchors have been formed~\cite{jiangDualMapOnlineOpenVocabulary2025}. As a result, DualMap favors semantic exploitation over semantic exploration, which can limit its ability to actively search for objects that have not yet been associated with existing anchors.
 
 
 \subsection*{Semantic Scene Reconstruction}
-\begin{itemize}
-    \item Overview of approaches to build and update semantic maps during exploration:
-    \begin{itemize}
-        \item 2D grid maps
-        \item Pointclouds
-        \item Voxel grids
-        \item Octomaps
-        \item Scene graphs
-        \item Neural Radiance Fields (NeRFs)
-        \item Feature Fields
-    \end{itemize}
-    \item Techniques for fusing sensor data into persistent 2D/3D representations:
-    \begin{itemize}
-        \item Storing Visual Embeddings (e.g., CLIP features) in 3D maps for semantic querying.
-        \item Incremental updating of semantic labels based on new observations.
-        \item Handling uncertainty and conflicting detections over time.
-    \end{itemize}
-    \item Comparison of representations (Octomaps, point clouds, voxel grids) in terms of:
-    \begin{itemize}
-        \item Memory efficiency.
-        \item Ability to store semantic labels persistently.
-    \end{itemize}
-    \item Discussion of \dots
-    \begin{itemize}
-        \item OpenFusion
-        \item Clio
-        \item GeFF
-        \item CLIP-Fields
-        \item ConceptFusion
-        \item LERF
-    \end{itemize}
-    as examples of global 3D semantic maps.
-    \item Limitations in updating or correcting the map after wrong detections.
-\end{itemize}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{
+|l|X|X|c|X|c|X|}
+\hline
+\textbf{Method}
+& \textbf{Semantic Memory Type}
+& \textbf{Spatial Representation}
+& \textbf{Open-Vocab}
+& \textbf{Update Mechanism}
+& \textbf{Belief Revision}
+& \textbf{Primary Limitation} \\
+\hline
+
+\textbf{ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023}}
+& Dense per-cell language embeddings (\ac{CLIP}-based~\cite{radfordLearningTransferableVisual2021})
+& 2.5D top-down grid map
+& \cmark
+& Multi-view feature averaging (accumulative fusion)
+& \xmark
+& Irreversible feature averaging causes semantic noise and ambiguity \\
+\hline
+
+\textbf{Clio~\cite{jiangDualMapOnlineOpenVocabulary2025}}
+& Dual semantic maps (short-term + long-term)
+& 2D grid maps
+& \cmark
+& Dual-stream accumulative fusion
+& \xmark
+& Long-term map cannot correct early semantic errors \\
+\hline
+
+\textbf{OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}}
+& Open-Vocabulary Belief Map (\ac{CLIP} features)
+& 2.5D top-down grid map
+& \cmark
+& Uncertainty-weighted accumulative fusion
+& \xmark
+& Irreversible belief fusion leads to semantic drift \\
+\hline
+
+\textbf{LERF~\cite{PIGEONVLMDrivenObject}}
+& Language-conditioned episodic visual memory (\ac{PoI} snapshots)
+& 2D geometric exploration map + episodic \ac{PoI} memory
+& \cmark
+& Episodic accumulation of visual evidence (per episode)
+& \xmark
+& No persistent semantic belief state or belief revision mechanism \\
+\hline
+
+\end{tabularx}
+\caption{Comparison of semantic memory representations for exploration.
+The table highlights how different methods store semantic information, update it over time,
+and whether they support belief revision, revealing a common lack of mechanisms for correcting
+erroneous semantic memories.}
+\label{tab:sota:semantic_scene_reconstruction_overview}
+\end{table}
 
 
 
-\section{Object Detection and Promptable Models}
-\begin{itemize}
-    \item Review of traditional and open-vocabulary object detection methods.
-    \item Analysis of grounding-capable detectors and segmentation models for zero-shot tasks.
-    \item Specific evaluation of the following models for their suitability in semantic multi-object search:
-    \begin{itemize}
-        \item YOLO-E
-        \item GroundingDINO
-        \item MobileSAM
-        \item GroundedSAM
-        \item SEEM
-        \item OWL-ViT
-        \item MaskDINO
-        \item GLIP
-    \end{itemize}
-    \item Discussion of promptable vision-language models supporting multi-modal queries (text, image, audio).
-    \item Challenges with false positives in zero-shot settings and their implications for reliable multi-object detection.
-\end{itemize}
+% \begin{itemize}
+%     \item Overview of approaches to build and update semantic maps during exploration:
+%     \begin{itemize}
+%         \item 2D grid maps
+%         \item Pointclouds
+%         \item Voxel grids
+%         \item Octomaps
+%         \item Scene graphs
+%         \item Neural Radiance Fields (NeRFs)
+%         \item Feature Fields
+%     \end{itemize}
+%     \item Techniques for fusing sensor data into persistent 2D/3D representations:
+%     \begin{itemize}
+%         \item Storing Visual Embeddings (e.g., CLIP features) in 3D maps for semantic querying.
+%         \item Incremental updating of semantic labels based on new observations.
+%         \item Handling uncertainty and conflicting detections over time.
+%     \end{itemize}
+%     \item Comparison of representations (Octomaps, point clouds, voxel grids) in terms of:
+%     \begin{itemize}
+%         \item Memory efficiency.
+%         \item Ability to store semantic labels persistently.
+%     \end{itemize}
+%     \item Discussion of \dots
+%     \begin{itemize}
+%         \item OpenFusion
+%         \item Clio
+%         \item GeFF
+%         \item CLIP-Fields
+%         \item ConceptFusion
+%         \item LERF
+%     \end{itemize}
+%     as examples of global 3D semantic maps.
+%     \item Limitations in updating or correcting the map after wrong detections.
+% \end{itemize}
+
+
+
+% \section{Object Detection and Promptable Models}
+% \begin{itemize}
+%     \item Review of traditional and open-vocabulary object detection methods.
+%     \item Analysis of grounding-capable detectors and segmentation models for zero-shot tasks.
+%     \item Specific evaluation of the following models for their suitability in semantic multi-object search:
+%     \begin{itemize}
+%         \item YOLO-E
+%         \item GroundingDINO
+%         \item MobileSAM
+%         \item GroundedSAM
+%         \item SEEM
+%         \item OWL-ViT
+%         \item MaskDINO
+%         \item GLIP
+%     \end{itemize}
+%     \item Discussion of promptable vision-language models supporting multi-modal queries (text, image, audio).
+%     \item Challenges with false positives in zero-shot settings and their implications for reliable multi-object detection.
+% \end{itemize}
