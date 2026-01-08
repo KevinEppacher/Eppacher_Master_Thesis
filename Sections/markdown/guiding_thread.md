@@ -316,13 +316,11 @@ These zero-shot and training-free approaches enable real-time semantic explorati
         - No belief revision mechanism to correct erroneous semantic memories.
         - 2.5D representation lacks full 3D spatial context.
 
-3. SemExp:
+3. DualMap:
 
 4. ConceptGraphs:
 
 5. Pigeon:
-
-6. DualMap:
 
 ### Semantic Scene Reconstruction
 

@@ -431,6 +431,15 @@ Table~\ref{tab:sota:persistent_mapping_exploration} summarizes recent approaches
 & Irreversible feature averaging causes semantic noise and ambiguity \\
 \hline
 
+\textbf{DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025}}
+& Dual semantic maps (short-term + long-term)
+& 2D grid maps
+& \cmark
+& Dual-stream accumulative fusion
+& \xmark
+& Long-term map cannot correct early semantic errors \\
+\hline
+
 \textbf{ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023}}
 & Object-centric scene graph
 & Graph + metric map
@@ -438,15 +447,6 @@ Table~\ref{tab:sota:persistent_mapping_exploration} summarizes recent approaches
 & Graph augmentation
 & \xmark
 & No uncertainty-aware belief correction \\
-\hline
-
-\textbf{SemExp~\cite{chaplotObjectGoalNavigation2020}}
-& Closed-set object categories
-& Top-down grid map
-& \xmark
-& Overwrite / accumulate
-& \xmark
-& Closed-set semantics limit generalization \\
 \hline
 
 \textbf{Pigeon~\cite{PIGEONVLMDrivenObject}}
@@ -458,15 +458,6 @@ Table~\ref{tab:sota:persistent_mapping_exploration} summarizes recent approaches
 & No persistent belief across episodes \\
 \hline
 
-\textbf{DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025}}
-& Dual semantic maps (short-term + long-term)
-& 2D grid maps
-& \cmark
-& Dual-stream accumulative fusion
-& \xmark
-& Long-term map cannot correct early semantic errors \\
-\hline
-
 \end{tabularx}
 \caption{Comparison of persistent semantic mapping approaches for exploration.
 The table highlights how different methods store semantic information, update it over time,
@@ -475,7 +466,51 @@ erroneous semantic memories.}
 \label{tab:sota:persistent_mapping_exploration}
 \end{table}
 
+A representative approach to building persistent open-vocabulary semantic maps during exploration
+is presented by \citeauthor{buschOneMapFind2025}~\cite{buschOneMapFind2025} and
+\citeauthor{huangVisualLanguageMaps2023}~\cite{huangVisualLanguageMaps2023}.
+Both methods construct a 2.5D top-down grid map in which semantic information is stored at the
+cell level in the form of language-aligned visual embeddings, enabling open-vocabulary querying
+via image-text similarity.
 
+In both frameworks, incoming \ac{RGB-D} observations are processed by a vision-language model to
+extract dense semantic features. In \ac{OneMap}, global \ac{CLIP} image embeddings are projected
+into the map using camera intrinsics and extrinsics, while \ac{VLMaps} employs language-driven
+semantic segmentation (LSeg) to obtain dense per-pixel language embeddings~\cite{buschOneMapFind2025,huangVisualLanguageMaps2023}. These features are associated with corresponding grid cells in the top-down map by back-projecting depth pixels into 3D space and discretizing them onto the 2.5D grid representation.
+
+As the robot explores, newly observed embeddings are fused with existing map entries in an
+accumulative manner. \citeauthor{buschOneMapFind2025} perform uncertainty-aware recursive fusion,
+in which observations with higher confidence exert greater influence on the stored semantic
+representation, whereas \citeauthor{huangVisualLanguageMaps2023} apply multi-view feature averaging
+without explicit uncertainty modeling. In both cases, once semantic features are integrated into the map, they are not selectively down-weighted or removed at later time steps.
+
+Open-vocabulary object querying is performed by comparing stored map embeddings against the
+embedding of a text prompt using cosine similarity (see Equation~\ref{eq:vlm_cosine_similarity}).
+An object is considered detected if the similarity score in any map cell exceeds a predefined
+threshold.
+Because this decision relies solely on similarity values rather than explicit object detection
+or instance verification, both approaches are sensitive to threshold selection and may produce
+false positives in visually cluttered or ambiguous scenes.
+
+Importantly, neither \ac{OneMap} nor \ac{VLMaps} incorporates mechanisms for belief revision or
+error correction.
+Once incorrect or noisy observations are fused into the map, they persist indefinitely and can
+bias future exploration decisions, leading to semantic drift over time~\cite{buschOneMapFind2025,huangVisualLanguageMaps2023}.
+Furthermore, the projection of semantic information onto a 2.5D grid discards vertical structure
+and instance-level geometry, limiting semantic fidelity in complex environments and preventing
+accurate 3D object localization for downstream tasks such as manipulation or grasp planning~\cite{guConceptGraphsOpenVocabulary3D2023}.
+
+~\citeauthor{jiangDualMapOnlineOpenVocabulary2025} introduced DualMap, a framework that maintains two complementary semantic maps during exploration: a short-term map that captures recent observations and a long-term map that aggregates persistent semantic knowledge~\cite{jiangDualMapOnlineOpenVocabulary2025}. Unlike \ac{OneMap}~\cite{buschOneMapFind2025} and \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, rely on pixel-wise feature extraction, DualMap first segments and crops objects from the \ac{RGB}-image via YOLO-World~\cite{chengYOLOWorldRealTimeOpenVocabulary2024} and with this cropped image it computes the visual embedding vector using CLIP~\cite{radfordLearningTransferableVisual2021}. If the segmneted object also includes a textual label, the text embedding is computed using CLIP's text encoder. The final object embedding is calculated in Equation~\ref{eq:feature_fusion}:
+
+\begin{equation}
+\mathbf{f}_t = \alpha \, \mathbf{f}^{\text{img}}_t + (1 - \alpha) \, \mathbf{f}^{\text{text}}_t,
+\quad \text{with } \alpha = 0.7
+\label{eq:feature_fusion}
+\end{equation}
+
+where \(\mathbf{f}^{\text{img}}_t\) and \(\mathbf{f}^{\text{text}}_t\) are the image and text embeddings at time \(t\), respectively, and \(\alpha\) balances their contributions. This allows ...
+
+DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025} has two semantic maps: a short-term (Local Concrete Map) map that captures recent observations and a long-term map (Abstract Map) that aggregates persistent semantic knowledge. The short-term map is updated frequently with new observations, while the long-term map is updated if the confidence in the short-term map exceeds a certain threshold. This dual-map structure aims to balance adaptability to new information with stability of long-term knowledge. A object is either added or updated depending on how similar the new observation is to existing objects and the \ac{IoU} over the observed pointcloud to the existing object pointcloud in the long-term map. The concrete maps stores actual object instances in 3D space, while the abstract map stores stable smeantic landmarkds for navigation. Objects are splitted into two main categories: \textit{anchors} (e.g., furniture) that are static and \textit{volatile objects} (e.g., small items) that can be moved. The long-term map only stores anchors to ensure stability. Each anchor in the long-term map has a list of associated volatile objects observed nearby in the short-term map, allowing the system to reason about object co-occurrences without permanently storing potentially transient items. In the case for searching a Mug, it doesnt compare each pointcloud in the long-term map to the current observation, but rather it checks which anchors have mugs associated with them and navigates to those anchors. During exploration, the robot navigates with a classical A* Planner to the likiest anchor in the abstract map, until the object is detected in the short-term map.
 
 
 \subsection*{Semantic Scene Reconstruction}
