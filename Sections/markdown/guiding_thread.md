@@ -324,6 +324,18 @@ These zero-shot and training-free approaches enable real-time semantic explorati
 
 ### Semantic Scene Reconstruction
 
+1. ConceptGraphs:
+    Pipeline:
+        - 1. Input: RGB-D image + robot/camera pose
+        - 2. Object Detection and Segmentation:
+            - Uses Mask R-CNN to detect and segment objects in the RGB image.
+        - 3. 3D Object Localization:
+            - Projects 2D detections into 3D space using depth information to create 3D bounding boxes.
+        - 4. Scene Graph Construction:
+            - Builds a 3D scene graph where nodes represent objects and edges represent spatial relationships (e.g., "on top of", "next to").
+        - 5. Language Integration:
+            - Uses a Large Language Model (LLM) to reason about object relationships and generate high-level plans for exploration based on the scene graph.
+
 ## 2.4 Object Detection and Promptable Models
 
 

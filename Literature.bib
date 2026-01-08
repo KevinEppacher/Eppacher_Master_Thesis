@@ -178,6 +178,19 @@
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/RGE5D2PZ/Chen et al. - 2023 - How To Not Train Your Dragon Training-free Embodied Object Goal Navigation with Semantic Frontiers.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/K42WJCBZ/2305.html}
 }
 
+@online{chertiReproducibleScalingLaws2022,
+  title = {Reproducible Scaling Laws for Contrastive Language-Image Learning},
+  author = {Cherti, Mehdi and Beaumont, Romain and Wightman, Ross and Wortsman, Mitchell and Ilharco, Gabriel and Gordon, Cade and Schuhmann, Christoph and Schmidt, Ludwig and Jitsev, Jenia},
+  date = {2022-12-14},
+  doi = {10.1109/CVPR52729.2023.00276},
+  url = {https://arxiv.org/abs/2212.07143v2},
+  urldate = {2026-01-08},
+  abstract = {Scaling up neural networks has led to remarkable performance across a wide range of tasks. Moreover, performance often follows reliable scaling laws as a function of training set size, model size, and compute, which offers valuable guidance as large-scale experiments are becoming increasingly expensive. However, previous work on scaling laws has primarily used private data \textbackslash\& models or focused on uni-modal language or vision learning. To address these limitations, we investigate scaling laws for contrastive language-image pre-training (CLIP) with the public LAION dataset and the open-source OpenCLIP repository. Our large-scale experiments involve models trained on up to two billion image-text pairs and identify power law scaling for multiple downstream tasks including zero-shot classification, retrieval, linear probing, and end-to-end fine-tuning. We find that the training distribution plays a key role in scaling laws as the OpenAI and OpenCLIP models exhibit different scaling behavior despite identical model architectures and similar training recipes. We open-source our evaluation workflow and all models, including the largest public CLIP models, to ensure reproducibility and make scaling laws research more accessible. Source code and instructions to reproduce this study will be available at https://github.com/LAION-AI/scaling-laws-openclip},
+  langid = {english},
+  organization = {arXiv.org},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/AT493AAL/Cherti et al. - 2022 - Reproducible scaling laws for contrastive language-image learning.pdf}
+}
+
 @article{dorbalaCanEmbodiedAgent2024,
   title = {Can an {{Embodied Agent Find Your}} "{{Cat-shaped Mug}}"? {{LLM-Guided Exploration}} for {{Zero-Shot Object Navigation}}},
   shorttitle = {Can an {{Embodied Agent Find Your}} "{{Cat-shaped Mug}}"?},
@@ -669,6 +682,23 @@
   langid = {english},
   keywords = {multimodal sensor fusion,open-world perception,robotic perception,semantic SLAM,zero-shot learning},
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/NBHH6UZS/Miao et al. - 2025 - A Frontier Review of Semantic SLAM Technologies Applied to the Open World.pdf}
+}
+
+@online{oquabDINOv2LearningRobust2024,
+  title = {{{DINOv2}}: {{Learning Robust Visual Features}} without {{Supervision}}},
+  shorttitle = {{{DINOv2}}},
+  author = {Oquab, Maxime and Darcet, Timothée and Moutakanni, Théo and Vo, Huy and Szafraniec, Marc and Khalidov, Vasil and Fernandez, Pierre and Haziza, Daniel and Massa, Francisco and El-Nouby, Alaaeldin and Assran, Mahmoud and Ballas, Nicolas and Galuba, Wojciech and Howes, Russell and Huang, Po-Yao and Li, Shang-Wen and Misra, Ishan and Rabbat, Michael and Sharma, Vasu and Synnaeve, Gabriel and Xu, Hu and Jegou, Hervé and Mairal, Julien and Labatut, Patrick and Joulin, Armand and Bojanowski, Piotr},
+  date = {2024-02-02},
+  eprint = {2304.07193},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2304.07193},
+  url = {http://arxiv.org/abs/2304.07193},
+  urldate = {2026-01-08},
+  abstract = {The recent breakthroughs in natural language processing for model pretraining on large quantities of data have opened the way for similar foundation models in computer vision. These models could greatly simplify the use of images in any system by producing all-purpose visual features, i.e., features that work across image distributions and tasks without finetuning. This work shows that existing pretraining methods, especially self-supervised methods, can produce such features if trained on enough curated data from diverse sources. We revisit existing approaches and combine different techniques to scale our pretraining in terms of data and model size. Most of the technical contributions aim at accelerating and stabilizing the training at scale. In terms of data, we propose an automatic pipeline to build a dedicated, diverse, and curated image dataset instead of uncurated data, as typically done in the self-supervised literature. In terms of models, we train a ViT model (Dosovitskiy et al., 2020) with 1B parameters and distill it into a series of smaller models that surpass the best available all-purpose features, OpenCLIP (Ilharco et al., 2021) on most of the benchmarks at image and pixel levels.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/7XXEHEJG/Oquab et al. - 2024 - DINOv2 Learning Robust Visual Features without Supervision.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/J6ZATIPM/2304.html}
 }
 
 @online{PIGEONVLMDrivenObject,

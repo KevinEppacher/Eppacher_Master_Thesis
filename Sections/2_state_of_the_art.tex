@@ -473,66 +473,53 @@ By separating short-term perceptual memory from long-term semantic anchors, Dual
 \subsection*{Semantic Scene Reconstruction}
 
 \begin{table}[H]
-\centering
-\footnotesize
-\renewcommand{\arraystretch}{1.2}
-\setlength{\tabcolsep}{4pt}
-\begin{tabularx}{\textwidth}{
-|l|X|X|c|X|c|X|}
-\hline
-\textbf{Method}
-& \textbf{Semantic Memory Type}
-& \textbf{Spatial Representation}
-& \textbf{Open-Vocab}
-& \textbf{Update Mechanism}
-& \textbf{Belief Revision}
-& \textbf{Primary Limitation} \\
-\hline
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.2}
 
-\textbf{ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023}}
-& Dense per-cell language embeddings (\ac{CLIP}-based~\cite{radfordLearningTransferableVisual2021})
-& 2.5D top-down grid map
-& \cmark
-& Multi-view feature averaging (accumulative fusion)
-& \xmark
-& Irreversible feature averaging causes semantic noise and ambiguity \\
-\hline
+    \begin{tabular}{l|l l c c c}
+    \toprule
+    \textbf{Method}
+    & \textbf{Representation}
+    & \textbf{Foundation Model}
+    & \textbf{Zero-Shot}
+    & \textbf{Real-Time}
+    & \textbf{Online SLAM} \\
+    \midrule
 
-\textbf{Clio~\cite{jiangDualMapOnlineOpenVocabulary2025}}
-& Dual semantic maps (short-term + long-term)
-& 2D grid maps
-& \cmark
-& Dual-stream accumulative fusion
-& \xmark
-& Long-term map cannot correct early semantic errors \\
-\hline
+    ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023}
+    & Points
+    & OpenCLIP~\cite{chertiReproducibleScalingLaws2022}, SAM~\cite{kirillovSegmentAnything2023}
+    & \cmark
+    & \xmark
+    & \xmark \\
 
-\textbf{OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}}
-& Open-Vocabulary Belief Map (\ac{CLIP} features)
-& 2.5D top-down grid map
-& \cmark
-& Uncertainty-weighted accumulative fusion
-& \xmark
-& Irreversible belief fusion leads to semantic drift \\
-\hline
+    Clio~\cite{jiangDualMapOnlineOpenVocabulary2025}
+    & Grid (dual map)
+    & CLIP-based
+    & \cmark
+    & \xmark
+    & \cmark \\
 
-\textbf{LERF~\cite{PIGEONVLMDrivenObject}}
-& Language-conditioned episodic visual memory (\ac{PoI} snapshots)
-& 2D geometric exploration map + episodic \ac{PoI} memory
-& \cmark
-& Episodic accumulation of visual evidence (per episode)
-& \xmark
-& No persistent semantic belief state or belief revision mechanism \\
-\hline
+    OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}
+    & TSDF
+    & SEEM~\cite{zouSegmentEverythingEverywhere2023}
+    & \cmark
+    & \cmark
+    & \cmark \\
 
-\end{tabularx}
-\caption{Comparison of semantic memory representations for exploration.
-The table highlights how different methods store semantic information, update it over time,
-and whether they support belief revision, revealing a common lack of mechanisms for correcting
-erroneous semantic memories.}
-\label{tab:sota:semantic_scene_reconstruction_overview}
+    LERF~\cite{PIGEONVLMDrivenObject}
+    & NeRF
+    & OpenCLIP~\cite{chertiReproducibleScalingLaws2022}, DINOv2~\cite{oquabDINOv2LearningRobust2024}
+    & \xmark
+    & \xmark
+    & \xmark \\
+
+    \bottomrule
+\end{tabular}
+
+\caption{Comparison of semantic scene reconstruction methods. The table contrasts spatial representations, semantic abstractions, temporal update strategies, and the degree of online integration with SLAM systems.}\label{tab:sota:semantic_scene_reconstruction_overview}
 \end{table}
-
 
 
 % \begin{itemize}
@@ -559,7 +546,7 @@ erroneous semantic memories.}
 %     \end{itemize}
 %     \item Discussion of \dots
 %     \begin{itemize}
-%         \item OpenFusion
+%         \item OpenFusion/ConceptFusion
 %         \item Clio
 %         \item GeFF
 %         \item CLIP-Fields
