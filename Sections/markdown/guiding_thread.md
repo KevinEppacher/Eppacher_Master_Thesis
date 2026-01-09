@@ -328,13 +328,87 @@ These zero-shot and training-free approaches enable real-time semantic explorati
     Pipeline:
         - 1. Input: RGB-D image + robot/camera pose
         - 2. Object Detection and Segmentation:
-            - Uses Mask R-CNN to detect and segment objects in the RGB image.
-        - 3. 3D Object Localization:
-            - Projects 2D detections into 3D space using depth information to create 3D bounding boxes.
-        - 4. Scene Graph Construction:
-            - Builds a 3D scene graph where nodes represent objects and edges represent spatial relationships (e.g., "on top of", "next to").
-        - 5. Language Integration:
-            - Uses a Large Language Model (LLM) to reason about object relationships and generate high-level plans for exploration based on the scene graph.
+            - SAM for segmentation masks
+        - 3. 3D PCL Segmentation:
+            - Projects 2D masks into 3D point cloud based on depth and pose
+            - Denoising and filterng of segments with DBSCAN
+        - 4. CLIP Fetaure Extraction:
+            - Extracts CLIP embeddings for each object instance
+        - Observation-object Association:
+            - Either 3D segment gets updated or a new instance is added to memory
+            - Feature and spatial similarity is compared to existing instances
+            - Nearest neighbor search in feature and spatial space
+            - If exceeds threshold, new instance is created
+        - Graph Node Extraction:
+            - Each object instance becomes a node in the semantic graph
+            - Nodes store 3D geometry, object caption generated via LVLM, ...
+            - LLM reads caption of nodes and creates refined caption with system prompt
+        - Graph Edges:
+            - Spatial relationships between objects are encoded as edges
+            - LLM reasons about object-object and object-room relations
+            - Creates edges based on spatial proximity and LLM-inferred relationships
+        - Query Mechanism:
+            - LLM can query the graph to find objects matching a text description
+        - Downstream Tasks:
+            - Object-goal navigation by querying the graph for target objects
+            - Scene summarization by generating textual descriptions of the environment
+            - Particle Filter-based Localization using graph nodes as landmarks
+            - Robot Manipulation by identifying objects to interact with
+    Strengths:
+        - Rich 3D semantic representation with object instances and relationships.
+        - Integration of LLMs for advanced reasoning and querying.
+        - Supports diverse downstream tasks beyond navigation.
+    Limitations:
+        - High computational cost due to multiple model inferences (SAM, CLIP, LLMs).
+        - Relies on accurate segmentation and detection; errors propagate through the graph.
+        - No explicit fusion of multi-source detection confidence; relies on single detection pipeline.
+
+2. Clio:
+    Pipeline:
+        - 1. Input: 
+            - RGB-D image + robot/camera pose from classic occupancygrid SLAM
+            - Occupancy grid map for localization and navigation
+        - 2. Open-Vocabulary Object Detection:
+            - RGB images are processed by open-vocabulary perception modules
+            - Object proposals are generated and associated with:
+                - BB/segmentation mask
+                - CLIP-based semantic embedding
+        - 3. Object Representation:
+            - Each detected object is represented by:
+                - 3D position (from depth and pose)
+                - Semantic embedding (CLIP)
+                - Confidence score
+            - Objects are treated as discrete semantic entitiers and not dense features
+        - 4. Dual-Map Memory Structure:
+            - Local (Concrete) Map:
+                - Short-term memory for recent observations
+                - High update rate
+            - Global (Abstract) Map:
+                - Stores stable. task-relevant object instances ("anchors")
+                - Formed by clustering multiple concrete observations
+                - Long term semantic memory
+                - Does not store raw observations, only abstracted object concepts 
+        - 5. Object Association and Fusion:
+            New object instances are associated with existing ones using:
+                - Spatial proximity
+                - Semantic similarity (CLIP embedding distance)
+            - Promotion from concrete to abstract representation is governed by:
+                - Information Bottleneck-based clustering
+                - Task relevance rather than fixed heruistic thresholds
+            Transient or inconsistent detections remain the concrete representation
+        - Query Mechanism:
+            - A language query is embedded using CLIP’s text encoder
+            - The query embedding is matched against object embeddings in the abstract representation
+            - Objects with high semantic similarity are selected as navigation targets
+    Strengths:
+        - Dual-map structure balances short-term reactivity with long-term stability.
+        - Information-theoretic fusion reduces noise and emphasizes task-relevant objects.
+        - Open-vocabulary representation via CLIP enables flexible querying.
+    Limitations:
+        - Relies on accurate open-vocabulary detection; errors can affect both maps.
+        - Computational overhead from multiple model inferences.
+        - Pre-mapping required; not designed for online exploration.
+
 
 ## 2.4 Object Detection and Promptable Models
 

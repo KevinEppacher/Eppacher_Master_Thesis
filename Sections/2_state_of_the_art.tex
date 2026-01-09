@@ -281,65 +281,70 @@ This section reviews state-of-the-art methods for persistent semantic mapping bo
 Table~\ref{tab:sota:persistent_mapping_exploration} summarizes recent approaches to persistent semantic mapping for exploration tasks. The table highlights how different methods store semantic information, update it over time, and whether they support belief revision, revealing a common lack of mechanisms for correcting erroneous semantic memories.
 
 \begin{table}[H]
-\centering
-\footnotesize
-\renewcommand{\arraystretch}{1.2}
-\setlength{\tabcolsep}{4pt}
-\begin{tabularx}{\textwidth}{
-|l|X|X|c|X|c|X|}
-\hline
-\textbf{Method}
-& \textbf{Semantic Memory Type}
-& \textbf{Spatial Representation}
-& \textbf{Open-Vocab}
-& \textbf{Update Mechanism}
-& \textbf{Belief Revision}
-& \textbf{Primary Limitation} \\
-\hline
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.2}
 
-\textbf{OneMap~\cite{buschOneMapFind2025}}
-& Open-Vocabulary Belief Map (\ac{CLIP} features)
-& 2.5D top-down grid map
-& \cmark
-& Uncertainty-weighted accumulative fusion
-& \xmark
-& Irreversible belief fusion leads to semantic drift \\
-\hline
+    \begin{tabular}{
+    l |
+    p{3.0cm}
+    p{1.5cm}
+    >{\centering\arraybackslash}p{1.2cm}
+    p{2.0cm}
+    >{\centering\arraybackslash}p{1.2cm}
+    p{2.0cm}
+    }
+    \toprule
+    \textbf{Method}
+    & \textbf{Semantic Memory Type}
+    & \textbf{Spatial Representation}
+    & \textbf{Open-Vocab}
+    & \textbf{Update Mechanism}
+    & \textbf{Belief Revision}
+    & \textbf{Primary Limitation} \\
+    \midrule
 
-\textbf{VLMaps~\cite{huangVisualLanguageMaps2023}}
-& Dense per-cell language embeddings (\ac{CLIP}-based~\cite{radfordLearningTransferableVisual2021})
-& 2.5D top-down grid map
-& \cmark
-& Multi-view feature averaging (accumulative fusion)
-& \xmark
-& Irreversible feature averaging causes semantic noise and ambiguity \\
-\hline
+    \textbf{OneMap~\cite{buschOneMapFind2025}}
+    & Open-Vocabulary Belief Map (\ac{CLIP} features)
+    & 2.5D top-down grid map
+    & \cmark
+    & Uncertainty-weighted accumulative fusion
+    & \xmark
+    & Irreversible belief fusion leads to semantic drift \\
 
-\textbf{PIGEON~\cite{PIGEONVLMDrivenObject}}
-& Language-conditioned episodic visual memory (\ac{PoI} snapshots)
-& 2D geometric exploration map + episodic \ac{PoI} memory
-& \cmark
-& Episodic accumulation of visual evidence (per episode)
-& \xmark
-& No persistent semantic belief state or belief revision mechanism \\
-\hline
+    \textbf{VLMaps~\cite{huangVisualLanguageMaps2023}}
+    & Dense per-cell language embeddings (\ac{CLIP}-based~\cite{radfordLearningTransferableVisual2021})
+    & 2.5D top-down grid map
+    & \cmark
+    & Multi-view feature averaging (accumulative fusion)
+    & \xmark
+    & Irreversible feature averaging causes semantic noise and ambiguity \\
 
-\textbf{DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025}}
-& Dual semantic maps (short-term + long-term)
-& 2D grid maps
-& \cmark
-& Dual-stream accumulative fusion
-& \xmark
-& Long-term map cannot correct early semantic errors \\
-\hline
+    \textbf{PIGEON~\cite{PIGEONVLMDrivenObject}}
+    & Language-conditioned episodic visual memory (\ac{PoI} snapshots)
+    & 2D geometric exploration map + episodic \ac{PoI} memory
+    & \cmark
+    & Episodic accumulation of visual evidence (per episode)
+    & \xmark
+    & No persistent semantic belief state or belief revision mechanism \\
 
-\end{tabularx}
-\caption{Comparison of semantic memory representations for exploration.
-The table highlights how different methods store semantic information, update it over time,
-and whether they support belief revision, revealing a common lack of mechanisms for correcting
-erroneous semantic memories.}
-\label{tab:sota:persistent_mapping_exploration}
+    \textbf{DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025}}
+    & Dual semantic maps (short-term + long-term)
+    & 2D grid maps
+    & \cmark
+    & Dual-stream accumulative fusion
+    & \xmark
+    & Long-term map cannot correct early semantic errors \\
+
+    \bottomrule
+    \end{tabular}
+
+    \caption{Comparison of semantic memory representations for exploration.
+    The table highlights how different methods store semantic information, update it over time,
+    and whether they support belief revision.}
+    \label{tab:sota:persistent_mapping_exploration}
 \end{table}
+
 
 % ---------------------- OneMap, VLMaps ----------------------
 
@@ -469,22 +474,29 @@ navigates toward them using a classical \ac{A*} planner~\cite{kabirEnhancedRobot
 
 By separating short-term perceptual memory from long-term semantic anchors, DualMap achieves more structured and interpretable language-guided navigation than dense feature-map approaches. However, semantic information in DualMap is primarily used for exploitation of previously observed anchors, while exploration itself remains purely geometry-driven. The framework does not provide a mechanism or hyperparameter to explicitly balance semantic exploration and exploitation, as semantic reasoning is only applied after anchors have been formed~\cite{jiangDualMapOnlineOpenVocabulary2025}. As a result, DualMap favors semantic exploitation over semantic exploration, which can limit its ability to actively search for objects that have not yet been associated with existing anchors.
 
-
 \subsection*{Semantic Scene Reconstruction}
+
+Inorder to incorporate persistent semantic memory into exploration systems, it is essential to build and maintain accurate 3D reconstructions of the environment enriched with semantic information. This section reviews state-of-the-art methods for semantic scene reconstruction, focusing on how different approaches represent spatial and semantic information, their ability to operate in real time, and whether they support object-centric reasoning and which foundation models they leverage. Table~\ref{tab:sota:semantic_scene_reconstruction_overview} summarizes key characteristics of recent semantic scene reconstruction methods.
 
 \begin{table}[H]
     \centering
     \footnotesize
     \renewcommand{\arraystretch}{1.2}
-
-    \begin{tabular}{l|l l c c c}
+    \begin{tabular}{
+        l|
+        p{2.5cm}
+        p{2.0cm}
+        c 
+        >{\centering\arraybackslash}p{1.5cm}
+        >{\centering\arraybackslash}p{1.5cm}
+    }
     \toprule
     \textbf{Method}
     & \textbf{Representation}
     & \textbf{Foundation Model}
     & \textbf{Zero-Shot}
-    & \textbf{Real-Time}
-    & \textbf{Online SLAM} \\
+    & \textbf{Real-Time capability}
+    & \textbf{Object-Centric} \\
     \midrule
 
     ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023}
@@ -492,28 +504,42 @@ By separating short-term perceptual memory from long-term semantic anchors, Dual
     & OpenCLIP~\cite{chertiReproducibleScalingLaws2022}, SAM~\cite{kirillovSegmentAnything2023}
     & \cmark
     & \xmark
-    & \xmark \\
+    & \cmark \\
 
     Clio~\cite{jiangDualMapOnlineOpenVocabulary2025}
     & Grid (dual map)
     & CLIP-based
     & \cmark
-    & \xmark
+    & \cmark ()
     & \cmark \\
+
+    LERF~\cite{kerrLERFLanguageEmbedded2023}
+    & NeRF
+    & OpenCLIP~\cite{chertiReproducibleScalingLaws2022}, DINOv2~\cite{oquabDINOv2LearningRobust2024}
+    & \xmark
+    & \xmark
+    & \xmark \\
 
     OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}
     & TSDF
     & SEEM~\cite{zouSegmentEverythingEverywhere2023}
     & \cmark
     & \cmark
-    & \cmark \\
-
-    LERF~\cite{PIGEONVLMDrivenObject}
-    & NeRF
-    & OpenCLIP~\cite{chertiReproducibleScalingLaws2022}, DINOv2~\cite{oquabDINOv2LearningRobust2024}
-    & \xmark
-    & \xmark
     & \xmark \\
+
+    RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025}
+    & Voxel grid + semantic ray field
+    & CLIP~\cite{radfordLearningTransferableVisual2021}
+    & \cmark
+    & \cmark
+    & \xmark \\
+
+    OTAS~\cite{schwaigerOTASOpenvocabularyToken2025}
+    & Points
+    & CLIP~\cite{radfordLearningTransferableVisual2021}, SAM2~\cite{raviSAM2Segment2024}, DINOv2~\cite{oquabDINOv2LearningRobust2024}
+    & \cmark
+    & \cmark
+    & \cmark \\
 
     \bottomrule
 \end{tabular}
@@ -521,6 +547,11 @@ By separating short-term perceptual memory from long-term semantic anchors, Dual
 \caption{Comparison of semantic scene reconstruction methods. The table contrasts spatial representations, semantic abstractions, temporal update strategies, and the degree of online integration with SLAM systems.}\label{tab:sota:semantic_scene_reconstruction_overview}
 \end{table}
 
+% Concept Graphs and Clio
+
+~\citeauthor{guConceptGraphsOpenVocabulary3D2023}~\cite{guConceptGraphsOpenVocabulary3D2023} proposed \textit{ConceptGraphs} and \citeauthor{maggioClioRealtimeTaskDriven2024}~\cite{maggioClioRealtimeTaskDriven2024} introduced \textit{Clio}, two object-centric semantic mapping frameworks that build persistent 3D representations enriched with open-vocabulary semantic information. Both methods use objects centric semantic represenation of the environment, by extracting with an open-vocubalry object detctor (e.g., GroundingDINO~\cite{liuGroundingDINOMarrying2024}) and segmenting them with SAM~\cite{kirillovSegmentAnything2023} a bounding box and mask for each detected object. Each object is then represented as a 3D point cloud obtained by back-projecting depth pixels within the mask, along with a CLIP-based embedding that encodes its semantic identity. Clio additionally adds the confidence score from the detector to the object representation~\cite{maggioClioRealtimeTaskDriven2024}. From here on, both methods differ how they store and fuse the object-centric representations into a persistent map. 
+
+ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023} updates the semantic map, if the detected 3D-filtered (via DBSCAN) pointcloud object has a similar image-embedding (via OpenCLIP~\cite{chertiReproducibleScalingLaws2022}) to an existing object in the map and a high 3D IoU. If so, the new pointcloud is merged with the existing object via ICP-based alignment and the CLIP embeddings are averaged. If not, a new object is added to the map. The final semantic map is represented as a scene graph, where nodes correspond to objects and edges encode spatial relationships (e.g., above, next to) based on relative positions. Each object is them captioned via a L\ac{VLM}, to generate a human-readable description of its attributes and context~\cite{guConceptGraphsOpenVocabulary3D2023}. A \ac{LLM} reads all available GraphNodes and generates with a system Prompt a refined description of the object. Furthermore, the \ac{LLM} creates egde-relationships between objects based on their spatial relations and textual captions. This enables several downstream tasks, such as question answering about the scene, robot manipulation, navigation and localization.
 
 % \begin{itemize}
 %     \item Overview of approaches to build and update semantic maps during exploration:

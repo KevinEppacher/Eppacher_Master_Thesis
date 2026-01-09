@@ -25,27 +25,68 @@ description in natural language.
 \begin{table}[H]
     \centering
     \footnotesize
-    \renewcommand{\arraystretch}{1.0}
-    \setlength{\tabcolsep}{3pt}
-    \begin{tabularx}{\textwidth}{
-        |>{\raggedright\arraybackslash}X
-        |>{\centering\arraybackslash}X
-        |>{\centering\arraybackslash}X
-        |>{\raggedright\arraybackslash}X|}
-        \hline
-        \textbf{Approach} & \textbf{Training Required} & \textbf{Real-Time} & \textbf{Semantic Reasoning Model} \\ \hline
-        \textbf{\ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}} & \xmark~(zero-shot) & \cmark & BLIP-2 + GroundingDINO + SAM \\ \hline
-        \textbf{SemUtil~\cite{chenHowNotTrain2023}} & \xmark~(training-free) & \cmark & Mask R-CNN + CLIP + BERT \\ \hline
-        \textbf{ESC~\cite{zhouESCExplorationSoft2023}} & \xmark~(zero-shot) & \cmark & GLIP + DeBERTa / ChatGPT reasoning \\ \hline
-        \textbf{LGX~\cite{dorbalaCanEmbodiedAgent2024}} & \xmark~(zero-shot) & \cmark & GPT-3 + GLIP + BLIP \\ \hline
-        \textbf{CoW~\cite{gadreCoWsPastureBaselines2022}} & \xmark~(zero-shot) & \cmark & CLIP similarity scoring \\ \hline
-        \textbf{ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}} & \cmark~(\ac{RL} pretraining) & \xmark & CLIP-based RL policy \\ \hline
-        \textbf{PONI~\cite{ramakrishnanPONIPotentialFunctions2022}} & \cmark~(supervised) & \xmark & Learned potential-field network \\ \hline
-        \textbf{PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023}} & \cmark~(\ac{BC} + \ac{RL}) & \xmark & DINO-based CNN-RNN policy \\ \hline
-    \end{tabularx}
+    \renewcommand{\arraystretch}{1.1}
+
+    \begin{tabular}{
+    p{2.0cm}|
+    c
+    c
+    p{5.2cm}
+    }
+    \toprule
+    \textbf{Approach}
+    & \textbf{Training Required}
+    & \textbf{Real-Time}
+    & \textbf{Semantic Reasoning Model} \\
+    \midrule
+
+    \textbf{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}
+    & \xmark~(zero-shot)
+    & \cmark
+    & BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023} + GroundingDINO~\cite{liuGroundingDINOMarrying2024} + SAM~\cite{kirillovSegmentAnything2023} \\
+
+    \textbf{SemUtil}~\cite{chenHowNotTrain2023}
+    & \xmark~(training-free)
+    & \cmark
+    & Mask R-CNN~\cite{heMaskRCNN2018} + CLIP~\cite{radfordLearningTransferableVisual2021} + BERT~\cite{devlinBERTPretrainingDeep2018} \\
+
+    \textbf{ESC}~\cite{zhouESCExplorationSoft2023}
+    & \xmark~(zero-shot)
+    & \cmark
+    & GLIP~\cite{liGroundedLanguageImagePretraining2022} + DeBERTa~\cite{devlinBERTPretrainingDeep2018} / ChatGPT reasoning \\
+
+    \textbf{LGX}~\cite{dorbalaCanEmbodiedAgent2024}
+    & \xmark~(zero-shot)
+    & \cmark
+    & GPT-3~\cite{brownLanguageModelsAre2020} + GLIP~\cite{liGroundedLanguageImagePretraining2022} + BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023} \\
+
+    \textbf{CoW}~\cite{gadreCoWsPastureBaselines2022}
+    & \xmark~(zero-shot)
+    & \cmark
+    & CLIP similarity scoring~\cite{radfordLearningTransferableVisual2021} \\
+
+    \textbf{ZSON}~\cite{majumdarZSONZeroShotObjectGoal2023}
+    & \cmark~(RL pretraining)
+    & \xmark
+    & CLIP-based RL policy \\
+
+    \textbf{PONI}~\cite{ramakrishnanPONIPotentialFunctions2022}
+    & \cmark~(supervised)
+    & \xmark
+    & Learned potential-field network \\
+
+    \textbf{PIRLNav}~\cite{ramrakhyaPIRLNavPretrainingImitation2023}
+    & \cmark~(BC + RL)
+    & \xmark
+    & DINO-based CNN-RNN policy~\cite{jiangCLIPDINOVisual2024} \\
+
+    \bottomrule
+    \end{tabular}
+
     \caption{Overview of semantic zero-shot and trained exploration approaches. All of these methods are capable of navigating to a goal described in natural language, however, they differ in zero-shot applicability to new scenes and real-time capability.}
     \label{tab:introduction:semantic_exploration_approaches}
 \end{table}
+
 
 Approaches such as ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}, PONI~\cite{ramakrishnanPONIPotentialFunctions2022}, and PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023} employ deep reinforcement learning (DRL) or supervised training to develop navigation policies capable of generalizing to unseen objects. Although these methods achieve promising results in simulation, they require extensive offline training and exhibit limited adaptability to previously unseen environments or object categories not encountered during training. In contrast, zero-shot methods such as \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, SemUtil~\cite{chenHowNotTrain2023}, ESC~\cite{zhouESCExplorationSoft2023}, LGX~\cite{dorbalaCanEmbodiedAgent2024}, and CoW~\cite{gadreCoWsPastureBaselines2022} leverage pretrained \acp{VLM} to perform semantic exploration without additional training. These models enable real-time decision-making by exploiting semantic cues extracted from RGB imagery, guiding robots toward areas likely to contain the target object or region.
 
@@ -80,30 +121,75 @@ capabilities.
 \begin{table}[H]
     \centering
     \footnotesize
-    \renewcommand{\arraystretch}{1.0}
-    \setlength{\tabcolsep}{3pt}
-    \begin{tabularx}{\textwidth}{
-        |>{\raggedright\arraybackslash}X
-        |>{\centering\arraybackslash}X
-        |>{\centering\arraybackslash}X
-        |>{\raggedright\arraybackslash}X
-        |>{\raggedright\arraybackslash}X|}
-        \hline
-        \textbf{Approach} & \textbf{Training Required} & \textbf{Real-Time} & \textbf{Memory Representation} & \textbf{Exploration Integration} \\ \hline
-        \textbf{\ac{OneMap}~\cite{buschOneMapFind2025}} & \xmark~(zero-shot) & \cmark & 2D probabilistic feature field & \cmark~(frontier-based) \\ \hline
-        \textbf{\ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}} & \xmark~(pretrained models) & \xmark & 3D scene graph & \cmark~(LLM-planner) \\ \hline
-        \textbf{\ac{SemExp}~\cite{chaplotObjectGoalNavigation2020}} & \cmark~(RL + supervised) & \xmark & 2D semantic occupancy map & \cmark~(learned policy) \\ \hline
-        \textbf{\ac{GeFF}~\cite{qiuLearningGeneralizableFeature2024}} & \cmark~(ScanNet pretrain) & \cmark & Implicit 3D feature field & \xmark~(passive) \\ \hline
-        \textbf{RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025}} & \xmark~(foundation model) & \cmark & Hybrid voxel + ray field & \xmark~(planner-agnostic) \\ \hline
-        \textbf{\ac{VLMaps}~\cite{huangVisualLanguageMaps2023}} & \xmark~(pretrained LSeg/CLIP) & \xmark & 2.5D open-vocab grid & \cmark~(frontier-compatible) \\ \hline
-        \textbf{Pigeon~\cite{PIGEONVLMDrivenObject}} & \cmark~(RLVR fine-tune) & \cmark & Point-of-Interest snapshot memory & \cmark~(reasoning-aware) \\ \hline
-    \end{tabularx}
+    \renewcommand{\arraystretch}{1.1}
+
+    \begin{tabular}{
+    p{3.0cm}|
+    c
+    c
+    p{3.0cm}
+    p{3.0cm}
+    }
+    \toprule
+    \textbf{Approach}
+    & \textbf{Training Required}
+    & \textbf{Real-Time}
+    & \textbf{Memory Representation}
+    & \textbf{Exploration Integration} \\
+    \midrule
+
+    \textbf{OneMap}~\cite{buschOneMapFind2025}
+    & \xmark~(zero-shot)
+    & \cmark
+    & 2D probabilistic feature field
+    & \cmark~(frontier-based) \\
+
+    \textbf{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}
+    & \xmark~(pretrained models)
+    & \xmark
+    & 3D scene graph
+    & \cmark~(LLM-planner) \\
+
+    \textbf{SemExp}~\cite{chaplotObjectGoalNavigation2020}
+    & \cmark~(RL + supervised)
+    & \xmark
+    & 2D semantic occupancy map
+    & \cmark~(learned policy) \\
+
+    \textbf{GeFF}~\cite{qiuLearningGeneralizableFeature2024}
+    & \cmark~(ScanNet pretrain)
+    & \cmark
+    & Implicit 3D feature field
+    & \xmark~(passive) \\
+
+    \textbf{RayFronts}~\cite{alamaRayFrontsOpenSetSemantic2025}
+    & \xmark~(foundation model)
+    & \cmark
+    & Hybrid voxel + ray field
+    & \xmark~(planner-agnostic) \\
+
+    \textbf{VLMaps}~\cite{huangVisualLanguageMaps2023}
+    & \xmark~(pretrained LSeg/CLIP)
+    & \xmark
+    & 2.5D open-vocab grid
+    & \cmark~(frontier-compatible) \\
+
+    \textbf{Pigeon~\cite{PIGEONVLMDrivenObject}}
+    & \cmark~(RLVR fine-tune)
+    & \cmark
+    & Point-of-Interest snapshot memory
+    & \cmark~(reasoning-aware) \\
+
+    \bottomrule
+    \end{tabular}
+
     \caption{This table provides an overview of representative persistent or memory-based semantic
-        mapping approaches, comparing their training requirements, real-time capability, underlying
-        memory representations, and the extent to which semantic memory is integrated into exploration
-        or planning.}
+    mapping approaches, comparing their training requirements, real-time capability, underlying
+    memory representations, and the extent to which semantic memory is integrated into exploration
+    or planning.}
     \label{tab:introduction:persistent_mapping_approaches}
 \end{table}
+
 
 methods such as SemExp~\cite{chaplotObjectGoalNavigation2020}, Pigeon~\cite{PIGEONVLMDrivenObject}, and GeFF~\cite{qiuLearningGeneralizableFeature2024} rely on offline training to construct persistent semantic representations. In the case of policy-learning approaches, this dependence on extensive training limits adaptability to previously seen environments and unseen object categories. Other approaches, such as \ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023} and \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, construct persistent open-vocabulary maps using pretrained foundation models but often require pre-mapping and lack real-time performance, which restricts their use in dynamic or large-scale settings.
 
@@ -116,26 +202,53 @@ Table~\ref{tab:introduction:identified_gaps} summarizes the key limitations obse
 \begin{table}[H]
     \centering
     \footnotesize
-    \renewcommand{\arraystretch}{1.0}
-    \setlength{\tabcolsep}{3pt}
-    \begin{tabularx}{\textwidth}{
-        |>{\raggedright\arraybackslash}X
-        |>{\raggedright\arraybackslash}X
-        |>{\raggedright\arraybackslash}X|}
-        \hline
-        \textbf{Limitation} & \textbf{Example Works} & \textbf{Implication} \\ \hline
-        \textbf{No persistent memory} & \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, CoW~\cite{gadreCoWsPastureBaselines2022}, LGX~\cite{dorbalaCanEmbodiedAgent2024}, ESC~\cite{zhouESCExplorationSoft2023} & No long-term fusion or recall; repeated exploration of known areas. \\ \hline
-        \textbf{Offline training required} & ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}, PONI~\cite{ramakrishnanPONIPotentialFunctions2022}, PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023}, \ac{SemExp}~\cite{chaplotObjectGoalNavigation2020} & Heavy RL/supervised training; poor adaptability to new scenes. \\ \hline
-        \textbf{No balance between exploration and memory} & \ac{OneMap}~\cite{buschOneMapFind2025}, RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025}, \ac{VLMaps}~\cite{huangVisualLanguageMaps2023} & Either passive mapping or short-term exploration; inefficient search. \\ \hline
-        \textbf{No zero-shot exploration} & \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, CoW~\cite{gadreCoWsPastureBaselines2022}, LGX~\cite{dorbalaCanEmbodiedAgent2024} & Detect novel objects but fail to explore unseen regions strategically. \\ \hline
-        \textbf{Premapping needed} & \ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}, \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, \ac{GeFF}~\cite{qiuLearningGeneralizableFeature2024} & Depend on pre-recorded data; not suited for online autonomy. \\ \hline
-        \textbf{Limited robustness} & PONI~\cite{ramakrishnanPONIPotentialFunctions2022}, \ac{SemExp}~\cite{chaplotObjectGoalNavigation2020}, PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023} & Closed-set categories; fragile under real-world variation. \\ \hline
-        \textbf{Low real-world applicability} & \ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}, \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, Pigeon~\cite{PIGEONVLMDrivenObject} & High GPU cost or simulation-only evaluation; limited deployability on mobile robots. \\ \hline
-    \end{tabularx}
-    \caption{This table summarizes key limitations of existing semantic exploration frameworks,
-providing representative example works for each limitation and outlining their practical
-implications for autonomous navigation and exploration.}
+    \renewcommand{\arraystretch}{1.1}
 
+    \begin{tabular}{
+    p{3.2cm}|
+    p{6.2cm}
+    p{5.0cm}
+    }
+    \toprule
+    \textbf{Limitation}
+    & \textbf{Example Works}
+    & \textbf{Implication} \\
+    \midrule
+
+    \textbf{No persistent memory}
+    & \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, CoW~\cite{gadreCoWsPastureBaselines2022}, LGX~\cite{dorbalaCanEmbodiedAgent2024}, ESC~\cite{zhouESCExplorationSoft2023}
+    & No long-term fusion or recall; repeated exploration of known areas. \\
+
+    \textbf{Offline training required}
+    & ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}, PONI~\cite{ramakrishnanPONIPotentialFunctions2022}, PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023}, \ac{SemExp}~\cite{chaplotObjectGoalNavigation2020}
+    & Heavy RL/supervised training; poor adaptability to new scenes. \\
+
+    \textbf{No balance between exploration and memory}
+    & \ac{OneMap}~\cite{buschOneMapFind2025}, RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025}, \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}
+    & Either passive mapping or short-term exploration; inefficient search. \\
+
+    \textbf{No zero-shot exploration}
+    & \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, CoW~\cite{gadreCoWsPastureBaselines2022}, LGX~\cite{dorbalaCanEmbodiedAgent2024}
+    & Detect novel objects but fail to explore unseen regions strategically. \\
+
+    \textbf{Premapping needed}
+    & \ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}, \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, \ac{GeFF}~\cite{qiuLearningGeneralizableFeature2024}
+    & Depend on pre-recorded data; not suited for online autonomy. \\
+
+    \textbf{Limited robustness}
+    & PONI~\cite{ramakrishnanPONIPotentialFunctions2022}, \ac{SemExp}~\cite{chaplotObjectGoalNavigation2020}, PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023}
+    & Closed-set categories; fragile under real-world variation. \\
+
+    \textbf{Low real-world applicability}
+    & \ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}, \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, Pigeon~\cite{PIGEONVLMDrivenObject}
+    & High GPU cost or simulation-only evaluation; limited deployability on mobile robots. \\
+
+    \bottomrule
+    \end{tabular}
+
+    \caption{This table summarizes key limitations of existing semantic exploration frameworks,
+    providing representative example works for each limitation and outlining their practical
+    implications for autonomous navigation and exploration.}
     \label{tab:introduction:identified_gaps}
 \end{table}
 

@@ -191,6 +191,19 @@
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/AT493AAL/Cherti et al. - 2022 - Reproducible scaling laws for contrastive language-image learning.pdf}
 }
 
+@online{devlinBERTPretrainingDeep2018,
+  title = {{{BERT}}: {{Pre-training}} of {{Deep Bidirectional Transformers}} for {{Language Understanding}}},
+  shorttitle = {{{BERT}}},
+  author = {Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina},
+  date = {2018-10-11},
+  url = {https://arxiv.org/abs/1810.04805v2},
+  urldate = {2026-01-08},
+  abstract = {We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models, BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5\% (7.7\% point absolute improvement), MultiNLI accuracy to 86.7\% (4.6\% absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement).},
+  langid = {english},
+  organization = {arXiv.org},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/HQUNA5YD/Devlin et al. - 2018 - BERT Pre-training of Deep Bidirectional Transformers for Language Understanding.pdf}
+}
+
 @article{dorbalaCanEmbodiedAgent2024,
   title = {Can an {{Embodied Agent Find Your}} "{{Cat-shaped Mug}}"? {{LLM-Guided Exploration}} for {{Zero-Shot Object Navigation}}},
   shorttitle = {Can an {{Embodied Agent Find Your}} "{{Cat-shaped Mug}}"?},
@@ -437,6 +450,24 @@
   keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Graphics},
   note = {Comment: Project website can be found at https://lerf.io},
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/JC7EXDM4/Kerr et al. - 2023 - LERF Language Embedded Radiance Fields.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/E9Z6W722/2303.html}
+}
+
+@online{kerrLERFLanguageEmbedded2023a,
+  title = {{{LERF}}: {{Language Embedded Radiance Fields}}},
+  shorttitle = {{{LERF}}},
+  author = {Kerr, Justin and Kim, Chung Min and Goldberg, Ken and Kanazawa, Angjoo and Tancik, Matthew},
+  date = {2023-03-16},
+  eprint = {2303.09553},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2303.09553},
+  url = {http://arxiv.org/abs/2303.09553},
+  urldate = {2026-01-09},
+  abstract = {Humans describe the physical world using natural language to refer to specific 3D locations based on a vast range of properties: visual appearance, semantics, abstract associations, or actionable affordances. In this work we propose Language Embedded Radiance Fields (LERFs), a method for grounding language embeddings from off-the-shelf models like CLIP into NeRF, which enable these types of open-ended language queries in 3D. LERF learns a dense, multi-scale language field inside NeRF by volume rendering CLIP embeddings along training rays, supervising these embeddings across training views to provide multi-view consistency and smooth the underlying language field. After optimization, LERF can extract 3D relevancy maps for a broad range of language prompts interactively in real-time, which has potential use cases in robotics, understanding vision-language models, and interacting with 3D scenes. LERF enables pixel-aligned, zero-shot queries on the distilled 3D CLIP embeddings without relying on region proposals or masks, supporting long-tail open-vocabulary queries hierarchically across the volume. The project website can be found at https://lerf.io .},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Graphics},
+  note = {Comment: Project website can be found at https://lerf.io},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/E37SDX9J/Kerr et al. - 2023 - LERF Language Embedded Radiance Fields.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/DCWZB68F/2303.html}
 }
 
 @online{kirillovSegmentAnything2023,
@@ -806,6 +837,24 @@
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/44TK5T7E/Ramrakhya et al. - 2023 - PIRLNav Pretraining with Imitation and RL Finetuning for ObjectNav.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/KVXYYXVM/2301.html}
 }
 
+@online{raviSAM2Segment2024,
+  title = {{{SAM}} 2: {{Segment Anything}} in {{Images}} and {{Videos}}},
+  shorttitle = {{{SAM}} 2},
+  author = {Ravi, Nikhila and Gabeur, Valentin and Hu, Yuan-Ting and Hu, Ronghang and Ryali, Chaitanya and Ma, Tengyu and Khedr, Haitham and Rädle, Roman and Rolland, Chloe and Gustafson, Laura and Mintun, Eric and Pan, Junting and Alwala, Kalyan Vasudev and Carion, Nicolas and Wu, Chao-Yuan and Girshick, Ross and Dollár, Piotr and Feichtenhofer, Christoph},
+  date = {2024-10-28},
+  eprint = {2408.00714},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2408.00714},
+  url = {http://arxiv.org/abs/2408.00714},
+  urldate = {2026-01-09},
+  abstract = {We present Segment Anything Model 2 (SAM 2), a foundation model towards solving promptable visual segmentation in images and videos. We build a data engine, which improves model and data via user interaction, to collect the largest video segmentation dataset to date. Our model is a simple transformer architecture with streaming memory for real-time video processing. SAM 2 trained on our data provides strong performance across a wide range of tasks. In video segmentation, we observe better accuracy, using 3x fewer interactions than prior approaches. In image segmentation, our model is more accurate and 6x faster than the Segment Anything Model (SAM). We believe that our data, model, and insights will serve as a significant milestone for video segmentation and related perception tasks. We are releasing our main model, dataset, as well as code for model training and our demo.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning},
+  note = {Comment: Website: https://ai.meta.com/sam2},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/Y8MABWVH/Ravi et al. - 2024 - SAM 2 Segment Anything in Images and Videos.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/545W6SES/2408.html}
+}
+
 @online{RoboticExplorationUsing,
   title = {Robotic {{Exploration Using Generalized Behavioral Entropy}}},
   url = {https://ieeexplore-1ieee-1org-100033czj02b7.han.technikum-wien.at/document/10608408},
@@ -848,6 +897,23 @@
   keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language,Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning,Computer Science - Robotics},
   note = {Comment: ICCV 2019},
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/6QJVE7UY/Savva et al. - 2019 - Habitat A Platform for Embodied AI Research.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/T7RRTKK3/1904.html}
+}
+
+@online{schwaigerOTASOpenvocabularyToken2025,
+  title = {{{OTAS}}: {{Open-vocabulary Token Alignment}} for {{Outdoor Segmentation}}},
+  shorttitle = {{{OTAS}}},
+  author = {Schwaiger, Simon and Thalhammer, Stefan and Wöber, Wilfried and Steinbauer-Wagner, Gerald},
+  date = {2025-09-22},
+  eprint = {2507.08851},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2507.08851},
+  url = {http://arxiv.org/abs/2507.08851},
+  urldate = {2026-01-09},
+  abstract = {Understanding open-world semantics is critical for robotic planning and control, particularly in unstructured outdoor environments. Existing vision-language mapping approaches typically rely on object-centric segmentation priors, which often fail outdoors due to semantic ambiguities and indistinct class boundaries. We propose OTAS - an Open-vocabulary Token Alignment method for outdoor Segmentation. OTAS addresses the limitations of open-vocabulary segmentation models by extracting semantic structure directly from the output tokens of pre-trained vision models. By clustering semantically similar structures across single and multiple views and grounding them in language, OTAS reconstructs a geometrically consistent feature field that supports open-vocabulary segmentation queries. Our method operates in a zero-shot manner, without scene-specific fine-tuning, and achieves real-time performance of up to \textasciitilde 17 fps. On the Off-Road Freespace Detection dataset, OTAS yields a modest IoU improvement over fine-tuned and open-vocabulary 2D segmentation baselines. In 3D segmentation on TartanAir, it achieves up to a 151\% relative IoU improvement compared to existing open-vocabulary mapping methods. Real-world reconstructions further demonstrate OTAS' applicability to robotic deployment. Code and a ROS 2 node are available at https://otas-segmentation.github.io/.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Robotics},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/UZ9C3NTN/Schwaiger et al. - 2025 - OTAS Open-vocabulary Token Alignment for Outdoor Segmentation.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/8CV89T6A/2507.html}
 }
 
 @online{schwaigerUGVCBRNUnmannedGround2024,
