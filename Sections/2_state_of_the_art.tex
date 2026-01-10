@@ -549,9 +549,56 @@ Inorder to incorporate persistent semantic memory into exploration systems, it i
 
 % Concept Graphs and Clio
 
-~\citeauthor{guConceptGraphsOpenVocabulary3D2023}~\cite{guConceptGraphsOpenVocabulary3D2023} proposed \textit{ConceptGraphs} and \citeauthor{maggioClioRealtimeTaskDriven2024}~\cite{maggioClioRealtimeTaskDriven2024} introduced \textit{Clio}, two object-centric semantic mapping frameworks that build persistent 3D representations enriched with open-vocabulary semantic information. Both methods use objects centric semantic represenation of the environment, by extracting with an open-vocubalry object detctor (e.g., GroundingDINO~\cite{liuGroundingDINOMarrying2024}) and segmenting them with SAM~\cite{kirillovSegmentAnything2023} a bounding box and mask for each detected object. Each object is then represented as a 3D point cloud obtained by back-projecting depth pixels within the mask, along with a CLIP-based embedding that encodes its semantic identity. Clio additionally adds the confidence score from the detector to the object representation~\cite{maggioClioRealtimeTaskDriven2024}. From here on, both methods differ how they store and fuse the object-centric representations into a persistent map. 
+\citeauthor{guConceptGraphsOpenVocabulary3D2023}~\cite{guConceptGraphsOpenVocabulary3D2023} proposed
+\textit{ConceptGraphs}, and \citeauthor{maggioClioRealtimeTaskDriven2024}~\cite{maggioClioRealtimeTaskDriven2024}
+introduced \textit{CLIO}, two object-centric semantic mapping frameworks that construct persistent
+3D representations enriched with open-vocabulary semantic information. Both methods represent the
+environment as a collection of discrete object entities rather than dense per-voxel semantic maps.
 
-ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023} updates the semantic map, if the detected 3D-filtered (via DBSCAN) pointcloud object has a similar image-embedding (via OpenCLIP~\cite{chertiReproducibleScalingLaws2022}) to an existing object in the map and a high 3D IoU. If so, the new pointcloud is merged with the existing object via ICP-based alignment and the CLIP embeddings are averaged. If not, a new object is added to the map. The final semantic map is represented as a scene graph, where nodes correspond to objects and edges encode spatial relationships (e.g., above, next to) based on relative positions. Each object is them captioned via a L\ac{VLM}, to generate a human-readable description of its attributes and context~\cite{guConceptGraphsOpenVocabulary3D2023}. A \ac{LLM} reads all available GraphNodes and generates with a system Prompt a refined description of the object. Furthermore, the \ac{LLM} creates egde-relationships between objects based on their spatial relations and textual captions. This enables several downstream tasks, such as question answering about the scene, robot manipulation, navigation and localization.
+Given an RGB image $I_t$, optional depth $D_t$, and robot pose $\mathbf{T}_t$, objects are detected
+using an open-vocabulary object detector (e.g., GroundingDINO~\cite{liuGroundingDINOMarrying2024})
+and segmented via SAM~\cite{kirillovSegmentAnything2023}. For each detected object $o_i$, a binary
+mask $M_i \subset \mathbb{R}^2$ is obtained. Depth pixels within the mask are back-projected into
+3D to yield an object point cloud
+\[
+\mathcal{P}_i = \{ \mathbf{p}_k \in \mathbb{R}^3 \mid (u_k, v_k) \in M_i \},
+\]
+which is optionally filtered using DBSCAN to remove outliers~\cite{guConceptGraphsOpenVocabulary3D2023}.
+
+Each object is further associated with a semantic embedding
+\[
+\mathbf{e}_i = f_{\text{img}}(I_t \odot M_i),
+\]
+where $f_{\text{img}}(\cdot)$ denotes an image encoder from a \ac{VLM} such as
+OpenCLIP~\cite{chertiReproducibleScalingLaws2022}. CLIO additionally augments this representation
+with a detector confidence score $s_i \in [0,1]$~\cite{maggioClioRealtimeTaskDriven2024}. Thus, an
+object instance is represented as
+\[
+o_i = (\mathcal{P}_i, \mathbf{e}_i, s_i).
+\]
+
+From this point onward, ConceptGraphs and CLIO differ in how object instances are associated,
+fused, and stored in memory. ConceptGraphs maintains a persistent semantic scene graph
+$\mathcal{G} = (\mathcal{V}, \mathcal{E})$, where each node $v_j \in \mathcal{V}$ corresponds to a
+unique object hypothesis. A newly observed object $o_i$ is associated with an existing node $v_j$
+if both semantic and geometric consistency criteria are satisfied:
+\[
+\cos(\mathbf{e}_i, \mathbf{e}_j) > \tau_{\text{sem}}
+\quad \text{and} \quad
+\text{IoU}_{3D}(\mathcal{P}_i, \mathcal{P}_j) > \tau_{\text{geo}}.
+\]
+If a match is found, the point clouds are aligned using ICP, and the object embedding is updated via
+averaging:
+\[
+\mathbf{e}_j \leftarrow \frac{1}{N_j + 1} \left( N_j \mathbf{e}_j + \mathbf{e}_i \right),
+\]
+where $N_j$ denotes the number of observations fused into node $v_j$. Otherwise, a new node is added
+to the graph. Edges $e_{jk} \in \mathcal{E}$ encode spatial relations (e.g., \textit{above}, \textit{next to}) derived from relative object poses. Each node is subsequently captioned using a large
+\ac{VLM} to generate a human-readable description of object attributes and
+context~\cite{guConceptGraphsOpenVocabulary3D2023}. A \ac{LLM} further refines these
+descriptions and infers higher-level relational edges based on both geometry and textual captions.
+This explicit graph-based representation enables downstream tasks such as semantic question
+answering, object-level navigation, manipulation, and localization.
 
 % \begin{itemize}
 %     \item Overview of approaches to build and update semantic maps during exploration:
