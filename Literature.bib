@@ -470,6 +470,24 @@
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/E37SDX9J/Kerr et al. - 2023 - LERF Language Embedded Radiance Fields.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/DCWZB68F/2303.html}
 }
 
+@online{kerrLERFLanguageEmbedded2023b,
+  title = {{{LERF}}: {{Language Embedded Radiance Fields}}},
+  shorttitle = {{{LERF}}},
+  author = {Kerr, Justin and Kim, Chung Min and Goldberg, Ken and Kanazawa, Angjoo and Tancik, Matthew},
+  date = {2023-03-16},
+  eprint = {2303.09553},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2303.09553},
+  url = {http://arxiv.org/abs/2303.09553},
+  urldate = {2026-01-11},
+  abstract = {Humans describe the physical world using natural language to refer to specific 3D locations based on a vast range of properties: visual appearance, semantics, abstract associations, or actionable affordances. In this work we propose Language Embedded Radiance Fields (LERFs), a method for grounding language embeddings from off-the-shelf models like CLIP into NeRF, which enable these types of open-ended language queries in 3D. LERF learns a dense, multi-scale language field inside NeRF by volume rendering CLIP embeddings along training rays, supervising these embeddings across training views to provide multi-view consistency and smooth the underlying language field. After optimization, LERF can extract 3D relevancy maps for a broad range of language prompts interactively in real-time, which has potential use cases in robotics, understanding vision-language models, and interacting with 3D scenes. LERF enables pixel-aligned, zero-shot queries on the distilled 3D CLIP embeddings without relying on region proposals or masks, supporting long-tail open-vocabulary queries hierarchically across the volume. The project website can be found at https://lerf.io .},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Graphics},
+  note = {Comment: Project website can be found at https://lerf.io},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/YJ2GATU7/Kerr et al. - 2023 - LERF Language Embedded Radiance Fields.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/VAS5A32F/2303.html}
+}
+
 @online{kirillovSegmentAnything2023,
   title = {Segment {{Anything}}},
   author = {Kirillov, Alexander and Mintun, Eric and Ravi, Nikhila and Mao, Hanzi and Rolland, Chloe and Gustafson, Laura and Xiao, Tete and Whitehead, Spencer and Berg, Alexander C. and Lo, Wan-Yen and Dollár, Piotr and Girshick, Ross},
@@ -713,6 +731,24 @@
   langid = {english},
   keywords = {multimodal sensor fusion,open-world perception,robotic perception,semantic SLAM,zero-shot learning},
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/NBHH6UZS/Miao et al. - 2025 - A Frontier Review of Semantic SLAM Technologies Applied to the Open World.pdf}
+}
+
+@online{mildenhallNeRFRepresentingScenes2020,
+  title = {{{NeRF}}: {{Representing Scenes}} as {{Neural Radiance Fields}} for {{View Synthesis}}},
+  shorttitle = {{{NeRF}}},
+  author = {Mildenhall, Ben and Srinivasan, Pratul P. and Tancik, Matthew and Barron, Jonathan T. and Ramamoorthi, Ravi and Ng, Ren},
+  date = {2020-08-03},
+  eprint = {2003.08934},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2003.08934},
+  url = {http://arxiv.org/abs/2003.08934},
+  urldate = {2026-01-11},
+  abstract = {We present a method that achieves state-of-the-art results for synthesizing novel views of complex scenes by optimizing an underlying continuous volumetric scene function using a sparse set of input views. Our algorithm represents a scene using a fully-connected (non-convolutional) deep network, whose input is a single continuous 5D coordinate (spatial location \$(x,y,z)\$ and viewing direction \$(θ, φ)\$) and whose output is the volume density and view-dependent emitted radiance at that spatial location. We synthesize views by querying 5D coordinates along camera rays and use classic volume rendering techniques to project the output colors and densities into an image. Because volume rendering is naturally differentiable, the only input required to optimize our representation is a set of images with known camera poses. We describe how to effectively optimize neural radiance fields to render photorealistic novel views of scenes with complicated geometry and appearance, and demonstrate results that outperform prior work on neural rendering and view synthesis. View synthesis results are best viewed as videos, so we urge readers to view our supplementary video for convincing comparisons.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Graphics},
+  note = {Comment: ECCV 2020 (oral). Project page with videos and code: http://tancik.com/nerf},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/BQGAGWUJ/Mildenhall et al. - 2020 - NeRF Representing Scenes as Neural Radiance Fields for View Synthesis.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/WUCI2C2W/2003.html}
 }
 
 @online{oquabDINOv2LearningRobust2024,
@@ -1062,6 +1098,22 @@
   pubstate = {prepublished},
   keywords = {Computer Science - Computer Vision and Pattern Recognition},
   file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/K9WRM94X/Wang et al. - 2022 - YOLOv7 Trainable bag-of-freebies sets new state-of-the-art for real-time object detectors.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/K3HN4JHE/2207.html}
+}
+
+@online{westphalGeneralizedInformationBottleneck2025,
+  title = {A {{Generalized Information Bottleneck Theory}} of {{Deep Learning}}},
+  author = {Westphal, Charles and Hailes, Stephen and Musolesi, Mirco},
+  date = {2025-10-14},
+  eprint = {2509.26327},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2509.26327},
+  url = {http://arxiv.org/abs/2509.26327},
+  urldate = {2026-01-10},
+  abstract = {The Information Bottleneck (IB) principle offers a compelling theoretical framework to understand how neural networks (NNs) learn. However, its practical utility has been constrained by unresolved theoretical ambiguities and significant challenges in accurate estimation. In this paper, we present a \textbackslash textit\{Generalized Information Bottleneck (GIB)\} framework that reformulates the original IB principle through the lens of synergy, i.e., the information obtainable only through joint processing of features. We provide theoretical and empirical evidence demonstrating that synergistic functions achieve superior generalization compared to their non-synergistic counterparts. Building on these foundations we re-formulate the IB using a computable definition of synergy based on the average interaction information (II) of each feature with those remaining. We demonstrate that the original IB objective is upper bounded by our GIB in the case of perfect estimation, ensuring compatibility with existing IB theory while addressing its limitations. Our experimental results demonstrate that GIB consistently exhibits compression phases across a wide range of architectures (including those with \textbackslash textit\{ReLU\} activations where the standard IB fails), while yielding interpretable dynamics in both CNNs and Transformers and aligning more closely with our understanding of adversarial robustness.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Information Theory,Computer Science - Machine Learning},
+  file = {/home/kevin/snap/zotero-snap/common/Zotero/storage/DW6A3LBC/Westphal et al. - 2025 - A Generalized Information Bottleneck Theory of Deep Learning.pdf;/home/kevin/snap/zotero-snap/common/Zotero/storage/C97VB9RP/2509.html}
 }
 
 @online{xiaGibsonEnvRealWorld2018,

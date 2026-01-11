@@ -380,11 +380,11 @@ These zero-shot and training-free approaches enable real-time semantic explorati
                 - Confidence score
             - Objects are treated as discrete semantic entitiers and not dense features
         - 4. Dual-Map Memory Structure:
-            - Local (Concrete) Map:
+            - Frontend Map:
                 - Short-term memory for recent observations
                 - High update rate
-            - Global (Abstract) Map:
-                - Stores stable. task-relevant object instances ("anchors")
+            - Backend Map:
+                - Stores stable, task-relevant object instances ("anchors")
                 - Formed by clustering multiple concrete observations
                 - Long term semantic memory
                 - Does not store raw observations, only abstracted object concepts 
@@ -409,6 +409,13 @@ These zero-shot and training-free approaches enable real-time semantic explorati
         - Computational overhead from multiple model inferences.
         - Pre-mapping required; not designed for online exploration.
 
+3. LERF:
+    Pipeline:
+        - 1. Input:
+            - RGB-D image + robot/camera pose + intrinsic 
+        - 2. NeeRF Reconstruction:
+            - Builds a neural radiance field (NeRF) representation of the environment
+            - Encodes both geometry and appearance in a continuous 3D volume
 
 ## 2.4 Object Detection and Promptable Models
 

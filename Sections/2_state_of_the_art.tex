@@ -510,7 +510,7 @@ Inorder to incorporate persistent semantic memory into exploration systems, it i
     & Grid (dual map)
     & CLIP-based
     & \cmark
-    & \cmark ()
+    & \cmark
     & \cmark \\
 
     LERF~\cite{kerrLERFLanguageEmbedded2023}
@@ -551,54 +551,54 @@ Inorder to incorporate persistent semantic memory into exploration systems, it i
 
 \citeauthor{guConceptGraphsOpenVocabulary3D2023}~\cite{guConceptGraphsOpenVocabulary3D2023} proposed
 \textit{ConceptGraphs}, and \citeauthor{maggioClioRealtimeTaskDriven2024}~\cite{maggioClioRealtimeTaskDriven2024}
-introduced \textit{CLIO}, two object-centric semantic mapping frameworks that construct persistent
-3D representations enriched with open-vocabulary semantic information. Both methods represent the
-environment as a collection of discrete object entities rather than dense per-voxel semantic maps.
+introduced \textit{Clio}, two object-centric semantic mapping frameworks that maintain persistent
+object-level representations enriched with open-vocabulary semantic information.
+Both methods represent the environment in an object-centric manner by extracting objects using
+open-vocabulary object detectors (e.g., GroundingDINO~\cite{liuGroundingDINOMarrying2024}) and
+segmenting them with \ac{SAM}~\cite{kirillovSegmentAnything2023}, yielding a bounding box and
+segmentation mask for each detected object.
+Semantic information is encoded using CLIP-based embeddings.
+While ConceptGraphs explicitly reconstructs per-object 3D geometry, Clio represents objects as
+spatially grounded semantic entities with associated embeddings and metadata.
+Clio additionally incorporates a detector confidence score into the object representation~\cite{maggioClioRealtimeTaskDriven2024}. From this point onward, the two methods differ in how object-centric representations are stored, associated, and fused into a persistent semantic map.
 
-Given an RGB image $I_t$, optional depth $D_t$, and robot pose $\mathbf{T}_t$, objects are detected
-using an open-vocabulary object detector (e.g., GroundingDINO~\cite{liuGroundingDINOMarrying2024})
-and segmented via SAM~\cite{kirillovSegmentAnything2023}. For each detected object $o_i$, a binary
-mask $M_i \subset \mathbb{R}^2$ is obtained. Depth pixels within the mask are back-projected into
-3D to yield an object point cloud
-\[
-\mathcal{P}_i = \{ \mathbf{p}_k \in \mathbb{R}^3 \mid (u_k, v_k) \in M_i \},
-\]
-which is optionally filtered using DBSCAN to remove outliers~\cite{guConceptGraphsOpenVocabulary3D2023}.
+ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023} updates its semantic map by associating
+newly detected objects with existing ones if the DBSCAN-filtered 3D point cloud exhibits both
+high semantic similarity, measured using OpenCLIP~\cite{chertiReproducibleScalingLaws2022}, and
+sufficient 3D spatial overlap, quantified via \ac{IoU}.
+If these conditions are met, the new point cloud is aligned to the existing object using \ac{ICP} and
+merged, while semantic embeddings are aggregated over time.
+Otherwise, a new object node is added to the map.
+The resulting representation is a 3D scene graph, where nodes correspond to objects and edges
+encode spatial relationships (e.g., above, next to) derived from relative geometry.
+Each object is subsequently captioned using a large \ac{VLM} to generate a
+human-readable description of its attributes and context~\cite{guConceptGraphsOpenVocabulary3D2023}.
+A \ac{LLM} then processes the set of graph nodes and their captions under a system
+prompt to refine object descriptions and infer higher-level relationships between objects, by connecting spatial edges between relevant nodes. This enables a range of downstream tasks, including question answering about the scene, robot manipulation, navigation, and localization.
 
-Each object is further associated with a semantic embedding
-\[
-\mathbf{e}_i = f_{\text{img}}(I_t \odot M_i),
-\]
-where $f_{\text{img}}(\cdot)$ denotes an image encoder from a \ac{VLM} such as
-OpenCLIP~\cite{chertiReproducibleScalingLaws2022}. CLIO additionally augments this representation
-with a detector confidence score $s_i \in [0,1]$~\cite{maggioClioRealtimeTaskDriven2024}. Thus, an
-object instance is represented as
-\[
-o_i = (\mathcal{P}_i, \mathbf{e}_i, s_i).
-\]
+Clio~\cite{maggioClioRealtimeTaskDriven2024} employs a dual-level object-centric memory consisting
+of a frontend instance buffer and a backend abstract object memory.
+The frontend maintains a transient buffer of newly detected object instances, each associated
+with a spatial estimate, a CLIP-based semantic embedding, and a detector confidence score.
+These instance-level representations are updated at a high frequency and may contain redundant
+or noisy observations.
+The backend maintains a compact set of stable, task-relevant object abstractions that serve as
+long-term semantic memory.
+In Clio, promotion from instance-level observations to abstract object anchors is governed by a mathematically defined information bottleneck objective operating in semantic embedding space, which compresses redundant observations while preserving task-relevant information. This enables efficient querying by retaining only a small number of semantically meaningful object anchors~\cite{westphalGeneralizedInformationBottleneck2025}.
+During language-guided navigation, semantic reasoning is performed by matching the CLIP embedding
+of the language query against the abstract object representations, while low-level navigation is
+handled by a classical planner operating on the geometric occupancy map. While Clio improves efficiency by retaining only task-relevant object abstractions, this task-specific design limits map reusability, as querying non-task objects requires additional map reconstruction. As noted by \citeauthor{jiangDualMapOnlineOpenVocabulary2025}~\cite{jiangDualMapOnlineOpenVocabulary2025},
+DualMap addresses this limitation by adopting a hybrid segmentation strategy for holistic
+open-vocabulary mapping and by replacing costly inter-object merging with lightweight
+intra-object consistency checks, enabling persistent semantic memory and more efficient
+online operation.
 
-From this point onward, ConceptGraphs and CLIO differ in how object instances are associated,
-fused, and stored in memory. ConceptGraphs maintains a persistent semantic scene graph
-$\mathcal{G} = (\mathcal{V}, \mathcal{E})$, where each node $v_j \in \mathcal{V}$ corresponds to a
-unique object hypothesis. A newly observed object $o_i$ is associated with an existing node $v_j$
-if both semantic and geometric consistency criteria are satisfied:
-\[
-\cos(\mathbf{e}_i, \mathbf{e}_j) > \tau_{\text{sem}}
-\quad \text{and} \quad
-\text{IoU}_{3D}(\mathcal{P}_i, \mathcal{P}_j) > \tau_{\text{geo}}.
-\]
-If a match is found, the point clouds are aligned using ICP, and the object embedding is updated via
-averaging:
-\[
-\mathbf{e}_j \leftarrow \frac{1}{N_j + 1} \left( N_j \mathbf{e}_j + \mathbf{e}_i \right),
-\]
-where $N_j$ denotes the number of observations fused into node $v_j$. Otherwise, a new node is added
-to the graph. Edges $e_{jk} \in \mathcal{E}$ encode spatial relations (e.g., \textit{above}, \textit{next to}) derived from relative object poses. Each node is subsequently captioned using a large
-\ac{VLM} to generate a human-readable description of object attributes and
-context~\cite{guConceptGraphsOpenVocabulary3D2023}. A \ac{LLM} further refines these
-descriptions and infers higher-level relational edges based on both geometry and textual captions.
-This explicit graph-based representation enables downstream tasks such as semantic question
-answering, object-level navigation, manipulation, and localization.
+\citeauthor{kerrLERFLanguageEmbedded2023}~\cite{kerrLERFLanguageEmbedded2023} introduced
+\textit{LERF}, which builds upon \ac{NeRF}~\cite{mildenhallNeRFRepresentingScenes2020} to represent a scene as a continuous volumetric function that maps 3D position and viewing direction to color and density, learned from multi-view RGB images with known camera poses. While a standard \ac{NeRF} reconstructs only geometry and appearance, LERF augments the radiance field with a dense language embedding field by distilling image-level semantic features into 3D during
+training.
+Specifically, CLIP~\cite{radfordLearningTransferableVisual2021} and DINO~\cite{jiangCLIPDINOVisual2024} embeddings are extracted from each training image at multiple spatial scales and projected into the \ac{NeRF} via multi-view consistency, allowing each 3D location to store language-aligned semantic information. This additional supervision enables dense 3D relevancy maps to be generated at query time by computing similarity between a text embedding and the learned language field. However, LERF requires extensive offline, scene-specific \ac{NeRF} training and does not support incremental updates or online exploration, limiting its applicability to real-time or long-term robotic mapping scenarios.
+
+
 
 % \begin{itemize}
 %     \item Overview of approaches to build and update semantic maps during exploration:
