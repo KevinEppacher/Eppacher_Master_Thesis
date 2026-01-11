@@ -521,7 +521,7 @@ Inorder to incorporate persistent semantic memory into exploration systems, it i
     & \xmark \\
 
     OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}
-    & TSDF
+    & region based TSDF
     & SEEM~\cite{zouSegmentEverythingEverywhere2023}
     & \cmark
     & \cmark
@@ -594,10 +594,57 @@ intra-object consistency checks, enabling persistent semantic memory and more ef
 online operation.
 
 \citeauthor{kerrLERFLanguageEmbedded2023}~\cite{kerrLERFLanguageEmbedded2023} introduced
-\textit{LERF}, which builds upon \ac{NeRF}~\cite{mildenhallNeRFRepresentingScenes2020} to represent a scene as a continuous volumetric function that maps 3D position and viewing direction to color and density, learned from multi-view RGB images with known camera poses. While a standard \ac{NeRF} reconstructs only geometry and appearance, LERF augments the radiance field with a dense language embedding field by distilling image-level semantic features into 3D during
+\textit{LERF}, which builds upon \ac{NeRF}~\cite{mildenhallNeRFRepresentingScenes2020} to represent a
+scene as a continuous volumetric function that maps a 3D position $\mathbf{x}$ and viewing
+direction $\mathbf{d}$ to color and density,
+$f(\mathbf{x}, \mathbf{d}) \rightarrow (\sigma, \mathbf{c})$, learned from multi-view RGB images
+with known camera poses.
+While a standard \ac{NeRF} reconstructs only geometry and appearance, LERF augments the radiance
+field with an additional language embedding output,
+$f(\mathbf{x}, \mathbf{d}) \rightarrow (\sigma, \mathbf{c}, \mathbf{e})$, where $\mathbf{e}$ denotes
+a language-aligned semantic embedding.
+This embedding field is learned by distilling image-level semantic features into 3D during
 training.
-Specifically, CLIP~\cite{radfordLearningTransferableVisual2021} and DINO~\cite{jiangCLIPDINOVisual2024} embeddings are extracted from each training image at multiple spatial scales and projected into the \ac{NeRF} via multi-view consistency, allowing each 3D location to store language-aligned semantic information. This additional supervision enables dense 3D relevancy maps to be generated at query time by computing similarity between a text embedding and the learned language field. However, LERF requires extensive offline, scene-specific \ac{NeRF} training and does not support incremental updates or online exploration, limiting its applicability to real-time or long-term robotic mapping scenarios.
+Specifically, CLIP~\cite{radfordLearningTransferableVisual2021} and
+DINO~\cite{jiangCLIPDINOVisual2024} embeddings are extracted from each training image at multiple
+spatial scales and projected into the \ac{NeRF} via multi-view consistency, allowing each 3D
+location to store a stable, language-aligned semantic representation.
+This additional supervision enables dense 3D relevancy maps to be generated at query time by
+computing similarity between a text embedding and the learned language field.
+However, LERF requires extensive offline, scene-specific \ac{NeRF} training and does not s upport
+incremental updates or online exploration, limiting its applicability to real-time or long-term
+robotic mapping scenarios.
 
+\citeauthor{yamazakiOpenFusionRealtimeOpenVocabulary2023}~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}
+presented \textit{OpenFusion}, a real-time open-vocabulary semantic mapping framework that integrates
+volumetric \ac{TSDF}-based reconstruction with region-level semantic perception from foundation models.
+OpenFusion processes incoming RGB images using \ac{SEEM}~\cite{zouSegmentEverythingEverywhere2023}, a
+promptable \ac{VLM} capable of zero-shot semantic segmentation based on text or image prompts.
+For each frame, \ac{SEEM} produces soft region confidence maps along with a semantic embedding vector
+for each region.
+
+Depth images and camera poses are fused into a volumetric \ac{TSDF} map to reconstruct scene geometry.
+Rather than directly storing semantic embeddings per voxel, OpenFusion associates voxels with
+lightweight semantic region identifiers with a dictionary mapping each region ID to its corresponding
+semantic embedding.
+To establish temporal consistency, the current \ac{TSDF} map is raycast from the camera pose to render
+the accumulated semantic regions into the image plane.
+The rendered regions are then compared with the newly observed regions using geometric overlap
+and semantic similarity, and region correspondences are solved via a Jonker-Volgenant assignment
+algorithm~\cite{crouseImplementing2DRectangular2016}.
+Matched regions are fused by updating confidence scores, while unmatched regions are added as new
+semantic entries.
+
+Semantic embeddings are stored in a global dictionary indexed by region identifiers, rather than
+per voxel, reducing memory consumption while enabling efficient semantic queries.
+At query time, a natural-language prompt is embedded using the same \ac{VLM}, and
+cosine similarity~\ref{eq:vlm_cosine_similarity} is computed between the query embedding and the
+dictionary entries.
+Regions with the highest similarity scores are retrieved and localized via their associated \ac{TSDF}
+geometry.
+This design enables real-time, open-vocabulary semantic mapping with efficient memory usage;
+however, OpenFusion does not maintain explicit object instances or support object-centric or
+instance-level semantic reasoning.
 
 
 % \begin{itemize}
