@@ -476,7 +476,7 @@ By separating short-term perceptual memory from long-term semantic anchors, Dual
 
 \subsection*{Semantic Scene Reconstruction}
 
-Inorder to incorporate persistent semantic memory into exploration systems, it is essential to build and maintain accurate 3D reconstructions of the environment enriched with semantic information. This section reviews state-of-the-art methods for semantic scene reconstruction, focusing on how different approaches represent spatial and semantic information, their ability to operate in real time, and whether they support object-centric reasoning and which foundation models they leverage. Table~\ref{tab:sota:semantic_scene_reconstruction_overview} summarizes key characteristics of recent semantic scene reconstruction methods.
+In order to incorporate persistent semantic memory into exploration systems, it is essential to build and maintain accurate 3D reconstructions of the environment enriched with semantic information. This section reviews state-of-the-art methods for semantic scene reconstruction, focusing on how different approaches represent spatial and semantic information, their ability to operate in real time, and whether they support object-centric reasoning and which foundation models they leverage. Table~\ref{tab:sota:semantic_scene_reconstruction_overview} summarizes key characteristics of recent semantic scene reconstruction methods.
 
 \begin{table}[H]
     \centering
@@ -507,7 +507,7 @@ Inorder to incorporate persistent semantic memory into exploration systems, it i
     & \cmark \\
 
     Clio~\cite{jiangDualMapOnlineOpenVocabulary2025}
-    & Grid (dual map)
+    & Points (dual map)
     & CLIP-based
     & \cmark
     & \cmark
@@ -521,7 +521,7 @@ Inorder to incorporate persistent semantic memory into exploration systems, it i
     & \xmark \\
 
     OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}
-    & region based TSDF
+    & region-based TSDF
     & SEEM~\cite{zouSegmentEverythingEverywhere2023}
     & \cmark
     & \cmark
@@ -543,9 +543,11 @@ Inorder to incorporate persistent semantic memory into exploration systems, it i
 
     \bottomrule
 \end{tabular}
-
-\caption{Comparison of semantic scene reconstruction methods. The table contrasts spatial representations, semantic abstractions, temporal update strategies, and the degree of online integration with SLAM systems.}\label{tab:sota:semantic_scene_reconstruction_overview}
+% TODO: New caption
+\caption{Comparison of semantic scene reconstruction methods. The table contrasts spatial representations, semantic abstractions, temporal update strategies, and the degree of online integration with SLAM systems. Zero-shot refers to deployment in unseen scenes.}\label{tab:sota:semantic_scene_reconstruction_overview}
 \end{table}
+
+
 
 % Concept Graphs and Clio
 
@@ -611,7 +613,7 @@ spatial scales and projected into the \ac{NeRF} via multi-view consistency, allo
 location to store a stable, language-aligned semantic representation.
 This additional supervision enables dense 3D relevancy maps to be generated at query time by
 computing similarity between a text embedding and the learned language field.
-However, LERF requires extensive offline, scene-specific \ac{NeRF} training and does not s upport
+However, LERF requires extensive offline, scene-specific \ac{NeRF} training and does not support
 incremental updates or online exploration, limiting its applicability to real-time or long-term
 robotic mapping scenarios.
 
@@ -633,7 +635,7 @@ The rendered regions are then compared with the newly observed regions using geo
 and semantic similarity, and region correspondences are solved via a Jonker-Volgenant assignment
 algorithm~\cite{crouseImplementing2DRectangular2016}.
 Matched regions are fused by updating confidence scores, while unmatched regions are added as new
-semantic entries.
+semantic entries~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}.
 
 Semantic embeddings are stored in a global dictionary indexed by region identifiers, rather than
 per voxel, reducing memory consumption while enabling efficient semantic queries.
@@ -642,63 +644,225 @@ cosine similarity~\ref{eq:vlm_cosine_similarity} is computed between the query e
 dictionary entries.
 Regions with the highest similarity scores are retrieved and localized via their associated \ac{TSDF}
 geometry.
-This design enables real-time, open-vocabulary semantic mapping with efficient memory usage;
-however, OpenFusion does not maintain explicit object instances or support object-centric or
-instance-level semantic reasoning.
+This design enables real-time, open-vocabulary semantic mapping with efficient memory usage. However, OpenFusion does not maintain explicit object instances or support object-centric or
+instance-level semantic reasoning, which could potentially be addressed by additional voxel clustering strategies. Similar to DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025} and Clio~\cite{maggioClioRealtimeTaskDriven2024},
+OpenFusion follows a local-global fusion paradigm, where semantic information extracted from
+individual observations is incrementally associated with a global map representation.
+However, unlike DualMap and Clio, which explicitly maintain semantic abstractions across time,
+OpenFusion performs this fusion at the level of region-aligned geometry without constructing
+persistent object instances or multi-level semantic memory~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023,jiangDualMapOnlineOpenVocabulary2025,maggioClioRealtimeTaskDriven2024}.
+
+\citeauthor{alamaRayFrontsOpenSetSemantic2025}~\cite{alamaRayFrontsOpenSetSemantic2025} introduced
+\textit{RayFronts}, a real-time open-set semantic mapping framework designed to support both
+fine-grained semantic scene understanding within sensor range and semantic reasoning about regions
+beyond the depth perception limit.
+RayFronts represents the environment using a hybrid spatial abstraction consisting of a sparse
+voxel-based semantic map for observed regions and a set of semantic ray frontiers anchored at map
+boundaries for unobserved space.
+
+Given posed RGB-D observations, RayFronts first extracts dense, language-aligned visual features
+using an efficient vision-language encoder based on RADIO~\cite{ranzingerAMRADIOAgglomerativeVision2024} with a SIGLIP~\cite{zhaiSigmoidLossLanguage2023} adapter.
+Within the sensor range, depth measurements are fused into a sparse voxel grid, where each occupied
+voxel stores a persistent semantic embedding aggregated over time via a weighted averaging scheme.
+This lightweight fusion strategy prioritizes computational efficiency and online operation, in
+contrast to more complex multi-stage or object-level fusion pipelines~\cite{guConceptGraphsOpenVocabulary3D2023,maggioClioRealtimeTaskDriven2024,jiangDualMapOnlineOpenVocabulary2025}.
+
+To reason about regions beyond the depth sensing horizon, RayFronts maintains a VDB-based occupancy
+map that encodes free, occupied, and unknown space.
+Three-dimensional frontiers are extracted as boundary voxels separating observed and unobserved
+regions.
+Instead of associating a single semantic descriptor with each frontier, RayFronts introduces
+\emph{semantic ray frontiers}, in which multiple rays are attached to each frontier voxel.
+Each ray is parameterized by its origin, direction, and a language-aligned visual embedding,
+capturing semantic evidence observed along that direction in image space.
+
+Semantic rays are discretized using angular bins and incrementally fused over time, allowing
+multiple distinct semantic hypotheses to coexist at the same frontier without feature collisions.
+This stands in contrast to VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, which maintains a
+single-query, episodic value map conditioned on a specific object prompt.
+This design enables multi-object and multi-query semantic reasoning in unobserved space and supports
+rough triangulation of distant semantic entities as exploration progresses.
+Importantly, both voxel and ray representations store task-agnostic visual embeddings rather than
+query-specific scores, allowing the semantic map to be queried at arbitrary times using text or
+image prompts via cosine similarity~\cite{alamaRayFrontsOpenSetSemantic2025}.
+
+RayFronts is explicitly planner-agnostic and does not prescribe a specific exploration strategy.
+Instead, it provides a persistent semantic scene representation that can be consumed by downstream
+planners for object search, exploration, or navigation in large-scale and unbounded environments.
+By decoupling semantic mapping from planning, RayFronts enables flexible integration with a wide
+range of exploration and decision-making frameworks while maintaining real-time performance in
+outdoor settings~\cite{alamaRayFrontsOpenSetSemantic2025}.
+
+\citeauthor{schwaigerOTASOpenvocabularyToken2025}~\cite{schwaigerOTASOpenvocabularyToken2025}
+introduced \textit{OTAS} (Open-vocabulary Token Alignment for Outdoor Segmentation), a training-free
+semantic segmentation and reconstruction framework designed for unstructured outdoor environments.
+Unlike prior open-vocabulary mapping approaches that rely on object-centric segmentation priors,
+OTAS extracts semantic structure directly from intermediate token representations of frozen vision
+and vision-language foundation models.
+
+OTAS uses DINOv2~\cite{oquabDINOv2LearningRobust2024} to generate dense visual embeddings at the image
+patch level, which capture visual similarity but are not language-aligned.
+To obtain language grounding, dense patch-level embeddings are extracted from CLIP~\cite{radfordLearningTransferableVisual2021},
+which are language-aligned but noisy and view-dependent.
+The core idea of OTAS is to cluster visually similar patches based on DINOv2 embeddings and align
+these clusters with CLIP~\cite{radfordLearningTransferableVisual2021} embeddings via masked average pooling, yielding language-grounded semantic
+regions without relying on object-centric segmentation~\cite{schwaigerOTASOpenvocabularyToken2025}.
+
+Semantic queries are performed by embedding text prompts using CLIP’s text encoder and computing
+cosine similarity against the cluster-level embeddings.
+Optionally, a frozen mask refinement network such as SAM2~\cite{raviSAM2Segment2024} can be used to
+upsample coarse relevance maps to pixel-level segmentations.
+For multi-view reconstruction, language-grounded features are projected into 3D using depth and
+camera poses and fused into a persistent point cloud representation, enabling open-vocabulary
+querying via cosine similarity. Unlike prior object-centric mapping approaches such as
+ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023} and Clio~\cite{maggioClioRealtimeTaskDriven2024},
+OTAS does not require explicit object detection or instance segmentation, allowing it to capture amorphous
+or unstructured semantic entities commonly found in outdoor environments, such as vegetation, terrain types and natural landmarks~\cite{schwaigerOTASOpenvocabularyToken2025}. 
+
+\section{State of the Art Summary}
+
+\paragraph{Summary and Critical Analysis.}
+Table~\ref{tab:sota:summary} reveals a clear structural separation between three dominant design
+paradigms in open-vocabulary semantic exploration: learned policy-based methods, foundation-model-based
+exploration frameworks, and mapping-centric semantic reconstruction systems.
+Reinforcement learning approaches such as \ac{ZSON} learn implicit exploration--exploitation behavior
+through reward optimization, but require extensive training, exhibit limited interpretability, and
+lack persistent semantic memory.
+Mapping-centric systems, including ConceptGraphs, OpenFusion, RayFronts, and OTAS, focus on building
+rich semantic scene representations, but typically decouple mapping from active exploration and do
+not provide mechanisms for semantic-driven frontier selection or adaptive exploration control.
+
+Foundation-model-based exploration methods such as \ac{VLFM}, OneMap, and DualMap explicitly integrate
+semantic cues into geometric exploration.
+However, across these methods, semantic information is either episodic (VLFM), accumulated without
+belief revision (OneMap, DualMap), or primarily used for exploitation of previously observed regions.
+None of the reviewed approaches jointly address (i) zero-shot semantic reasoning, (ii) online
+semantic-driven exploration, and (iii) persistent, revisable semantic memory within a unified
+framework.
+As a result, existing systems remain sensitive to false positives, exhibit redundant exploration
+during multi-object search, and lack principled mechanisms to balance exploration and exploitation
+based on semantic uncertainty.
+
+\paragraph{Identified Gaps in the State of the Art.}
+From this analysis, three recurring limitations emerge.
+First, semantic exploration is often guided by transient or episodic representations that are
+discarded after an episode or task, preventing knowledge reuse across multiple search objectives.
+Second, persistent semantic maps, when present, rely on irreversible accumulative fusion, causing
+early misdetections to bias future exploration decisions without the possibility of belief revision.
+Third, the interaction between live semantic exploration signals and long-term semantic memory is
+either absent or fixed, with no adaptive mechanism to regulate trust between newly observed evidence
+and stored beliefs.
+
+\paragraph{Contribution of This Work.}
+This thesis addresses these limitations by introducing a hybrid semantic exploration framework that
+explicitly couples zero-shot semantic frontier scoring with a persistent, confidence-aware 3D
+semantic memory.
+Unlike prior methods, semantic information is integrated from multiple sources and fused with
+explicit uncertainty modeling, enabling the system to continuously adjust the balance between
+exploration and exploitation based on observation reliability and memory stability.
+By maintaining a revisable semantic belief over time, the proposed approach reduces the impact of
+false positives, avoids redundant exploration during multi-object search, and enables consistent
+semantic reasoning across extended missions.
+In doing so, this work bridges the gap between semantic mapping-centric systems and exploration-driven
+frameworks, providing a unified solution for open-vocabulary, multi-object semantic exploration in
+real-world environments.
 
 
-% \begin{itemize}
-%     \item Overview of approaches to build and update semantic maps during exploration:
-%     \begin{itemize}
-%         \item 2D grid maps
-%         \item Pointclouds
-%         \item Voxel grids
-%         \item Octomaps
-%         \item Scene graphs
-%         \item Neural Radiance Fields (NeRFs)
-%         \item Feature Fields
-%     \end{itemize}
-%     \item Techniques for fusing sensor data into persistent 2D/3D representations:
-%     \begin{itemize}
-%         \item Storing Visual Embeddings (e.g., CLIP features) in 3D maps for semantic querying.
-%         \item Incremental updating of semantic labels based on new observations.
-%         \item Handling uncertainty and conflicting detections over time.
-%     \end{itemize}
-%     \item Comparison of representations (Octomaps, point clouds, voxel grids) in terms of:
-%     \begin{itemize}
-%         \item Memory efficiency.
-%         \item Ability to store semantic labels persistently.
-%     \end{itemize}
-%     \item Discussion of \dots
-%     \begin{itemize}
-%         \item OpenFusion/ConceptFusion
-%         \item Clio
-%         \item GeFF
-%         \item CLIP-Fields
-%         \item ConceptFusion
-%         \item LERF
-%     \end{itemize}
-%     as examples of global 3D semantic maps.
-%     \item Limitations in updating or correcting the map after wrong detections.
-% \end{itemize}
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{
+        l|
+        >{\centering\arraybackslash}p{1.8cm}
+        >{\centering\arraybackslash}p{2.2cm}
+        >{\centering\arraybackslash}p{1.5cm}
+        >{\centering\arraybackslash}p{1.5cm}
+        >{\centering\arraybackslash}p{2.2cm}
+        >{\centering\arraybackslash}p{2.2cm}
+    }
+    \toprule
+    \textbf{Method}
+    & \textbf{Exploration Type}
+    & \textbf{Exploration-Exploitation Tradeoff}
+    & \textbf{Zero-Shot}
+    & \textbf{Real-Time}
+    & \textbf{Persistent Semantic Memory} \\
+    \midrule
 
+    ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}
+    & RL-based
+    & Learned policy
+    & \xmark
+    & training required
+    & \xmark \\
 
+    \midrule
 
-% \section{Object Detection and Promptable Models}
-% \begin{itemize}
-%     \item Review of traditional and open-vocabulary object detection methods.
-%     \item Analysis of grounding-capable detectors and segmentation models for zero-shot tasks.
-%     \item Specific evaluation of the following models for their suitability in semantic multi-object search:
-%     \begin{itemize}
-%         \item YOLO-E
-%         \item GroundingDINO
-%         \item MobileSAM
-%         \item GroundedSAM
-%         \item SEEM
-%         \item OWL-ViT
-%         \item MaskDINO
-%         \item GLIP
-%     \end{itemize}
-%     \item Discussion of promptable vision-language models supporting multi-modal queries (text, image, audio).
-%     \item Challenges with false positives in zero-shot settings and their implications for reliable multi-object detection.
-% \end{itemize}
+    VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}
+    & Foundation-model-based
+    & Semantic frontier value map
+    & \cmark
+    & \cmark
+    & \xmark \\
+
+    \midrule
+
+    OneMap~\cite{buschOneMapFind2025}
+    & Foundation-model-based
+    & Geometry-driven
+    & \cmark
+    & \cmark
+    & \cmark \\
+
+    DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025}
+    & Foundation-model-based
+    & Geometry-driven
+    & \cmark
+    & \cmark
+    & \cmark \\
+
+    RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025}
+    & Foundation-model-based
+    & Planner-agnostic
+    & \cmark
+    & \cmark
+    & \cmark \\
+
+    \midrule
+
+    ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023}
+    & Mapping-centric
+    & N/A
+    & \cmark
+    & \xmark
+    & \cmark \\
+
+    OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}
+    & Mapping-centric
+    & N/A
+    & \cmark
+    & \cmark
+    & \cmark \\
+
+    OTAS~\cite{schwaigerOTASOpenvocabularyToken2025}
+    & Mapping-centric
+    & N/A
+    & \cmark
+    & \cmark
+    & \cmark \\
+
+    \midrule
+
+    SAGE (ours)
+    & Foundation-model-based
+    & Balance between semantic exploration and exploitation
+    & \cmark
+    & \cmark
+    & \cmark \\
+
+    \bottomrule
+\end{tabular}
+\caption{Summary of state-of-the-art methods for open-vocabulary semantic exploration and mapping.}
+\label{tab:sota:summary}
+\end{table}
