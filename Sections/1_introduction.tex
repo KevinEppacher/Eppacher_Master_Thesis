@@ -29,9 +29,9 @@ description in natural language.
 
     \begin{tabular}{
     p{2.0cm}|
+    >{\centering\arraybackslash}p{3.5cm}
     c
-    c
-    p{5.2cm}
+    >{\centering\arraybackslash}p{5.2cm}
     }
     \toprule
     \textbf{Approach}
@@ -66,7 +66,7 @@ description in natural language.
     & CLIP similarity scoring~\cite{radfordLearningTransferableVisual2021} \\
 
     \textbf{ZSON}~\cite{majumdarZSONZeroShotObjectGoal2023}
-    & \cmark~(RL pretraining)
+    & \cmark~(Reinforcement Learning pretraining)
     & \xmark
     & CLIP-based RL policy \\
 
@@ -76,7 +76,7 @@ description in natural language.
     & Learned potential-field network \\
 
     \textbf{PIRLNav}~\cite{ramrakhyaPIRLNavPretrainingImitation2023}
-    & \cmark~(BC + RL)
+    & \cmark~(Behavior Cloning + Reinforcement Learning)
     & \xmark
     & DINO-based CNN-RNN policy~\cite{jiangCLIPDINOVisual2024} \\
 
@@ -124,11 +124,11 @@ capabilities.
     \renewcommand{\arraystretch}{1.1}
 
     \begin{tabular}{
-    p{3.0cm}|
+    >{\centering\arraybackslash}p{3.0cm}|
     c
     c
-    p{3.0cm}
-    p{3.0cm}
+    >{\centering\arraybackslash}p{3.0cm}
+    >{\centering\arraybackslash}p{3.0cm}
     }
     \toprule
     \textbf{Approach}
@@ -205,9 +205,9 @@ Table~\ref{tab:introduction:identified_gaps} summarizes the key limitations obse
     \renewcommand{\arraystretch}{1.1}
 
     \begin{tabular}{
-    p{3.2cm}|
-    p{6.2cm}
-    p{5.0cm}
+    >{\centering\arraybackslash}p{3.2cm}|
+    >{\centering\arraybackslash}p{6.2cm}
+    >{\centering\arraybackslash}p{5.0cm}
     }
     \toprule
     \textbf{Limitation}

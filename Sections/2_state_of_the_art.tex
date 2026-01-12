@@ -483,9 +483,9 @@ In order to incorporate persistent semantic memory into exploration systems, it 
     \footnotesize
     \renewcommand{\arraystretch}{1.2}
     \begin{tabular}{
-        l|
-        p{2.5cm}
-        p{2.0cm}
+        c|
+        >{\centering\arraybackslash}p{2.5cm}
+        >{\centering\arraybackslash}p{2.0cm}
         c 
         >{\centering\arraybackslash}p{1.5cm}
         >{\centering\arraybackslash}p{1.5cm}
@@ -719,54 +719,9 @@ ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023} and Clio~\cite{maggioCl
 OTAS does not require explicit object detection or instance segmentation, allowing it to capture amorphous
 or unstructured semantic entities commonly found in outdoor environments, such as vegetation, terrain types and natural landmarks~\cite{schwaigerOTASOpenvocabularyToken2025}. 
 
-\section{State of the Art Summary}
+\section{Identified Research Gaps in State of the Art}
 
-\paragraph{Summary and Critical Analysis.}
-Table~\ref{tab:sota:summary} reveals a clear structural separation between three dominant design
-paradigms in open-vocabulary semantic exploration: learned policy-based methods, foundation-model-based
-exploration frameworks, and mapping-centric semantic reconstruction systems.
-Reinforcement learning approaches such as \ac{ZSON} learn implicit exploration--exploitation behavior
-through reward optimization, but require extensive training, exhibit limited interpretability, and
-lack persistent semantic memory.
-Mapping-centric systems, including ConceptGraphs, OpenFusion, RayFronts, and OTAS, focus on building
-rich semantic scene representations, but typically decouple mapping from active exploration and do
-not provide mechanisms for semantic-driven frontier selection or adaptive exploration control.
-
-Foundation-model-based exploration methods such as \ac{VLFM}, OneMap, and DualMap explicitly integrate
-semantic cues into geometric exploration.
-However, across these methods, semantic information is either episodic (VLFM), accumulated without
-belief revision (OneMap, DualMap), or primarily used for exploitation of previously observed regions.
-None of the reviewed approaches jointly address (i) zero-shot semantic reasoning, (ii) online
-semantic-driven exploration, and (iii) persistent, revisable semantic memory within a unified
-framework.
-As a result, existing systems remain sensitive to false positives, exhibit redundant exploration
-during multi-object search, and lack principled mechanisms to balance exploration and exploitation
-based on semantic uncertainty.
-
-\paragraph{Identified Gaps in the State of the Art.}
-From this analysis, three recurring limitations emerge.
-First, semantic exploration is often guided by transient or episodic representations that are
-discarded after an episode or task, preventing knowledge reuse across multiple search objectives.
-Second, persistent semantic maps, when present, rely on irreversible accumulative fusion, causing
-early misdetections to bias future exploration decisions without the possibility of belief revision.
-Third, the interaction between live semantic exploration signals and long-term semantic memory is
-either absent or fixed, with no adaptive mechanism to regulate trust between newly observed evidence
-and stored beliefs.
-
-\paragraph{Contribution of This Work.}
-This thesis addresses these limitations by introducing a hybrid semantic exploration framework that
-explicitly couples zero-shot semantic frontier scoring with a persistent, confidence-aware 3D
-semantic memory.
-Unlike prior methods, semantic information is integrated from multiple sources and fused with
-explicit uncertainty modeling, enabling the system to continuously adjust the balance between
-exploration and exploitation based on observation reliability and memory stability.
-By maintaining a revisable semantic belief over time, the proposed approach reduces the impact of
-false positives, avoids redundant exploration during multi-object search, and enables consistent
-semantic reasoning across extended missions.
-In doing so, this work bridges the gap between semantic mapping-centric systems and exploration-driven
-frameworks, providing a unified solution for open-vocabulary, multi-object semantic exploration in
-real-world environments.
-
+Table~\ref{tab:sota:summary} provides a comprehensive overview of state-of-the-art methods for open-vocabulary semantic exploration and mapping frameworks. Table~\ref{tab:sota:summary} categorizes methods into 4 main groups: reinforcement learning-based, foundation-model-based exploration, persistent semantic mapping for exploration and mapping-centric approaches. The second column indicates the type of exploration strategy employed, while the third column highlights whether each method incorporates an explicit exploration-exploitation tradeoff mechanism, which determines if the user can decide the balance between exploring new areas and exploiting known information. The fourth and fifth columns denote whether the method supports zero-shot generalization to unseen environments and real-time operation, respectively. The final column indicates whether the method maintains a persistent semantic memory that can be revised over time.
 
 \begin{table}[H]
     \centering
@@ -791,17 +746,24 @@ real-world environments.
     \midrule
 
     ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}
-    & RL-based
-    & Learned policy
+    & Reinforcement Learning
     & \xmark
-    & training required
+    & \xmark
+    & \xmark (tscene specific traning)
+    & \xmark \\
+
+    PONI~\cite{ramakrishnanPONIPotentialFunctions2022}
+    & Reinforcement Learning
+    & \cmark
+    & \xmark
+    & \xmark (tscene specific traning)
     & \xmark \\
 
     \midrule
 
     VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}
-    & Foundation-model-based
-    & Semantic frontier value map
+    & Foundation-model
+    & \xmark
     & \cmark
     & \cmark
     & \xmark \\
@@ -810,21 +772,21 @@ real-world environments.
 
     OneMap~\cite{buschOneMapFind2025}
     & Foundation-model-based
-    & Geometry-driven
+    & \xmark
     & \cmark
     & \cmark
     & \cmark \\
 
     DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025}
     & Foundation-model-based
-    & Geometry-driven
+    & \xmark
     & \cmark
     & \cmark
     & \cmark \\
 
     RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025}
     & Foundation-model-based
-    & Planner-agnostic
+    & \xmark
     & \cmark
     & \cmark
     & \cmark \\
@@ -833,7 +795,7 @@ real-world environments.
 
     ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023}
     & Mapping-centric
-    & N/A
+    & \xmark
     & \cmark
     & \xmark
     & \cmark \\
@@ -854,15 +816,19 @@ real-world environments.
 
     \midrule
 
-    SAGE (ours)
+    SAGE (this work)
     & Foundation-model-based
-    & Balance between semantic exploration and exploitation
+    & \cmark
     & \cmark
     & \cmark
     & \cmark \\
 
     \bottomrule
 \end{tabular}
-\caption{Summary of state-of-the-art methods for open-vocabulary semantic exploration and mapping.}
+\caption{TODO:}
 \label{tab:sota:summary}
 \end{table}
+
+The main issue of RL-based methods is the adaptability to unseen environments, wehere structual differences occur, such as room layouts, object appearances, and lighting conditions. These methods typically require extensive retraining or fine-tuning to generalize effectively, limiting their practical applicability in dynamic or unfamiliar settings. Most Importantly, \ac{RL}-based approaches do not build online semantic memory representations, which hinders their ability to retain and utilize knowledge acquired during exploration, unless explicitly trained in desired environments~\cite{majumdarZSONZeroShotObjectGoal2023}. Therefore, the pre-trained foundation models are leveraged, to guide exploration in a zero-shot manner, towards semantically relevant regions~\cite{gadreCoWsPastureBaselines2022}. ~\cite{yokoyamaVLFMVisionLanguageFrontier2023} uses classical geometry-driven exploration strategies, such as frontier-based exploration, to navigate towards unexplored areas, which have the highest potential to contain the target object, by scoring the frontiers with the value map, extracted from the cosine similarity between the language query and the visual embeddings. However, also VLFM is episodic and does not maintain persistent semantic memory, which could be used to refine exploration strategies over time, which is proved by OneMap~\cite{buschOneMapFind2025}. Instead of storing the cosine similarity scores in the value map, OneMap embedds visual embedding on a probabilistic 2D ground plane, which on query highlights the likiest positions of possible targets. However, OneMap has no explicit object detector and the robot is stopps at the target, if the cosine similarity exceeds a predefined threshold, which could lead to false positives to similar objects.~DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025} overcomes this limitation by explicitly detecting objects and storing them in a dual-map structure, consisting of a local concrete map for recent observations and a global abstract map for long-term stable anchors. However, both OneMap and DualMap lack mechanisms to balance exploration and exploitation, as they primarily focus on exploiting previously observed semantic information without actively seeking new knowledge about the environment.~\cite{alamaRayFrontsOpenSetSemantic2025} addresses this gap by introducing semantic ray frontiers, which allow the robot to reason about unobserved regions beyond the depth sensing limit. This enables more informed exploration decisions based on both observed and unobserved semantic cues. However, RayFronts does not prescribe a specific exploration strategy, leaving the integration of exploration-exploitation tradeoff mechanisms to future work. ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023}, OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}, and OTAS~\cite{schwaigerOTASOpenvocabularyToken2025} focus primarily on semantic scene reconstruction and mapping, without directly addressing exploration strategies or the exploration-exploitation tradeoff. While these methods excel at building rich semantic representations of the environment, they do not provide mechanisms for guiding exploration based on semantic relevance or uncertainty. Therefore, there is a clear research gap in developing open-vocabulary semantic exploration frameworks that effectively balance exploration and exploitation while maintaining persistent semantic memory for long-term adaptability and knowledge retention.
+
+\newpage
