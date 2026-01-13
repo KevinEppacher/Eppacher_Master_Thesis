@@ -2,15 +2,27 @@
 
 \chapter{Methods}
 \label{ch:methods}
-This section describes the methodology applied in this thesis with a focus on the proposed hybrid semantic exploration system, adressing the issues extracted from the State of the Art in Chapter~\ref{ch:sota}. Firstly, an overview of the system architecture (Section~\ref{sec:methods:system_overview}) is provided, followed by detailed explanations of each component: semantic frontier exploration (Section~\ref{sec:methods:semantic_frontier}), promptable zero-shot detection (Section~\ref{sec:methods:zero_shot_detection}), persistent semantic 3D mapping (Section~\ref{sec:methods:persistent_mapping}), fusion strategy (Section~\ref{sec:methods:fusion_strategy}), and behavior tree for semantic-guided exploration (Section~\ref{sec:methods:behavior_tree}).
+This chapter presents the methodology of the proposed hybrid semantic exploration system, 
+designed to mitigate the key limitations identified in Chapter~\ref{ch:sota}, namely the 
+absence of persistent semantic memory, the reliance on single-source semantic detections, 
+and the lack of an explicit and controllable trade-off between semantic exploration and 
+exploitation in existing approaches.
+
+The proposed system integrates zero-shot semantic perception with frontier-based exploration and persistent 3D semantic mapping into a unified, closed-loop decision-making framework. Semantic evidence acquired during exploration is continuously fused into a long-term spatial memory, while exploration behavior is adaptively modulated based on the reliability of accumulated semantic beliefs.
+
+An overview of the system architecture is provided in Section~\ref{sec:methods:system_overview}, followed by detailed descriptions of the core components: semantic frontier exploration (Section~\ref{sec:methods:semantic_frontier}), promptable zero-shot detection (Section~\ref{sec:methods:zero_shot_detection}), persistent semantic 3D mapping (Section~\ref{sec:methods:persistent_mapping}), the multi-source fusion strategy governing semantic belief updates (Section~\ref{sec:methods:fusion_strategy}), and the behavior tree used to orchestrate semantic-guided exploration and navigation (Section~\ref{sec:methods:behavior_tree}).
+
 
 \section{System Overview}
 \label{sec:methods:system_overview}
-\begin{itemize}
-    \item Presentation of the overall architecture of the exploration~(\ref{sec:semantic_frontier}), detection~(\ref{sec:zero_shot_detection}), mapping~(\ref{sec:persistent_mapping}), and fusion~(\ref{sec:fusion_strategy}) pipeline.
-    \item Description of data flow between exploration (frontier evaluation), detection (promptable models), and memory (persistent semantic mapping), as shown in Figure~\ref{fig:system_overview}.
-    \item Explanation of how exploration and mapping components interact to progressively build a semantic understanding of the environment.
-\end{itemize}
+
+
+
+% \begin{itemize}
+%     \item Presentation of the overall architecture of the exploration~(\ref{sec:semantic_frontier}), detection~(\ref{sec:zero_shot_detection}), mapping~(\ref{sec:persistent_mapping}), and fusion~(\ref{sec:fusion_strategy}) pipeline.
+%     \item Description of data flow between exploration (frontier evaluation), detection (promptable models), and memory (persistent semantic mapping), as shown in Figure~\ref{fig:system_overview}.
+%     \item Explanation of how exploration and mapping components interact to progressively build a semantic understanding of the environment.
+% \end{itemize}
 
 \begin{figure}[h!]
     \centering
