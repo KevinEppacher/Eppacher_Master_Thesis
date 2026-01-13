@@ -2,9 +2,10 @@
 
 \chapter{Methods}
 \label{ch:methods}
-This chapter details the methods developed for semantic exploration, persistent 3D mapping, promptable object detection, and robust fusion strategies for multi-object search. 
+This section describes the methodology applied in this thesis with a focus on the proposed hybrid semantic exploration system, adressing the issues extracted from the State of the Art in Chapter~\ref{ch:sota}. Firstly, an overview of the system architecture (Section~\ref{sec:methods:system_overview}) is provided, followed by detailed explanations of each component: semantic frontier exploration (Section~\ref{sec:methods:semantic_frontier}), promptable zero-shot detection (Section~\ref{sec:methods:zero_shot_detection}), persistent semantic 3D mapping (Section~\ref{sec:methods:persistent_mapping}), fusion strategy (Section~\ref{sec:methods:fusion_strategy}), and behavior tree for semantic-guided exploration (Section~\ref{sec:methods:behavior_tree}).
 
 \section{System Overview}
+\label{sec:methods:system_overview}
 \begin{itemize}
     \item Presentation of the overall architecture of the exploration~(\ref{sec:semantic_frontier}), detection~(\ref{sec:zero_shot_detection}), mapping~(\ref{sec:persistent_mapping}), and fusion~(\ref{sec:fusion_strategy}) pipeline.
     \item Description of data flow between exploration (frontier evaluation), detection (promptable models), and memory (persistent semantic mapping), as shown in Figure~\ref{fig:system_overview}.
@@ -18,7 +19,8 @@ This chapter details the methods developed for semantic exploration, persistent 
     \label{fig:system_overview}
 \end{figure}
 
-\section{Semantic Frontier Exploration} \label{sec:semantic_frontier}
+\section{Semantic Frontier Exploration} 
+\label{sec:methods:semantic_frontier}
 \subsection*{Exploration 2D Occupancy Map}
 
 \begin{itemize}
@@ -72,7 +74,8 @@ This chapter details the methods developed for semantic exploration, persistent 
     \item Dynamic update of value maps as new observations are integrated.
 \end{itemize}
 
-\section{Persistent Semantic 3D Mapping} \label{sec:persistent_mapping}
+\section{Persistent Semantic 3D Mapping} 
+\label{sec:methods:persistent_mapping}
 
 \subsection*{Global Map Construction with Open-Fusion}
 \begin{itemize}
@@ -88,7 +91,8 @@ This chapter details the methods developed for semantic exploration, persistent 
     \item Maintenance of the semantic graph as a persistent memory for multi-object search tasks.
 \end{itemize}
 
-\section{Promptable Zero-Shot Detection} \label{sec:zero_shot_detection}
+\section{Promptable Zero-Shot Detection} 
+\label{sec:methods:zero_shot_detection}
 \begin{itemize}
     \item In this work YOLO-E \cite{yoloe} is used as the promptable zero-shot detection model.
     \item YOLO-E has the following advantages:
@@ -124,7 +128,8 @@ This chapter details the methods developed for semantic exploration, persistent 
 \end{figure}
 
 
-\section{Fusion Strategy}\label{sec:fusion_strategy}
+\section{Fusion Strategy}
+\label{sec:methods:fusion_strategy}
 \subsection*{Exploration–Memory Weighting}
 \begin{itemize}
     \item Exploration and memory graph nodes are fused and weighted as follows:
@@ -166,7 +171,8 @@ This chapter details the methods developed for semantic exploration, persistent 
     \label{fig:relevance_map_example}
 \end{figure}
 
-\section{Behavior Tree for Semantic-Guided Exploration} \label{sec:behavior_tree}
+\section{Behavior Tree for Semantic-Guided Exploration} 
+\label{sec:methods:behavior_tree}
 
 \subsection*{High-Level Task Structure}
 \begin{itemize}
