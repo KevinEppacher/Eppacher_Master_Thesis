@@ -16,41 +16,80 @@ An overview of the system architecture is provided in Section~\ref{sec:methods:s
 \section{System Overview}
 \label{sec:methods:system_overview}
 
-
-
-% \begin{itemize}
-%     \item Presentation of the overall architecture of the exploration~(\ref{sec:semantic_frontier}), detection~(\ref{sec:zero_shot_detection}), mapping~(\ref{sec:persistent_mapping}), and fusion~(\ref{sec:fusion_strategy}) pipeline.
-%     \item Description of data flow between exploration (frontier evaluation), detection (promptable models), and memory (persistent semantic mapping), as shown in Figure~\ref{fig:system_overview}.
-%     \item Explanation of how exploration and mapping components interact to progressively build a semantic understanding of the environment.
-% \end{itemize}
+The proposed system follows a modular hybrid architecture that tightly couples semantic perception,
+geometry-driven exploration, and persistent semantic mapping to enable robust open-vocabulary
+object-guided exploration. Figure~\ref{fig:system_overview} provides a high-level overview of the system components and their data flow. The exploration task is specified by a user-provided natural language prompt, which defines the semantic target and conditions the detection, exploration, and fusion modules throughout system execution.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{Images/03_methods/sage_pipeline.png}
-    \caption{System architecture}
-    \label{fig:system_overview}
+    \caption{Overview of the SAGE system architecture for open-vocabulary semantic exploration.
+    RGB-D observations and robot poses are processed by three parallel modules: 
+    (a) a persistent semantic mapping backend (OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}) that maintains a semantic 3D map, 
+    (b) a semantic frontier exploration module that scores geometric frontiers based on language-guided relevance, and 
+    (c) a promptable zero-shot detection pipeline for object hypotheses.
+    All semantic hypotheses are represented as graph nodes, filtered by relevance maps, and fused using a multi-source fusion strategy.
+    A behavior tree orchestrates exploration, verification, and navigation actions, while low-level motion planning and execution are handled by the ROS~2 Navigation Stack~\cite{macenskiDesksROSMaintainers2023}.}
+\label{fig:system_overview}
 \end{figure}
 
-\section{Semantic Frontier Exploration} 
-\label{sec:methods:semantic_frontier}
-\subsection*{Exploration 2D Occupancy Map}
+Robot observations at time $t$ are represented as RGB-D measurements $O_t = \{I_t, D_t\}$, where $I_t$ denotes the RGB image and $D_t$ the depth map. The robot pose in the world frame is denoted by $P_t$. To reduce computational load, observations are temporally and spatially downsampled prior to further processing.
 
-\begin{itemize}
-    \item The SLAM map is used for navigation.
-    \item Generating frontiers for each prompt would require deleting and rebuilding the SLAM map.
-    \item This approach is inefficient and impractical for navigation.
-    \item Therefore, a separate 2D occupancy grid is created exclusively for exploration.
-    \item The exploration map is constructed by:
-    \begin{itemize}
-        \item collecting robot poses, and
-        \item performing raytracing against the parent SLAM map.
-    \end{itemize}
-    \item For each new semantic prompt:
-    \begin{itemize}
-        \item all stored poses are cleared, and
-        \item the exploration occupancy grid is rebuilt from scratch.
-    \end{itemize}
-\end{itemize}
+The pre-processed observations are then fed into three parallel modules.
+(a) The \textit{Memory Module} takes as input the current observations $O_t$ and pose $P_t$, obtained from the ROS~2 SLAM Toolbox~\cite{macenskiSLAMToolboxSLAM2021}, and updates the persistent semantic 3D map $M_t$.
+(b) The \textit{Exploration Module} uses $O_t$ and $P_t$ to generate semantic frontiers $F_t$ from the current exploration occupancy grid.
+(c) The \textit{Detection Module} processes $O_t$ to produce promptable zero-shot detections $D_t^{\text{det}}$.
+
+Each module outputs a set of graph nodes representing semantic hypotheses.
+Specifically, the memory module produces memory graph nodes $G_t^{\text{mem}}$ derived from the persistent map $M_t$, the exploration module outputs exploration graph nodes $G_t^{\text{exp}}$ corresponding to semantic frontiers $F_t$, and the detection module outputs detection graph nodes $G_t^{\text{det}}$ obtained from $D_t^{\text{det}}$.
+This unified graph abstraction enables heterogeneous semantic hypotheses to be compared, filtered, and ranked using a common interface.
+
+Prior to fusion, graph nodes are filtered using a relevance map to suppress nodes located in already explored areas. The remaining nodes are fused using the multi-source fusion strategy described in Section~\ref{sec:methods:fusion_strategy}, resulting in a unified set of weighted graph nodes $G_t^{\text{fused}}$.
+
+Finally, the behavior tree described in Section~\ref{sec:methods:behavior_tree} selects the next high-level action based on $G_t^{\text{fused}}$, either navigating toward high-value frontiers for continued exploration or approaching detected objects for verification.
+Low-level motion planning, obstacle avoidance, and execution are handled by the ROS~2 Navigation Stack~\cite{macenskiDesksROSMaintainers2023}.
+
+
+\section{Semantic Frontier Exploration}
+\label{sec:methods:semantic_frontier}
+
+Semantic frontier exploration extends classical frontier-based exploration by incorporating
+semantic relevance derived from vision-language models, enabling task-driven exploration guided by
+a user-defined semantic prompt. Instead of exploring unknown space uniformly, the robot prioritizes frontiers that are more likely to yield observations relevant to the target concept~\cite{topiwalaFrontierBasedExploration2018, yokoyamaVLFMVisionLanguageFrontier2023 alamaRayFrontsOpenSetSemantic2025}. Figure~\ref{fig:sage_maps} illustrates the intermediate map representations and processing stages used to construct the semantic frontier map.
+
+\subsection*{Exploration Occupancy Maps}
+
+The system maintains three distinct 2D occupancy grids for navigation and exploration:
+(a) a SLAM map used for localization and navigation~\cite{macenskiSLAMToolboxSLAM2021},
+(b) an exploration map used exclusively for frontier detection, and
+(c) an inflated map that suppresses narrow passages and noisy frontier artifacts.
+This separation decouples stable navigation from task-specific exploration decisions and prevents
+semantic exploration logic from modifying the navigation map.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{Images/03_methods/semantic_frontier_exploration/sage_maps.png}
+    \caption{Overview of the map representations used for semantic frontier exploration.
+    The SLAM map is used for localization and navigation, while the exploration map encodes
+    task-specific explored and unexplored regions for frontier detection~\cite{macenskiSLAMToolboxSLAM2021}.
+    An inflated map is used to suppress narrow structures and reduce spurious frontiers.
+    The resulting frontier map is combined with a semantic value map to prioritize exploration
+    toward semantically relevant regions.}
+    \label{fig:sage_maps}
+\end{figure}
+
+Rather than running a separate SLAM instance for exploration, the exploration map is derived
+directly from the SLAM occupancy grid~\cite{macenskiSLAMToolboxSLAM2021}.
+Given the robot pose $P_t$ and the SLAM map $M_{\text{SLAM}}$, free space is raycast from the robot
+into the occupancy grid, marking traversed cells as explored while preserving unknown regions beyond
+sensor reach.
+This raycasting process is applied to all recorded robot poses accumulated during the current task,
+yielding an exploration map $M_{\text{exp}}$ that reflects the explored workspace.
+
+When a new semantic search task is initiated, all stored poses are cleared and the exploration map
+is rebuilt from scratch, while the SLAM map remains unchanged.
+This design ensures that exploration decisions are conditioned solely on task-relevant semantic
+information and prevents bias from previously explored but semantically irrelevant regions.
 
 \subsection*{Frontier Detection and Calculation}
 \begin{itemize}
