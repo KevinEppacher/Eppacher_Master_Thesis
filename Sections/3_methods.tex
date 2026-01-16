@@ -265,7 +265,9 @@ The value map can be interpreted as an analogy to gradient ascent in deep reinfo
     \label{fig:methods:gradient_ascent}
 \end{figure}
 
-The value map is generated using a pre-trained \ac{VLM}, specifically \ac{BLIP-2}~\cite{liBLIP2BootstrappingLanguageImage2023}, which is queried via a ROS~2 service to compute the semantic similarity between visual observations and a user-defined text prompt. The value map node subscribes to RGB images, robot poses, and the exploration occupancy grid, following prior semantic frontier formulations~\cite{yokoyamaVLFMVisionLanguageFrontier2023}. The overall value map generation pipeline is illustrated in Figure~\ref{fig:methods:value_map_ros2_pipeline}.
+The value map is generated using a pre-trained vision-language model, specifically BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023}, which is queried via a ROS~2 service to compute semantic similarity between visual observations and a user-defined text prompt.
+The value map node subscribes to RGB images, robot poses, and a global occupancy grid produced by a
+LiDAR-based SLAM system. This differs from prior semantic frontier approaches such as VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, which rely on depth camera projections and odometry-based local maps. By leveraging LiDAR-based SLAM, the proposed system maintains a globally consistent exploration map with reduced drift, enabling persistent semantic value accumulation over long trajectories. Figure~\ref{fig:methods:value_map_ros2_pipeline} illustrates the overall value map generation pipeline.
 
 \begin{figure}[h!]
     \centering
@@ -320,7 +322,7 @@ at the current robot pose $\mathbf{p}_t$.
 
 The update procedure, summarized in Algorithm~\ref{alg:value_map_update}, consists of three
 conceptual stages: (a) motion-gated temporal decay, (b) visibility-aware observation selection, and
-(c) confidence-weighted fusion.
+(c) confidence-weighted fusion. The following update procedure closely follows the semantic value map formulation proposed in VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, with adaptations for ROS~2 integration.
 
 \begin{algorithm}[H]
 \caption{2D Value Map Update using Vision-Language Model Similarity Scores}
@@ -365,38 +367,16 @@ conceptual stages: (a) motion-gated temporal decay, (b) visibility-aware observa
 \end{algorithmic}
 \end{algorithm}
 
-For each visible cell $(i,j)$, the semantic value update follows
-
-\begin{equation}
-V_t(i,j) = V_{t-1}(i,j) + \alpha\, C_{\text{obs}}(i,j)\big(s_t - V_{t-1}(i,j)\big),
-\end{equation}
-
-while the confidence map is updated as
-
-\begin{equation}
-C_t(i,j) = \max\big(\lambda C_{t-1}(i,j),\; C_{\text{obs}}(i,j)\big).
-\end{equation}
-
 (a) Temporal decay is applied to both the value map and the confidence map only if the robot
 has translated more than a predefined threshold $\delta_{\text{move}}$ since the previous update.
 This motion-gated decay prevents repeated observations from dominating the map when the robot
 remains stationary or performs pure rotations, while still allowing outdated semantic evidence
 to fade over time when the robot explores new regions. The decay factor
-$\lambda \in [0,1]$ controls the persistence of past observations and prevents oscillation between multiple similar frontiers by gradually reducing the influence of stale semantic evidence when the robot revisits similar viewpoints.”
+$\lambda \in [0,1]$ controls the persistence of past observations and prevents oscillation between multiple similar frontiers by gradually reducing the influence of stale semantic evidence when the robot revisits similar viewpoints~\cite{yokoyamaVLFMVisionLanguageFrontier2023}.
 
 (b) The set of map cells that can be updated at time step $t$ is determined by computing a
 top-down visibility mask $M_{\text{fov}}(\mathbf{p}_t)$ using raytracing within the current field
-of view.
-Only cells that are geometrically visible from the robot's pose and not occluded by obstacles
-are considered for update.
-For these visible cells, an instantaneous observation confidence map
-$C_{\text{obs}}(\mathbf{p}_t, M_{\text{fov}})$ is computed, which models the reliability of the
-current observation as a function of the sensor geometry.
-Cells near the center of the field of view are assigned higher confidence, while confidence
-decreases toward the periphery due to reduced resolution and increased distortion.
-This behavior is modeled using a Gaussian weighting function over the angular deviation from
-the camera’s principal viewing direction.
-The observation confidence assigned to a visible cell $(i,j)$ is computed as
+of view, instead of relying solely on depth camera projections based on odometry~\cite{yokoyamaVLFMVisionLanguageFrontier2023,thrunProbabilisticRobotics2006}. Only cells that are geometrically visible from the robot's pose and not occluded by obstacles are considered for update. For these visible cells, an instantaneous observation confidence map $C_{\text{obs}}(\mathbf{p}_t, M_{\text{fov}})$ is computed, which models the reliability of the current observation as a function of the sensor geometry. Cells near the center of the field of view are assigned higher confidence, while confidence decreases toward the periphery due to reduced resolution and increased distortion. This behavior is modeled using a Gaussian weighting function over the angular deviation from the camera’s principal viewing direction. The observation confidence assigned to a visible cell $(i,j)$ is computed as
 
 \begin{equation}
 \label{eq:value_map:confidence_weight}
@@ -410,17 +390,50 @@ C_{\text{obs}}(i,j)
 
 where $\Delta\theta(i,j)$ denotes the angular difference between the viewing ray toward cell
 $(i,j)$ and the robot’s forward-facing direction, and $\sigma$ controls the sharpness of the
-confidence decay within the field of view.
-Smaller values of $\sigma$ result in a narrower high-confidence region centered around the
-optical axis, while larger values produce a more uniform confidence distribution.
+confidence decay within the field of view. Smaller values of $\sigma$ result in a narrower high-confidence region centered around the optical axis, while larger values produce a more uniform confidence distribution. This confidence formulation follows the angular weighting strategy used in VLFM to model observation reliability across the field of view~\cite{yokoyamaVLFMVisionLanguageFrontier2023}.
 
-(c) For each visible cell $(i,j)$, the previous semantic value $V_{t-1}(i,j)$ is updated toward the
-current similarity score $s_t$, scaled by the effective confidence contribution.
-The update gain $\alpha \in [0,1]$ controls how strongly new observations influence existing
-values.
-At the same time, the confidence map retains the maximum between the decayed previous confidence
-and the newly observed confidence, ensuring that strongly observed regions remain influential
-over time. Using a max operation ensures that strongly observed regions retain high confidence even after decay, preventing repeated low-confidence observations from diluting reliable semantic evidence. This update mechanism allows the value map to accumulate semantically meaningful information in a spatially consistent manner, while remaining robust to sensor noise, viewpoint changes, and repeated observations from similar poses. 
+
+(c) For each visible cell $(i,j)$, the semantic value stored in the map is updated toward the
+current similarity score $s_t$ using a confidence-weighted fusion rule.
+Let $V_{t-1}(i,j)$ and $C_{t-1}(i,j)$ denote the semantic value and confidence stored at cell $(i,j)$
+before the update, and let $C_{\text{obs}}(i,j)$ denote the instantaneous observation confidence
+computed from the current field of view.
+
+The semantic value update is formulated as a weighted interpolation between the previous value and
+the current similarity score (see Equation~\eqref{eq:value_map:update}):
+
+\begin{equation}
+\label{eq:value_map:update}
+V_t(i,j)
+=
+V_{t-1}(i,j)
++
+\alpha\, C_{\text{obs}}(i,j)
+\bigl(
+s_t - V_{t-1}(i,j)
+\bigr),
+\end{equation}
+
+where $\alpha \in [0,1]$ is an update gain that controls how strongly new observations influence the
+existing value map. Higher observation confidence leads to a stronger correction toward the current similarity score, while low-confidence observations have only a minor effect. In parallel, the confidence map is updated to preserve strong observations over time. Specifically, the confidence assigned to each cell is defined in Equation~\eqref{eq:value_map:confidence_update}:
+
+\begin{equation}
+\label{eq:value_map:confidence_update}
+C_t(i,j)
+=
+\max\!\bigl(
+\lambda\, C_{t-1}(i,j),
+\;
+C_{\text{obs}}(i,j)
+\bigr),
+\end{equation}
+
+where $\lambda \in [0,1]$ is the temporal decay factor applied when the robot has translated since
+the previous update. Using a max operation ensures that regions which have been observed with high confidence remain influential even after decay, preventing repeated low-confidence observations from diluting reliable semantic evidence~\cite{yokoyamaVLFMVisionLanguageFrontier2023}.
+
+Together, Equations~\eqref{eq:value_map:update} and~\eqref{eq:value_map:confidence_update} implement
+a persistent, confidence-aware fusion mechanism that incrementally integrates semantic similarity
+scores into a spatially consistent value map.
 
 Figure~\ref{fig:methods:value_map:example} illustrates a generated value map for the prompts ``Bed'', ``TV'', and the zero-shot prompt ``A door leading to a bed'', demonstrating how prompt design can bias exploration toward multiple targets or semantically useful transition regions.
 
@@ -433,22 +446,38 @@ Figure~\ref{fig:methods:value_map:example} illustrates a generated value map for
     \label{fig:methods:value_map:example}
 \end{figure}
 
+These scored frontiers are then encapsulated as graph nodes and passed to the fusion strategy
+(Section~\ref{sec:methods:fusion_strategy}) for integration with memory and detection modules.
+
 \section{Persistent Semantic 3D Mapping} 
 \label{sec:methods:persistent_mapping}
 
+The frontier centroids serve as a local guidance, which area should be explored next. However, to effectively search for multiple objects over extended periods, the robot requires a persistent memory of previously detected objects and their locations. This is achieved through a semantic 3D mapping module that constructs a global semantic point cloud map from RGB-D observations and generates object-level hypotheses as graph nodes. These memory graph nodes are then integrated into the fusion strategy (Section~\ref{sec:methods:fusion_strategy}) to inform exploration and detection decisions.
+
+At the time implementation, OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} was the most promising open-source framework for real-time semantic 3D mapping. Its trade-off between mapping accuracy, semantic integration, and computational efficiency made it suitable for onboard deployment on mobile robots with limited processing power. From the analysis of the state-of-the-art (see Chapter~\ref{sec:sota:semantic_scene_reconstruction}), shows zero-shot and realtime capabilities. However, OpenFusion is not object centric. Therefore, this work extends OpenFusion with object-level semantic clustering and graph node generation to create a persistent memory suitable for multi-object search tasks.
+
 \subsection*{Global Map Construction with Open-Fusion}
-\begin{itemize}
-    \item Incremental creation of a global semantic point cloud map integrating RGB-D observations over time.
-    \item Registration of observations using robot poses to maintain a consistent world representation.
-    \item Association of semantic labels with 3D points based on query relevance scores.
-\end{itemize}
+
+OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} originally focueses on offline semantic mapping using pre-recorded RGB-D sequences from for example the ScanNet dataset~\cite{daiScanNetRichlyannotated3D2017} or Replica dataset~\cite{straubReplicaDatasetDigital2019}. This work adapts OpenFusion for online operation on a mobile robot by integrating it with a LiDAR-based SLAM system for accurate global pose estimation. The OpenFusion ROS~2 wrapper subscribes to RGB-D images, camera intrinsics and robot poses, which are filtered (see Figure~\ref{fig:methods:persistent_mapping:pipeline}). Let the input pairs defined as $\{(I_t, D_t, P_t) \mid t = 1,\dots,K\}$, where $I_t$ is the RGB image, $D_t$ is the depth image, and $P_t$ is the robot pose at time step $t$. OpenFusion has a maximum number of voxel blocks that can be stored in memory. Therefore, the pose-rgbd pair is only passed to OpenFusion if the robot has moved more than a predefined threshold $\delta_{\text{move}}$ since the last update and is significantly different to all previous stored poses to avoid redundant observations. OpenFusion initializes with the current camera intrinsics, voxel size and voxel count, which represent entire available memory for the semantic map. For each accepted input pair, OpenFusion integrates the RGB-D observation into a global Truncated Signed Distance Function (TSDF) volume using the provided robot pose for accurate alignment. The wrapper openfusion_ros publishes continously the constructed pointcloud and on each prompt, it triggers the semantic mapping process. The semantic mapping calculates the with the users text prompt the text embedding and compares it to the visual embeddings and the top-k similar embeddings are used to label the points in the pointcloud with semantic labels and confidence scores. This enables a zero-shot semantic mapping capability, allowing the robot to build a semantic map tailored to arbitrary user-defined concepts without requiring prior training on specific object categories.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{Images/03_methods/semantic_mapping/openfusion_ros_pipeline.png}
+    \caption{}
+    \label{fig:methods:persistent_mapping:pipeline}
+\end{figure}
+
+openfusion_ros outputs four poitclouds, first the 3D reconstruction pointcloud without semantic labels, second the pointcloud clusters which allign with the query prompt, third a semantic pointcloud, which requieres a list of classes to segment the pointcloud and fourth a panoptic pointcloud, which segments the pointcloud into different object instances. The difference between semantic and panoptic pointcloud is, that the semantic pointcloud only segments the pointcloud into different classes, e.g. chair, table, bed, while the panoptic pointcloud segments the pointcloud into different object instances, e.g. chair 1, chair 2, table 1. The semantic pointcloud and panoptic pointcloud are obtained with a ROS~2 service call, where the path of the classes json file is passed as argument. The classes json file contains a list of classes, which are used to segment the pointcloud. For example, if the user wants to search for chairs and tables, the classes json file contains the classes "chair" and "table". With the service call, the user can save the semantic and panoptic pointclouds on demand (further Information in Chapter~\ref{sec:implementation:evaluation}).
+
+Now this returns a semantic pointcloud with semantic labels and confidence scores for each point. However, to create object-level hypotheses suitable for multi-object search tasks, the pointcloud is further processed to cluster points spatially.
+
 
 \subsection*{Semantic Clustering and Graph Node Generation}
-\begin{itemize}
-    \item Clustering of points with similar semantic labels to form object-level hypotheses.
-    \item Construction of semantic graph nodes representing detected object instances with aggregated confidence scores.
-    \item Maintenance of the semantic graph as a persistent memory for multi-object search tasks.
-\end{itemize}
+% \begin{itemize}
+%     \item Clustering of points with similar semantic labels to form object-level hypotheses.
+%     \item Construction of semantic graph nodes representing detected object instances with aggregated confidence scores.
+%     \item Maintenance of the semantic graph as a persistent memory for multi-object search tasks.
+% \end{itemize}
 
 \section{Promptable Zero-Shot Detection} 
 \label{sec:methods:zero_shot_detection}
