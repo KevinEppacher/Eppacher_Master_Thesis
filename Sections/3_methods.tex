@@ -127,7 +127,7 @@ Let $\mathcal{G} \in \{-1, 0, 100\}^{W \times H}$ denote the exploration occupan
         \Comment{Spatially connected frontier region}
 
         \If{$N_{\min} \le |\mathcal{P}| \le N_{\max}$}
-            \State Compute centroid $\mathbf{c} = \frac{1}{|\mathcal{P}|} \sum_{\mathbf{p} \in \mathcal{P}} \mathbf{p}$
+            \State Compute centroid $\mathbf{c} \gets \frac{1}{|\mathcal{P}|} \sum_{\mathbf{p} \in \mathcal{P}} \mathbf{p}$
             \Comment{Representative frontier location}
 
             \State Assign frontier ID via nearest centroid match within $d_{\text{match}} \in \mathbb{R}$
@@ -169,15 +169,15 @@ The frontier centroids are tracked over time by matching them to previously dete
     $\mathcal{C}$,
     $\mathbf{p}$
 }
-    \State $r = 0.3$ \Comment{Query radius}
-    \State $s_{\max} = 0$
-    \State $\text{observed} = \text{false}$
+    \State $r \gets 0.3$ \Comment{Query radius}
+    \State $s_{\max} \gets 0$
+    \State $\text{observed} \gets \text{false}$
     
     \ForAll{points $q \in \mathcal{C}$}
         \If{$\lVert q - \mathbf{p} \rVert_2 < r$}
-            \State $s_{\max} = \max(s_{\max}, s(q))$
+            \State $s_{\max} \gets \max(s_{\max}, s(q))$
             \Comment{Max semantic response}
-            \State $\text{observed} = \text{true}$
+            \State $\text{observed} \gets \text{true}$
         \EndIf
     \EndFor
 
@@ -222,21 +222,21 @@ nodes by combining geometric frontier extraction with semantic scoring.
     $\mathcal{V}$,
     $\{\mathbf{c}_{i}^{t-1}\}$
 }
-    \State $\mathcal{F}_t = \textsc{ExtractFrontiers}(\mathcal{G}, N_{\min}, N_{\max}, d_{\text{match}}, \{\mathbf{c}_{i}^{t-1}\})$
+    \State $\mathcal{F}_t \gets \textsc{ExtractFrontiers}(\mathcal{G}, N_{\min}, N_{\max}, d_{\text{match}}, \{\mathbf{c}_{i}^{t-1}\})$
     \Comment{Geometric frontier extraction}
 
     \ForAll{frontier $f \in \mathcal{F}_t$}
-        \State $\mathbf{c} = \text{centroid}(f)$
+        \State $\mathbf{c} \gets \text{centroid}(f)$
         \Comment{Representative frontier position}
 
-        \State $(\text{observed}, s) = \textsc{GetScoreFromValueMap}(\mathcal{V}, \mathbf{c})$
+        \State $(\text{observed}, s) \gets \textsc{GetScoreFromValueMap}(\mathcal{V}, \mathbf{c})$
         \Comment{Semantic value lookup}
 
         \State Create graph node $n$
-        \State $n.\text{id} = f.\text{id}$
-        \State $n.\text{position} = \mathbf{c}$
-        \State $n.\text{score} = s$
-        \State $n.\text{observed} = \text{observed}$
+        \State $n.\text{id} \gets f.\text{id}$
+        \State $n.\text{position} \gets \mathbf{c}$
+        \State $n.\text{score} \gets s$
+        \State $n.\text{observed} \gets \text{observed}$
 
         \State Add $n$ to graph
         \Comment{Semantic frontier node}
@@ -255,48 +255,182 @@ The final step involves creating graph nodes for each frontier, encapsulating th
 \section*{Value Map Generation using Vision-Language Models}
 \label{sec:semantic_frontier:value_map_generation}
 
-The value map is a analogy to gradient ascent in deep reinforcement learning, where the robot seeks to maximize expected semantic reward by navigating toward areas with high relevance to the target concept~\cite{yokoyamaVLFMVisionLanguageFrontier2023,gadreCoWsPastureBaselines2022,majumdarZSONZeroShotObjectGoal2023}. In this work, the value map can be represented as the slope of reward function, with the only difference, that moving towards higher semantically relevant areas is hindert by obstacles and unknown space. Therefore, the geometrically deriven frontiers serve as feasible navigation targets that guide the robot toward high-value regions while ensuring safe traversal, instead of getting stuck in local minima~\cite{gadreCoWsPastureBaselines2022}. Figure~\ref{fig:methods:gradient_ascent} illustrates the semantic reward function and finding its maxima via frontier navigation (see Chapter~\ref{sec:methods:fusion_strategy} for reward definition).
+The value map can be interpreted as an analogy to gradient ascent in deep reinforcement learning, where the robot seeks to maximize an expected semantic reward by navigating toward regions with high relevance to a target concept~\cite{yokoyamaVLFMVisionLanguageFrontier2023,gadreCoWsPastureBaselines2022,majumdarZSONZeroShotObjectGoal2023,thomasPolicyGradientMethods2017}. In this work, the value map represents the slope of a semantic reward function. In contrast to classical gradient ascent, movement toward regions of high semantic relevance is constrained by obstacles and unknown space. Consequently, geometrically derived frontiers serve as feasible navigation targets that guide the robot toward high-value regions while ensuring safe traversal, thereby preventing convergence to unreachable local maxima~\cite{gadreCoWsPastureBaselines2022}. Figure~\ref{fig:methods:gradient_ascent} illustrates this analogy, showing the semantic reward landscape and the role of frontier-based navigation (see Chapter~\ref{sec:methods:fusion_strategy} for the reward definition).
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{Images/03_methods/semantic_frontier_exploration/gardient_ascent.png}
-    \caption{Gradient ascent analogy for semantic frontier exploration.}
+    \caption{Conceptual visualization of the gradient-ascent analogy for semantic frontier exploration. Semantic relevance is illustrated as a folded reward surface, where frontier and memory graph nodes are elevated according to their semantic scores at position $(x,y)$.
+    Geometric frontiers constrain feasible ascent directions under spatial obstacles.}
     \label{fig:methods:gradient_ascent}
 \end{figure}
 
-The value map is generated using a pre-trained \ac{VLM}, specifically the \ac{BLIP-2} model~\cite{liBLIP2BootstrappingLanguageImage2023}, requests over a ROS~2 service (see Figure~\ref{fig:methods:value_map_ros2_pipeline}) the cosine similarity between image embeddings and text prompt embeddings. Therefore, the value map node subscribes to RGB images and depth images, and robot poses and the exploration occupancy grid. The value map generation pipeline is outlined in Figure~\ref{fig:methods:value_map_ros2_pipeline}.
+The value map is generated using a pre-trained \ac{VLM}, specifically \ac{BLIP-2}~\cite{liBLIP2BootstrappingLanguageImage2023}, which is queried via a ROS~2 service to compute the semantic similarity between visual observations and a user-defined text prompt. The value map node subscribes to RGB images, robot poses, and the exploration occupancy grid, following prior semantic frontier formulations~\cite{yokoyamaVLFMVisionLanguageFrontier2023}. The overall value map generation pipeline is illustrated in Figure~\ref{fig:methods:value_map_ros2_pipeline}.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{Images/03_methods/semantic_frontier_exploration/value_map_ros2_pipeline.png}
-    \caption{ROS 2 value map generation pipeline using BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023} vision-language model for computing cosine similarity between image embeddings and text prompt embeddings.}
+    \caption{ROS~2 value map generation pipeline using the BLIP-2 vision-language model for computing image-text cosine similarity.}
     \label{fig:methods:value_map_ros2_pipeline}
 \end{figure}
 
-When the BLIP-2 service receives an RGB image and a text prompt, it computes the image embedding $E_I$ and the text embedding $E_T$ using its pre-trained encoders. The image is divided into a grid of patches, where each patch is flattened and linearly projected into the embedding space. Similarly, the text prompt is tokenized, by dividing the prompt into individual words or subwords, and each token is embedded into the same space. Both the image patches and the text tokens are then processed through transformer layers to capture contextual relationships and calculating the respective embeddings. Both embeddings are not jet aligned, therefore those high dimensional embeddings are projected into a common space using learned projection matrices $W_I$ and $W_T$. This is necessary, because the image and text encoders are trained separately and may have different dimensionalities or distributions. Both projected embeddings are then L2 normalized to ensure they have unit length, which is crucial for cosine similarity computation. The \ac{ITC} loss is used during training to maximize the cosine similarity between matching image-text pairs while minimizing it for non-matching pairs. This encourages the model to learn meaningful cross-modal representations. The cosine similarity $S$ between the normalized image embedding $\hat{E}_I$ and text embedding $\hat{E}_T$ is computed as follows:
+Upon receiving an RGB image and a text prompt, the BLIP-2 service computes an image embedding and a text embedding using its pre-trained visual and textual encoders. The input image is divided into a grid of fixed-size patches, which are flattened, added with positional embeddings, and linearly projected before being processed by a vision transformer to capture spatial and semantic context~\cite{sharirImageWorth16x162021,liBLIP2BootstrappingLanguageImage2023}. Similarly, the text prompt is tokenized into subword units, embedded, and processed by a language transformer to model semantic and syntactic relationships.
+
+Therefore, both embeddings are projected using learned projection matrices \( W_I \) and \( W_T \)
+into a common embedding space (see Equation~\ref{eq:methods:value_map:projection}):
+
+\begin{equation}
+E_I = W_I f_I(I), \qquad
+E_T = W_T f_T(T)
+\label{eq:methods:value_map:projection}
+\end{equation}
+
+where \( f_I(\cdot) \) and \( f_T(\cdot) \) denote the visual and textual encoders, respectively.
+The projection matrices \( W_I \) and \( W_T \) are learned during pre-training using an
+\ac{ITC} objective, which optimizes the cosine similarity between matching
+image-text pairs while pushing apart non-matching pairs~\cite{radfordLearningTransferableVisual2021,liBLIP2BootstrappingLanguageImage2023}. This training procedure aligns visual and textual representations in a shared semantic embedding space, enabling direct similarity comparison via cosine similarity. The projected embeddings are subsequently L2-normalized to unit length, which is required for cosine similarity computation.
+
+The cosine similarity score \( S \) between the normalized image embedding \( \hat{E}_I \) and text embedding \( \hat{E}_T \) is computed as:
 
 \begin{equation}
 S = \hat{E}_I \cdot \hat{E}_T
-  = \frac{E_I}{\|E_I\|_2} \cdot \frac{E_T}{\|E_T\|_2}
-\label{eq:cosine_similarity}
+  = \frac{E_I}{\|E_I\|_2} \cdot \frac{E_T}{\|E_T\|_2} = \cos(\hat{E}_I, \hat{E}_T)
+\label{eq:methods:value_map:cosine_similarity}
 \end{equation}
 
-where $\cdot$ denotes the dot product operation. The resulting cosine similarity score $S$ ranges from -1 to 1, indicating the degree of alignment between the image and text embeddings. A score close to 1 indicates high similarity, while a score close to -1 indicates dissimilarity.
-
-In this work the \ac{BLIP-2} large pre-trained blip\_image\_text\_matching model is used to compute the cosine similarity between image embeddings and text prompt embeddings. 
+Figure~\ref{fig:methods:cosine_sim} illustrates this image-text similarity computation, where
+visual observations are embedded by the BLIP-2 image encoder and compared against a
+user-defined text prompt in a shared semantic embedding space. Although cosine similarity is theoretically bounded in the interval \([-1,1]\), in practice \ac{ITC}-based \acp{VLM} yield similarity scores concentrated in a narrow positive range~\cite{radfordLearningTransferableVisual2021,liBLIP2BootstrappingLanguageImage2023}. This continuous score serves as a measure of semantic relevance between the current visual observation and the target concept.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{Images/03_methods/blip2_cosine_sim.png}
-    \caption{System architecture}
+    \caption{Image-text cosine similarity computation using the BLIP-2 \ac{ITC} head.
+    An RGB observation is embedded by the visual encoder and compared against a user-defined text prompt in a shared semantic embedding space~\cite{liBLIP2BootstrappingLanguageImage2023}.}
     \label{fig:methods:cosine_sim}
 \end{figure}
+
+\subsubsection*{Cosine Similarity to Value Map Projection}
+
+The computed cosine similarity score is integrated into a persistent 2D semantic value map in a
+pose- and visibility-aware manner.
+Let $V_{t-1}$ denote the semantic value map and $C_{t-1}$ the associated confidence map at time
+step $t-1$, and let $s_t$ be the cosine similarity score obtained from the \ac{VLM}
+at the current robot pose $\mathbf{p}_t$.
+
+The update procedure, summarized in Algorithm~\ref{alg:value_map_update}, consists of three
+conceptual stages: (a) motion-gated temporal decay, (b) visibility-aware observation selection, and
+(c) confidence-weighted fusion.
+
+\begin{algorithm}[H]
+\caption{2D Value Map Update using Vision-Language Model Similarity Scores}
+\label{alg:value_map_update}
+\begin{algorithmic}[1]
+
+\Function{UpdateSemanticValueMap}{
+    $V_{t-1}$,
+    $C_{t-1}$,
+    $s_t$,
+    $\mathbf{p}_t$
+}
+
+    \State \algcomment{(a) Motion-gated temporal decay}
+    \If{$\|\mathbf{p}_t - \mathbf{p}_{t-1}\|_2 > \delta_{\text{move}}$}
+        \State $V_{t-1} \gets \lambda V_{t-1}$
+        \State $C_{t-1} \gets \lambda C_{t-1}$
+    \EndIf
+
+    \State \algcomment{(b) Visibility and observation confidence}
+    \State Compute visibility mask $M_{\text{fov}}(\mathbf{p}_t)$ via raytracing
+    \State Compute confidence map $C_{\text{obs}}(\mathbf{p}_t, M_{\text{fov}})$
+
+    \State \algcomment{(c) Confidence-weighted fusion}
+    \ForAll{cells $(i,j)$ with $M_{\text{fov}}(i,j)=1$}
+
+        \State $v \gets V_{t-1}(i,j)$
+        \State $c \gets C_{t-1}(i,j)$
+        \State $c_{\text{new}} \gets C_{\text{obs}}(i,j)$
+
+        \If{$c + c_{\text{new}} = 0$}
+            \State \textbf{continue}
+        \EndIf
+
+        \State $V_t(i,j) \gets v + \alpha\, c_{\text{new}} (s_t - v)$
+        \State $C_t(i,j) \gets \max(\lambda c,\; c_{\text{new}})$
+
+    \EndFor
+
+    \State \Return $V_t,\; C_t$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+For each visible cell $(i,j)$, the semantic value update follows
+
+\begin{equation}
+V_t(i,j) = V_{t-1}(i,j) + \alpha\, C_{\text{obs}}(i,j)\big(s_t - V_{t-1}(i,j)\big),
+\end{equation}
+
+while the confidence map is updated as
+
+\begin{equation}
+C_t(i,j) = \max\big(\lambda C_{t-1}(i,j),\; C_{\text{obs}}(i,j)\big).
+\end{equation}
+
+(a) Temporal decay is applied to both the value map and the confidence map only if the robot
+has translated more than a predefined threshold $\delta_{\text{move}}$ since the previous update.
+This motion-gated decay prevents repeated observations from dominating the map when the robot
+remains stationary or performs pure rotations, while still allowing outdated semantic evidence
+to fade over time when the robot explores new regions. The decay factor
+$\lambda \in [0,1]$ controls the persistence of past observations and prevents oscillation between multiple similar frontiers by gradually reducing the influence of stale semantic evidence when the robot revisits similar viewpoints.”
+
+(b) The set of map cells that can be updated at time step $t$ is determined by computing a
+top-down visibility mask $M_{\text{fov}}(\mathbf{p}_t)$ using raytracing within the current field
+of view.
+Only cells that are geometrically visible from the robot's pose and not occluded by obstacles
+are considered for update.
+For these visible cells, an instantaneous observation confidence map
+$C_{\text{obs}}(\mathbf{p}_t, M_{\text{fov}})$ is computed, which models the reliability of the
+current observation as a function of the sensor geometry.
+Cells near the center of the field of view are assigned higher confidence, while confidence
+decreases toward the periphery due to reduced resolution and increased distortion.
+This behavior is modeled using a Gaussian weighting function over the angular deviation from
+the camera’s principal viewing direction.
+The observation confidence assigned to a visible cell $(i,j)$ is computed as
+
+\begin{equation}
+\label{eq:value_map:confidence_weight}
+C_{\text{obs}}(i,j)
+=
+\mathrm{e}^{-\frac{1}{2}
+\left(
+\frac{\Delta\theta(i,j)}{\sigma}
+\right)^2},
+\end{equation}
+
+where $\Delta\theta(i,j)$ denotes the angular difference between the viewing ray toward cell
+$(i,j)$ and the robot’s forward-facing direction, and $\sigma$ controls the sharpness of the
+confidence decay within the field of view.
+Smaller values of $\sigma$ result in a narrower high-confidence region centered around the
+optical axis, while larger values produce a more uniform confidence distribution.
+
+(c) For each visible cell $(i,j)$, the previous semantic value $V_{t-1}(i,j)$ is updated toward the
+current similarity score $s_t$, scaled by the effective confidence contribution.
+The update gain $\alpha \in [0,1]$ controls how strongly new observations influence existing
+values.
+At the same time, the confidence map retains the maximum between the decayed previous confidence
+and the newly observed confidence, ensuring that strongly observed regions remain influential
+over time. Using a max operation ensures that strongly observed regions retain high confidence even after decay, preventing repeated low-confidence observations from diluting reliable semantic evidence. This update mechanism allows the value map to accumulate semantically meaningful information in a spatially consistent manner, while remaining robust to sensor noise, viewpoint changes, and repeated observations from similar poses. 
+
+Figure~\ref{fig:methods:value_map:example} illustrates a generated value map for the prompts ``Bed'', ``TV'', and the zero-shot prompt ``A door leading to a bed'', demonstrating how prompt design can bias exploration toward multiple targets or semantically useful transition regions.
+
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{Images/03_methods/value_map_example.png}
-    \caption{Value map example}
-    \label{fig:value_map_example}
+    \caption{Example value maps generated using BLIP-2 for different text prompts.
+    The value maps highlight regions of high semantic relevance to the prompts ``Bed'', ``TV'', and ``A door leading to a bed''.}
+    \label{fig:methods:value_map:example}
 \end{figure}
 
 \section{Persistent Semantic 3D Mapping} 
@@ -319,7 +453,7 @@ In this work the \ac{BLIP-2} large pre-trained blip\_image\_text\_matching model
 \section{Promptable Zero-Shot Detection} 
 \label{sec:methods:zero_shot_detection}
 \begin{itemize}
-    \item In this work YOLO-E \cite{yoloe} is used as the promptable zero-shot detection model.
+    \item In this work YOLO-E \cite{wangYOLOERealTimeSeeing2025} is used as the promptable zero-shot detection model.
     \item YOLO-E has the following advantages:
     \begin{itemize}
         \item High inference speed suitable for real-time applications.
