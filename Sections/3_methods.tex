@@ -449,48 +449,275 @@ Figure~\ref{fig:methods:value_map:example} illustrates a generated value map for
 These scored frontiers are then encapsulated as graph nodes and passed to the fusion strategy
 (Section~\ref{sec:methods:fusion_strategy}) for integration with memory and detection modules.
 
-\section{Persistent Semantic 3D Mapping} 
+\section{Persistent Semantic 3D Mapping}
 \label{sec:methods:persistent_mapping}
 
-The frontier centroids serve as a local guidance, which area should be explored next. However, to effectively search for multiple objects over extended periods, the robot requires a persistent memory of previously detected objects and their locations. This is achieved through a semantic 3D mapping module that constructs a global semantic point cloud map from RGB-D observations and generates object-level hypotheses as graph nodes. These memory graph nodes are then integrated into the fusion strategy (Section~\ref{sec:methods:fusion_strategy}) to inform exploration and detection decisions.
 
-At the time implementation, OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} was the most promising open-source framework for real-time semantic 3D mapping. Its trade-off between mapping accuracy, semantic integration, and computational efficiency made it suitable for onboard deployment on mobile robots with limited processing power. From the analysis of the state-of-the-art (see Chapter~\ref{sec:sota:semantic_scene_reconstruction}), shows zero-shot and realtime capabilities. However, OpenFusion is not object centric. Therefore, this work extends OpenFusion with object-level semantic clustering and graph node generation to create a persistent memory suitable for multi-object search tasks.
+The semantic frontier centroids described in Section~\ref{sec:methods:semantic_frontier} offer
+short-term exploration targets based on immediate observations. However, to enable effective multi-object search over multiple objects, the system requires a persistent memory that retains information about previously observed objects and their spatial locations throughout the exploration task~\cite{jiangDualMapOnlineOpenVocabulary2025,guConceptGraphsOpenVocabulary3D2023,buschOneMapFind2025}. The proposed system incorporates a semantic 3D mapping module that constructs a global, persistent semantic representation from RGB-D observations and produces object-level hypotheses in the form of graph nodes. These memory graph nodes are subsequently integrated into the fusion strategy (see Section~\ref{sec:methods:fusion_strategy}) to inform exploration and detection decisions.
 
-\subsection*{Global Map Construction with Open-Fusion}
+At the time of implementation, OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}
+represented a suitable open-source framework for real-time, open-vocabulary semantic 3D mapping. Its balance between reconstruction fidelity and computational efficiency makes it suitable for onboard deployment on mobile robotic platforms~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}. As discussed in the state-of-the-art analysis
+(Chapter~\ref{sec:sota:semantic_scene_reconstruction}), OpenFusion enables zero-shot semantic
+mapping but does not provide an object-centric abstraction. This work extends OpenFusion with
+object-level semantic clustering and graph node generation, yielding a persistent semantic
+memory tailored to multi-object search and long-horizon exploration tasks.
 
-OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} originally focueses on offline semantic mapping using pre-recorded RGB-D sequences from for example the ScanNet dataset~\cite{daiScanNetRichlyannotated3D2017} or Replica dataset~\cite{straubReplicaDatasetDigital2019}. This work adapts OpenFusion for online operation on a mobile robot by integrating it with a LiDAR-based SLAM system for accurate global pose estimation. The OpenFusion ROS~2 wrapper subscribes to RGB-D images, camera intrinsics and robot poses, which are filtered (see Figure~\ref{fig:methods:persistent_mapping:pipeline}). Let the input pairs defined as $\{(I_t, D_t, P_t) \mid t = 1,\dots,K\}$, where $I_t$ is the RGB image, $D_t$ is the depth image, and $P_t$ is the robot pose at time step $t$. OpenFusion has a maximum number of voxel blocks that can be stored in memory. Therefore, the pose-rgbd pair is only passed to OpenFusion if the robot has moved more than a predefined threshold $\delta_{\text{move}}$ since the last update and is significantly different to all previous stored poses to avoid redundant observations. OpenFusion initializes with the current camera intrinsics, voxel size and voxel count, which represent entire available memory for the semantic map. For each accepted input pair, OpenFusion integrates the RGB-D observation into a global Truncated Signed Distance Function (TSDF) volume using the provided robot pose for accurate alignment. The wrapper openfusion_ros publishes continously the constructed pointcloud and on each prompt, it triggers the semantic mapping process. The semantic mapping calculates the with the users text prompt the text embedding and compares it to the visual embeddings and the top-k similar embeddings are used to label the points in the pointcloud with semantic labels and confidence scores. This enables a zero-shot semantic mapping capability, allowing the robot to build a semantic map tailored to arbitrary user-defined concepts without requiring prior training on specific object categories.
+\subsection*{Global Map Construction with OpenFusion}
+
+OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} was originally designed for offline semantic reconstruction from pre-recorded
+RGB-D sequences, such as ScanNet~\cite{daiScanNetRichlyannotated3D2017} and
+Replica~\cite{straubReplicaDatasetDigital2019}. In contrast, this work adapts OpenFusion for
+online operation on a mobile robot by integrating it with a LiDAR-based SLAM system that
+provides globally consistent pose estimates.
+
+A dedicated ROS~2 wrapper node, referred to as \texttt{openfusion\_ros}, interfaces OpenFusion
+with the exploration system (see Figure~\ref{fig:methods:persistent_mapping:pipeline}). 
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{Images/03_methods/semantic_mapping/openfusion_ros_pipeline.png}
-    \caption{}
+    \caption{ROS~2 integration of OpenFusion for persistent semantic 3D mapping.
+    RGB images, depth images, and LiDAR-based SLAM poses are synchronized and filtered before
+    integration into a global TSDF volume.
+    On-demand semantic queries generate semantic and panoptic point clouds, which are further
+    processed to extract object-level hypotheses for the fusion strategy.}
     \label{fig:methods:persistent_mapping:pipeline}
 \end{figure}
 
-openfusion_ros outputs four poitclouds, first the 3D reconstruction pointcloud without semantic labels, second the pointcloud clusters which allign with the query prompt, third a semantic pointcloud, which requieres a list of classes to segment the pointcloud and fourth a panoptic pointcloud, which segments the pointcloud into different object instances. The difference between semantic and panoptic pointcloud is, that the semantic pointcloud only segments the pointcloud into different classes, e.g. chair, table, bed, while the panoptic pointcloud segments the pointcloud into different object instances, e.g. chair 1, chair 2, table 1. The semantic pointcloud and panoptic pointcloud are obtained with a ROS~2 service call, where the path of the classes json file is passed as argument. The classes json file contains a list of classes, which are used to segment the pointcloud. For example, if the user wants to search for chairs and tables, the classes json file contains the classes "chair" and "table". With the service call, the user can save the semantic and panoptic pointclouds on demand (further Information in Chapter~\ref{sec:implementation:evaluation}).
+The wrapper subscribes to RGB images $I_t$, depth images $D_t$, camera intrinsics $K$, and SLAM-based robot poses $P_t$. To limit computational overhead and avoid redundant observations, RGB-D ($I_t, D_t$) frames are forwarded to OpenFusion only if the robot pose $P_t$ differs sufficiently from previously integrated viewpoints. This pose filtering reduces redundant TSDF updates from near-identical viewpoints, mitigates over-integration artifacts, and ensures efficient use of the fixed voxel budget. Specifically, an input tuple \(\{(I_t, D_t, P_t)\}\) is accepted only if the robot has translated or rotated more than a predefined threshold \(\delta_{\text{move}}\) and represents a novel viewpoint relative to the existing map.
 
-Now this returns a semantic pointcloud with semantic labels and confidence scores for each point. However, to create object-level hypotheses suitable for multi-object search tasks, the pointcloud is further processed to cluster points spatially.
+Upon initialization, OpenFusion is configured using the current camera intrinsics and a fixed
+voxel resolution and voxel budget, which together define the available memory for semantic
+mapping~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}. For each accepted RGB-D observation \((I_t, D_t, P_t)\), the data are fused into a global \ac{TSDF} volume using the SLAM-based pose estimate, yielding a globally consistent 3D reconstruction with reduced drift compared to odometry-only approaches~\cite{thrunProbabilisticRobotics2006}.
+
+Each point in the semantic point cloud is associated with a cosine similarity score between the
+user-defined text prompt and the corresponding visual observation.
+The visual embeddings are obtained using \ac{SEEM}~\cite{zouSegmentEverythingEverywhere2023}, a pre-trained \ac{VLM} optimized for dense, pixel-level representations. SEEM produces a high-dimensional embedding for each pixel in the RGB image, which is then compared
+to the text prompt embedding using cosine similarity. By projecting these pixel-wise similarity scores into 3D space via the aligned RGB-D observations, a semantic point cloud is obtained in which each point encodes its semantic relevance with respect to the query.
+
+% To enable object-level reasoning, SEEM~\cite{zouSegmentEverythingEverywhere2023} produces dense, pixel-level semantic predictions and associated similarity scores with respect to the query prompt.
+In practice, only the most semantically relevant predictions are retained by selecting a subset
+of high-confidence regions, controlled by a top-$k$ selection criterion. This selection acts as a filtering mechanism rather than a strict object count, limiting the number of candidate regions considered for further processing.
+
+Based on these high-confidence regions, SEEM performs instance-aware grouping, yielding a
+panoptic point cloud in which each 3D point is assigned both a semantic label and an instance
+identifier~\cite{zouSegmentEverythingEverywhere2023}.
+This panoptic representation allows spatially distinct object instances of the same semantic
+class to be differentiated. While OpenFusion provides the underlying 3D reconstruction and voxel management, semantic embeddings are computed externally using SEEM and fused into the 3D map via aligned RGB-D projections~\cite{zouSegmentEverythingEverywhere2023,yamazakiOpenFusionRealtimeOpenVocabulary2023}.
+
+These instance-level clusters are subsequently aggregated into object-centric
+memory graph nodes, which are consumed by the fusion strategy for long-horizon
+semantic exploration and object search.
 
 
 \subsection*{Semantic Clustering and Graph Node Generation}
-% \begin{itemize}
-%     \item Clustering of points with similar semantic labels to form object-level hypotheses.
-%     \item Construction of semantic graph nodes representing detected object instances with aggregated confidence scores.
-%     \item Maintenance of the semantic graph as a persistent memory for multi-object search tasks.
-% \end{itemize}
 
-\section{Promptable Zero-Shot Detection} 
+The semantic point cloud produced by OpenFusion encodes dense geometric structure together
+with a per-point semantic relevance score derived from vision-language similarity~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023,zouSegmentEverythingEverywhere2023}.
+To extract object-centric hypotheses suitable for long-horizon exploration and persistent
+memory reasoning, a dedicated clustering and aggregation stage is applied~\cite{guConceptGraphsOpenVocabulary3D2023}.
+
+Prior to clustering, the semantic point cloud is spatially downsampled using a voxel grid
+filter with a fixed leaf size. This operation reduces sensor noise and computational
+complexity while preserving the coarse geometry of potential object instances~\cite{Figure2Downsampling,rusu3DPointCloud2008}.
+
+Let the semantic point cloud be defined as
+$\mathcal{P} = \{(\mathbf{x}_i, s_i)\}_{i=1}^{N}$,
+where $\mathbf{x}_i \in \mathbb{R}^3$ denotes the 3D position of point $i$ in the global map
+frame, $s_i \in [0,1]$ its associated semantic similarity score, and $N$ the total number of
+points. The objective of clustering is to partition $\mathcal{P}$ into a set of spatially
+coherent clusters
+
+\begin{equation}
+\label{eq:cluster_set}
+\mathcal{C} = \{C_1, \dots, C_M\}, \quad C_k \subset \mathcal{P},
+\end{equation}
+
+where each cluster $C_k$ corresponds to a single object hypothesis and $M$ denotes the
+number of extracted clusters. Clustering is performed using Euclidean distance in 3D space~\cite{rusu3DPointCloud2008,thrunProbabilisticRobotics2006}.
+Two points $\mathbf{x}_i$ and $\mathbf{x}_j$ are assigned to the same cluster if
+$\|\mathbf{x}_i - \mathbf{x}_j\|_2 \leq \varepsilon_{\text{cluster}}$, where
+$\varepsilon_{\text{cluster}} > 0$ is a fixed spatial distance threshold controlling the
+maximum cluster extent. To suppress spurious noise clusters and overly large, diffuse
+regions, only clusters satisfying $N_{\min} \leq |C_k| \leq N_{\max}$ are retained, where
+$|C_k|$ denotes the number of points in cluster $C_k$ and $N_{\min}, N_{\max}$ are
+user-defined bounds.
+
+Each retained cluster $C_k$ is represented geometrically by its centroid (see Equation~\ref{eq:cluster_centroid}), which serves as the spatial location of the corresponding object hypothesis.
+
+\begin{equation}
+\label{eq:cluster_centroid}
+\mathbf{c}_k
+=
+\frac{1}{|C_k|}
+\sum_{(\mathbf{x}_i, s_i) \in C_k} \mathbf{x}_i,
+\end{equation}
+
+To assign a semantic confidence score to each cluster, the per-point similarity scores must
+be aggregated into a single representative value. Although the input point clouds already
+exclude background geometry due to semantic filtering by OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} and \ac{SEEM}~\cite{zouSegmentEverythingEverywhere2023}, the distribution of similarity scores within a semantic cluster remains highly non-uniform. Even within a single object instance, confidence varies significantly due to partial observations, occlusions, viewing angle effects, depth noise, and heterogeneous visual
+evidence across object surfaces. As a result, only a subset of points typically exhibits
+strong semantic alignment with the query, while the remaining points carry weaker but still
+relevant signals.
+
+Therefore, a naïve aggregation using the arithmetic mean is insufficient for this setting. Within a semantic cluster, the mean is dominated by weakly informative points and systematically underestimates objects that are only partially visible or observed from
+suboptimal viewpoints. To obtain a robust estimate of semantic relevance, a
+percentile-based aggregation is employed instead~\cite{PDFRobustStatistics}. Let $\mathcal{S}_k = \{ s_i \mid (\mathbf{x}_i, s_i) \in C_k \}$ denote the set of similarity scores within cluster $C_k$. The cluster-level semantic confidence is defined as the $75$-th percentile of this set (see Equation~\ref{eq:cluster_percentile}):
+
+\begin{equation}
+\label{eq:cluster_percentile}
+\tilde{s}_k = \operatorname{percentile}_p(\mathcal{S}_k),
+\end{equation}
+
+Selecting the 75th percentile emphasizes clusters for which a substantial fraction of points
+exhibits consistently high semantic similarity, while remaining robust to isolated
+spurious activations. Lower percentiles (e.g., the median) are overly conservative in the
+presence of localized but strong semantic evidence, whereas higher percentiles (e.g., the
+maximum) are sensitive to noise~\cite{PDFRobustStatistics}.
+
+To further favor spatially consistent object hypotheses without allowing large clusters to
+dominate purely by size, the percentile score is modulated by a logarithmic cluster size
+factor (see Equation~\ref{eq:cluster_final_score}):
+
+\begin{equation}
+\label{eq:cluster_final_score}
+s_k
+=
+\tilde{s}_k \cdot \log(|C_k| + 1),
+\end{equation}
+
+where the logarithmic term grows sublinearly with cluster size. In the semantic-only setting
+considered here, this factor reflects the spatial support of the semantic hypothesis rather
+than compensating for background clutter, thereby favoring compact objects supported by a
+coherent extent of evidence.
+
+Finally, each cluster $C_k$ is mapped to a memory graph node
+
+\begin{equation}
+\label{eq:memory_graph_node}
+n_k = (\mathbf{c}_k, s_k),
+\end{equation}
+
+where $\mathbf{c}_k$ denotes the spatial location of the object hypothesis and $s_k$ its
+aggregated semantic relevance score.
+
+\section{Promptable Zero-Shot Detection}
+
+In order to search for objects in a zero-shot manner based on user-defined text prompts, a
+promptable open-vocabulary object detection model is integrated into the exploration system. Such models leverage large-scale vision-language pre-training to detect and localize objects specified by arbitrary text queries~\cite{radfordLearningTransferableVisual2021, kirillovSegmentAnything2023,wangYOLOERealTimeSeeing2025,liGroundedLanguageImagePretraining2022}.
+
+Table~\ref{tab:methods:object_detection:comparison} compares several state-of-the-art open-vocabulary object detection methods with respect to their prompt types, output representations, foundation models, and real-time capabilities.
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{
+        c|
+        >{\centering\arraybackslash}p{1.0cm}
+        >{\centering\arraybackslash}p{1.3cm}
+        >{\centering\arraybackslash}p{1.7cm}
+        >{\centering\arraybackslash}p{1.2cm}
+        >{\centering\arraybackslash}p{1.5cm}
+        >{\centering\arraybackslash}p{1.0cm}
+    }
+    \toprule
+    \textbf{Method}
+    & \textbf{Zero-Shot}
+    & \textbf{Prompt Type}
+    & \textbf{Instance Segmentation}
+    & \textbf{Bounding Boxes}
+    & \textbf{Foundation Model}
+    & \textbf{Real-Time} \\
+    \midrule
+
+    % TODO: Inspect realtime capability for all methods below.
+
+    Grounding Dino~\cite{liuGroundingDINOMarrying2024}
+    & \cmark
+    & Text
+    & \xmark
+    & \cmark
+    & DINO + BERT
+    & \xmark \\
+
+    SAM~\cite{kirillovSegmentAnything2023}
+    & \cmark
+    & Visual
+    & \cmark
+    & \xmark
+    & ViT
+    & \xmark \\
+
+    SEEM~\cite{zouSegmentEverythingEverywhere2023}
+    & \cmark
+    & Text, Visual, Spatial
+    & \cmark
+    & \xmark
+    & ViT + Text Encoder
+    & \xmark \\
+
+    GLIP~\cite{liGroundedLanguageImagePretraining2022}
+    & \cmark
+    & Text
+    & \xmark
+    & \cmark
+    & DINO + BERT
+    & \xmark \\
+
+    OWL-ViT~\cite{mindererScalingOpenVocabularyObject2024}
+    & \cmark
+    & Text
+    & \xmark
+    & \cmark
+    & ViT + CLIP
+    & \xmark \\
+
+    Mask R-CNN~\cite{heMaskRCNN2018}
+    & \xmark
+    & None
+    & \cmark
+    & \cmark
+    & ResNet + FPN
+    & \xmark \\
+    
+    YOLO-E~\cite{wangYOLOERealTimeSeeing2025}
+    & \cmark
+    & Text, Image
+    & \cmark
+    & \cmark
+    & YOLO + CLIP~\cite{radfordLearningTransferableVisual2021}
+    & \cmark \\
+
+    \bottomrule
+\end{tabular}
+\caption{Comparison of open-vocabulary object detection methods with respect to supported prompt types and output representations. Assuming 10 fps as real-time capability for low dynamic robotic applications.}
+\label{tab:methods:object_detection:comparison}
+\end{table}
+
+To generate 3D object hypotheses for the fusion strategy, 2D detections from the selected open-vocabulary object detection model are projected into 3D space using depth information from the RGB-D sensor and camera intrinsics. A common method for extracting 3D locations from 2D detections involves segmenting the detected objects in the image plane, projecting the segmented pixels into 3D using depth values, and clustering the resulting 3D points to obtain robust object locations~\cite{meierCARLADroneMonocular2024,kuJoint3DProposal2018}. Therefore, the chosen detection model must provide instance segmentation masks, confidence scores and have zero-shot capability. 
+
+Detection can be splittet up into three categories: closed-vocabulary, open-vocabulary, and promptable zero-shot detection. Closed-vocabulary models are limited to a fixed set of classes seen during training and cannot generalize to unseen categories~\cite{redmonYouOnlyLook2016,heMaskRCNN2018}. Open-vocabulary models can detect arbitrary object categories specified by text prompts, enabling zero-shot generalization to unseen classes~\cite{liuGroundingDINOMarrying2024,liGroundedLanguageImagePretraining2022,mindererScalingOpenVocabularyObject2024}. Promptable zero-shot detection models further enhance flexibility by allowing both text and image prompts to specify target objects, enabling context-aware detection based on visual cues~\cite{wangYOLOERealTimeSeeing2025,zouSegmentEverythingEverywhere2023}.
+
+SAM~\cite{kirillovSegmentAnything2023} and SEEM~\cite{zouSegmentEverythingEverywhere2023} are promptable zero-shot segmentation models that can generate instance masks based on visual or textual prompts. VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023} integrates YOLOv7~\cite{redmonYouOnlyLook2016} for real-time closed-vocabulary detection, grounding DINO~\cite{liuGroundingDINOMarrying2024} for open-vocabulary detection, and SAM~\cite{kirillovSegmentAnything2023} for segmentation. However, VLFM relies on multiple models with varying inference speeds, leading to increased computational overhead and latency. In contrast, YOLO-E~\cite{wangYOLOERealTimeSeeing2025} combines promptable zero-shot detection and instance segmentation into a single efficient model, making it well-suited for real-time robotic applications.
+
+YOLO-E~\cite{wangYOLOERealTimeSeeing2025} conducted a comprehensive evaluationon the LVIS dataset~\cite{guptaLVISDatasetLarge2019} of various open-vocabulary detection models, demonstrating superior performance in terms of accuracy and inference speed. Its architecture builds upon the YOLO framework~\cite{redmonYouOnlyLook2016}, integrating CLIP~\cite{radfordLearningTransferableVisual2021} for vision-language alignment. YOLO-E achieves real-time performance while maintaining high detection accuracy across a wide range of object categories specified by text or image prompts. YOLO-E model \texttt{YOLOE-11-L} uses 26M parameters for textual prompt types and 32M parameters for image prompt types. Compared to GLIPv2~\cite{liGroundedLanguageImagePretraining2022} and Grounding DINO~\cite{liuGroundingDINOMarrying2024} which have 232M and 172M parameters respectively with much less training time, YOLO-E has a \ac{AP} of 35.2/33.7 (text/image prompt) on LVIS while Grounding DINO has an \ac{AP} of 27.4  and GLIPv2 has an \ac{AP} of 29. YOLO-E achieves an inference speed of 130 fps on a T4 GPU and 39.2 fps on a iPhone, making it suitable for real-time applications~\cite{wangYOLOERealTimeSeeing2025}.
+
+This is achieved through a combination of efficient backbone architectures, optimized detection heads, and streamlined processing pipelines that minimize computational overhead without sacrificing accuracy. YOLO-E's ability to handle open-vocabulary object detection based on text prompts, along with its integration of both visual and textual information for robust detection, makes it a compelling choice for real-time robotic applications requiring flexible object recognition capabilities~\cite{wangYOLOERealTimeSeeing2025}.
+
+
 \label{sec:methods:zero_shot_detection}
-\begin{itemize}
-    \item In this work YOLO-E \cite{wangYOLOERealTimeSeeing2025} is used as the promptable zero-shot detection model.
-    \item YOLO-E has the following advantages:
-    \begin{itemize}
-        \item High inference speed suitable for real-time applications.
-        \item Ability to handle open-vocabulary object detection based on text prompts.
-        \item Integration of both visual and textual information for robust detection.
-        \item Pre-trained on large-scale datasets, enabling zero-shot generalization to unseen object categories.
-    \end{itemize}
-\end{itemize}
+% \begin{itemize}
+%     \item In this work YOLO-E \cite{wangYOLOERealTimeSeeing2025} is used as the promptable zero-shot detection model.
+%     \item YOLO-E has the following advantages:
+%     \begin{itemize}
+%         \item High inference speed suitable for real-time applications.
+%         \item Ability to handle open-vocabulary object detection based on text prompts.
+%         \item Integration of both visual and textual information for robust detection.
+%         \item Pre-trained on large-scale datasets, enabling zero-shot generalization to unseen object categories.
+%     \end{itemize}
+% \end{itemize}
 
 
 \subsection*{Open-Vocabulary Object Detection with YOLO-E}
