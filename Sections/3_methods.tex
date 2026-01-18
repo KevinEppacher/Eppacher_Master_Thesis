@@ -512,6 +512,7 @@ semantic exploration and object search.
 
 
 \subsection*{Semantic Clustering and Graph Node Generation}
+\label{sec:methods:persistent_mapping:semantic_clustering}
 
 The semantic point cloud produced by OpenFusion encodes dense geometric structure together
 with a per-point semantic relevance score derived from vision-language similarity~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023,zouSegmentEverythingEverywhere2023}.
@@ -727,27 +728,137 @@ These properties make YOLO-E particularly well suited for semantic exploration s
 \subsection*{Open-Vocabulary Object Detection with YOLO-E}
 \label{sec:methods:open_vocabulary_detection}
 
-\begin{itemize}
-    \item Utilization of the YOLO-E model for open-vocabulary object detection based on text prompts.
-    \item Extraction of 2D bounding boxes and associated confidence scores for detected objects.
-    \item Segmentation of detected objects to isolate relevant pixels for 3D localization.
-\end{itemize}
+In this work, YOLO-E~\cite{wangYOLOERealTimeSeeing2025} is integrated as a promptable
+zero-shot object detection module within the exploration system. Incoming \ac{RGB-D} observations are preprocessed by throttling the input frame rate and resizing images to the required network resolution in order to reduce computational load while maintaining sufficient perceptual fidelity. 
 
-\subsection*{Depth-Based 3D Localization}
-\begin{itemize}
-    \item With camera intrinsics and depth information, the 2D bounding boxes ans segmentation masks are projected into 3D space.
-    \item Calculation of 3D coordinates for each detected object using depth values within the bounding box.
-    \item Semantic detection pointclouds are passed are then clustered and the centroid of each cluster is computed to obtain robust 3D object locations.
-    \item For each cluster, the mean of the confidence scores of the associated 2D detections is calculated to assign a confidence score to the 3D localization.
-\end{itemize}
+Given a user-defined text prompt and the current RGB image, YOLO-E~\cite{wangYOLOERealTimeSeeing2025} performs a single forward pass to produce a set of 2D bounding boxes, confidence scores, and corresponding instance segmentation masks for all objects matching the prompt (see Figure~\ref{fig:methods:object_detection:pipeline}). For visualization purposes, an overlay image containing bounding boxes, class labels, and confidence scores is generated.
+In addition, an instance ID mask is published to differentiate between multiple detected objects of the same category, and a per-pixel score mask is produced to assign semantic confidence values to segmented image regions.
+
+Using the scored 2D segmentation mask, the instance ID mask, the aligned depth image,
+and the camera intrinsic parameters, detected object pixels are projected into 3D space (see Section~\ref{sec:methods:depth_based_3d_localization}). This projection yields a semantic point cloud in which each point $\mathbf{p}_i = (x_i, y_i, z_i)$ is associated with a semantic confidence value and an instance identifier. A subsequent clustering stage aggregates the semantic point cloud into object-level hypotheses by grouping spatially coherent points belonging to the same instance. For each cluster, a 3D centroid and a mean confidence score are computed.
+
+The resulting 3D object hypotheses are encapsulated as detection graph nodes and forwarded to the fusion strategy for integration with the persistent semantic memory
+(see Section~\ref{sec:methods:fusion_strategy}).
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1.0\textwidth]{Images/03_methods/vlm_detector.png}
-    \caption{YOLO-E detection to graph node 3D localization}
-    \label{fig:vlm_detector}
+    \includegraphics[width=1.0\textwidth]{Images/03_methods/object_detection/detection_pipeline.png}
+    \caption{Promptable open-vocabulary object detection and 3D hypothesis generation pipeline using YOLO-E~\cite{wangYOLOERealTimeSeeing2025}.}
+    \label{fig:methods:object_detection:pipeline}
 \end{figure}
 
+
+\subsection*{Depth-Based 3D Localization}
+\label{sec:methods:depth_based_3d_localization}
+
+Let a pixel $(u, v)$ in the image plane be represented in homogeneous coordinates as
+$\tilde{\mathbf{p}} = [u, v, 1]^{\top}$, where $u$ and $v$ denote the horizontal and
+vertical pixel indices, respectively. Equation~\eqref{eq:3d_projection:intrinsics} defines the camera intrinsic matrix $\mathbf{K} \in \mathbb{R}^{3 \times 3}$, parameterized by the focal lengths $f_x, f_y$ and the principal point coordinates $c_x, c_y$~\cite{corkeRoboticsVisionControl2023}. These parameters are obtained by calibrating the RGB-D camera prior to deployment with standard calibration techniques~\cite{zhangFlexibleNewTechnique2000}.
+
+\begin{equation}
+\begin{aligned}
+\mathbf{K} &=
+\begin{bmatrix}
+f_x & 0   & c_x \\
+0   & f_y & c_y \\
+0   & 0   & 1
+\end{bmatrix}
+\end{aligned}
+\label{eq:3d_projection:intrinsics}
+\end{equation}
+
+Given a metric depth value $z \in \mathbb{R}^{+}$ at pixel $(u, v)$, the corresponding
+3D point in the camera coordinate frame is obtained via Equation~\eqref{eq:3d_projection:backprojection}, which is illustrated in Figure~\ref{fig:3d_projection:pinhole_projection}~\cite{corkeRoboticsVisionControl2023}.
+
+\begin{equation}
+\begin{aligned}
+\mathbf{P}_{\mathrm{cam}}
+&=
+z \, \mathbf{K}^{-1} \tilde{\mathbf{p}}
+&=
+z
+\begin{bmatrix}
+\frac{1}{f_x} & 0 & -\frac{c_x}{f_x} \\
+0 & \frac{1}{f_y} & -\frac{c_y}{f_y} \\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+u \\
+v \\
+1
+\end{bmatrix}
+&=
+\begin{bmatrix}
+\frac{(u - c_x)}{f_x} \, z \\
+\frac{(v - c_y)}{f_y} \, z \\
+z
+\end{bmatrix}
+\end{aligned}
+\label{eq:3d_projection:backprojection}
+\end{equation}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1.0\textwidth]{Images/03_methods/object_detection/3d_pinhole_projection.png}
+    \caption{YOLO-E detection to graph node 3D localization}
+    \label{fig:3d_projection:pinhole_projection}
+\end{figure}
+
+
+To express the 3D point in the global map frame, the homogeneous transformation $\mathbf{T}_{\mathrm{map}\leftarrow\mathrm{cam}} \in SE(3)$ is applied (see Equation~\eqref{eq:3d_projection:transformation}).
+
+\begin{equation}
+\mathbf{T}_{\mathrm{map}\leftarrow\mathrm{cam}} =
+\begin{bmatrix}
+\mathbf{R}_{\mathrm{map}\leftarrow\mathrm{cam}} & \mathbf{t}_{\mathrm{map}\leftarrow\mathrm{cam}} \\
+\mathbf{0}^{\top} & 1
+\label{eq:3d_projection:transformation}
+\end{bmatrix}
+\end{equation}
+
+where $\mathbf{R} \in SO(3)$ denotes the rotation matrix and $\mathbf{t} \in \mathbb{R}^{3}$ the translation vector. The transformation $\mathbf{T}_{\mathrm{map}\leftarrow\mathrm{cam}}$ is obtained from the robot pose estimate provided by the localization and mapping system.
+
+Using homogeneous coordinates $\tilde{\mathbf{P}}_{\mathrm{cam}} = [\mathbf{P}_{\mathrm{cam}}^{\top}, 1]^{\top}$, the 3D point in the global map frame is obtained in Equation~\eqref{eq:3d_projection:global_point}.
+
+\begin{equation}
+\tilde{\mathbf{P}}_{\mathrm{map}} =
+\mathbf{T}_{\mathrm{map}\leftarrow\mathrm{cam}}
+\tilde{\mathbf{P}}_{\mathrm{cam}}.
+\label{eq:3d_projection:global_point}
+\end{equation}
+
+Dropping the homogeneous component yields the final 3D point $\mathbf{P}_{\mathrm{map}} \in \mathbb{R}^{3}$ expressed in the global map coordinate system.
+
+Each pixel $(u, v)$ is additionally associated with a semantic confidence score $s(u,v) \in [0,1]$ and an instance identifier $\mathrm{id}(u,v) \in \mathbb{N}$, obtained from the instance segmentation output of the visual detector.
+
+While the geometric back-projection and coordinate transformation affect only the
+spatial components of the point, the semantic attributes are propagated unchanged
+from the image domain to the 3D representation. Consequently, each 3D point in the
+global map frame is represented as an augmented semantic point. Each pixel $(u,v)$ is associated with a semantic confidence score and an instance identifier produced by the detector at the current camera pose (see Equation~\eqref{eq:3d_projection:augmented_point}).
+
+\begin{equation}
+\mathbf{q}_{\mathrm{map}} =
+\begin{bmatrix}
+\mathbf{P}_{\mathrm{map}} \\
+s \\
+\mathrm{id}
+\end{bmatrix}
+=
+\begin{bmatrix}
+x_{\mathrm{map}} \\
+y_{\mathrm{map}} \\
+z_{\mathrm{map}} \\
+s(u,v) \\
+\mathrm{id}(u,v)
+\label{eq:3d_projection:augmented_point}
+\end{bmatrix}.
+\end{equation}
+
+This formulation preserves object-level information across the 2D-3D lifting
+process, enabling instance-consistent aggregation, clustering, and persistent
+semantic reasoning directly in the global map frame.
+
+Similar to the semantic clustering process described in Section~\ref{sec:methods:persistent_mapping:semantic_clustering}, the augmented 3D points are grouped into object-level clusters based on spatial proximity and shared instance identifiers. Each cluster is then summarized as a detection graph node, which encapsulates the 3D centroid and aggregated confidence score of the detected object hypothesis. However, instead of using the percentile-based aggregation employed for memory nodes, the mean confidence score is computed for detection nodes, reflecting the typically higher reliability of promptable detection outputs~\cite{wangYOLOERealTimeSeeing2025,redmonYouOnlyLook2016} compared to open-vocabulary semantic mapping~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}.
 
 \section{Fusion Strategy}
 \label{sec:methods:fusion_strategy}
