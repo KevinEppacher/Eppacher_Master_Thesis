@@ -603,11 +603,18 @@ where $\mathbf{c}_k$ denotes the spatial location of the object hypothesis and $
 aggregated semantic relevance score.
 
 \section{Promptable Zero-Shot Detection}
+\label{sec:methods:promptable_detection}
 
-In order to search for objects in a zero-shot manner based on user-defined text prompts, a
-promptable open-vocabulary object detection model is integrated into the exploration system. Such models leverage large-scale vision-language pre-training to detect and localize objects specified by arbitrary text queries~\cite{radfordLearningTransferableVisual2021, kirillovSegmentAnything2023,wangYOLOERealTimeSeeing2025,liGroundedLanguageImagePretraining2022}.
+To enable goal-directed object search without prior knowledge of object categories,
+the exploration system integrates a promptable open-vocabulary object detection model.
+Such models leverage large-scale vision--language pre-training to localize objects
+specified by arbitrary user-defined prompts, enabling zero-shot generalization beyond
+a fixed training vocabulary~\cite{radfordLearningTransferableVisual2021}.
 
-Table~\ref{tab:methods:object_detection:comparison} compares several state-of-the-art open-vocabulary object detection methods with respect to their prompt types, output representations, foundation models, and real-time capabilities.
+Table~\ref{tab:methods:object_detection:comparison} compares representative state-of-the-art
+detection and segmentation models with respect to their zero-shot capability, supported
+prompt modalities, output representations, foundation architectures, and suitability for
+real-time robotic operation.
 
 \begin{table}[H]
     \centering
@@ -663,7 +670,7 @@ Table~\ref{tab:methods:object_detection:comparison} compares several state-of-th
     & Text
     & \xmark
     & \cmark
-    & DINO + BERT
+    & Swin Transformer + BERT
     & \xmark \\
 
     OWL-ViT~\cite{mindererScalingOpenVocabularyObject2024}
@@ -691,36 +698,35 @@ Table~\ref{tab:methods:object_detection:comparison} compares several state-of-th
     & \cmark \\
 
     \bottomrule
-\end{tabular}
-\caption{Comparison of open-vocabulary object detection methods with respect to supported prompt types and output representations. Assuming 10 fps as real-time capability for low dynamic robotic applications.}
+    \end{tabular}
+    \caption{Comparison of object detection and segmentation models with respect to zero-shot
+    capability, prompt modality, output representation, and real-time suitability.
+    Real-time capability is defined as achieving at least 10\,Hz inference on a single GPU,
+    which is sufficient for low-dynamic robotic exploration tasks.}
 \label{tab:methods:object_detection:comparison}
 \end{table}
 
-To generate 3D object hypotheses for the fusion strategy, 2D detections from the selected open-vocabulary object detection model are projected into 3D space using depth information from the RGB-D sensor and camera intrinsics. A common method for extracting 3D locations from 2D detections involves segmenting the detected objects in the image plane, projecting the segmented pixels into 3D using depth values, and clustering the resulting 3D points to obtain robust object locations~\cite{meierCARLADroneMonocular2024,kuJoint3DProposal2018}. Therefore, the chosen detection model must provide instance segmentation masks, confidence scores and have zero-shot capability. 
+For integration into a 3D semantic fusion pipeline, 2D detections must be lifted into
+3D space using depth measurements and camera intrinsics. A common approach consists of projecting instance-segmented pixels into 3D and clustering the resulting point sets to obtain robust object hypotheses~\cite{kuJoint3DProposal2018,meierCARLADroneMonocular2024}. Consequently, the detection model must provide instance-level segmentation masks, confidence scores, and zero-shot generalization.
 
-Detection can be splittet up into three categories: closed-vocabulary, open-vocabulary, and promptable zero-shot detection. Closed-vocabulary models are limited to a fixed set of classes seen during training and cannot generalize to unseen categories~\cite{redmonYouOnlyLook2016,heMaskRCNN2018}. Open-vocabulary models can detect arbitrary object categories specified by text prompts, enabling zero-shot generalization to unseen classes~\cite{liuGroundingDINOMarrying2024,liGroundedLanguageImagePretraining2022,mindererScalingOpenVocabularyObject2024}. Promptable zero-shot detection models further enhance flexibility by allowing both text and image prompts to specify target objects, enabling context-aware detection based on visual cues~\cite{wangYOLOERealTimeSeeing2025,zouSegmentEverythingEverywhere2023}.
+Object detection approaches can be categorized into three
+classes. (a) \emph{Closed-vocabulary} methods rely on a fixed set of object classes defined during training and cannot generalize to unseen categories, as exemplified by classical detectors such as Mask R-CNN~\cite{heMaskRCNN2018} or YOLOv7~\cite{redmonYouOnlyLook2016}. (b) \emph{Open-vocabulary} methods extend detection to arbitrary categories specified via text prompts, enabling zero-shot recognition but typically lacking fine-grained instance segmentation~\cite{liuGroundingDINOMarrying2024,liGroundedLanguageImagePretraining2022,mindererScalingOpenVocabularyObject2024}. (c) \emph{Promptable zero-shot} models further generalize this paradigm by supporting multiple prompt modalities, such as textual descriptions and visual reference images, allowing context-aware and flexible object specification~\cite{wangYOLOERealTimeSeeing2025,zouSegmentEverythingEverywhere2023}.
 
-SAM~\cite{kirillovSegmentAnything2023} and SEEM~\cite{zouSegmentEverythingEverywhere2023} are promptable zero-shot segmentation models that can generate instance masks based on visual or textual prompts. VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023} integrates YOLOv7~\cite{redmonYouOnlyLook2016} for real-time closed-vocabulary detection, grounding DINO~\cite{liuGroundingDINOMarrying2024} for open-vocabulary detection, and SAM~\cite{kirillovSegmentAnything2023} for segmentation. However, VLFM relies on multiple models with varying inference speeds, leading to increased computational overhead and latency. In contrast, YOLO-E~\cite{wangYOLOERealTimeSeeing2025} combines promptable zero-shot detection and instance segmentation into a single efficient model, making it well-suited for real-time robotic applications.
+Promptable segmentation models such as SAM~\cite{kirillovSegmentAnything2023} and
+SEEM~\cite{zouSegmentEverythingEverywhere2023} provide powerful instance mask generation
+capabilities from visual or textual prompts. However, these approaches rely on heavy
+transformer-based architectures with prompt-conditioned decoding, leading to inference
+latency that prevents bounded real-time execution within robotic control loops.
 
-YOLO-E~\cite{wangYOLOERealTimeSeeing2025} conducted a comprehensive evaluationon the LVIS dataset~\cite{guptaLVISDatasetLarge2019} of various open-vocabulary detection models, demonstrating superior performance in terms of accuracy and inference speed. Its architecture builds upon the YOLO framework~\cite{redmonYouOnlyLook2016}, integrating CLIP~\cite{radfordLearningTransferableVisual2021} for vision-language alignment. YOLO-E achieves real-time performance while maintaining high detection accuracy across a wide range of object categories specified by text or image prompts. YOLO-E model \texttt{YOLOE-11-L} uses 26M parameters for textual prompt types and 32M parameters for image prompt types. Compared to GLIPv2~\cite{liGroundedLanguageImagePretraining2022} and Grounding DINO~\cite{liuGroundingDINOMarrying2024} which have 232M and 172M parameters respectively with much less training time, YOLO-E has a \ac{AP} of 35.2/33.7 (text/image prompt) on LVIS while Grounding DINO has an \ac{AP} of 27.4  and GLIPv2 has an \ac{AP} of 29. YOLO-E achieves an inference speed of 130 fps on a T4 GPU and 39.2 fps on a iPhone, making it suitable for real-time applications~\cite{wangYOLOERealTimeSeeing2025}.
+Related to the proposed object search system, VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023} addresses zero-shot object search by integrating multiple perception modules rather than introducing a single unified detection model. Specifically, VLFM combines a closed-vocabulary detector for fast and reliable detections, an open-vocabulary grounding model that operates at a lower frequency to enable zero-shot detection, and a separate segmentation network to extract object centroids used for navigation toward the target. While this modular design facilitates flexible semantic reasoning, it requires multiple sequential inference stages, resulting in substantial computational overhead and limiting its suitability for real-time deployment.
 
-This is achieved through a combination of efficient backbone architectures, optimized detection heads, and streamlined processing pipelines that minimize computational overhead without sacrificing accuracy. YOLO-E's ability to handle open-vocabulary object detection based on text prompts, along with its integration of both visual and textual information for robust detection, makes it a compelling choice for real-time robotic applications requiring flexible object recognition capabilities~\cite{wangYOLOERealTimeSeeing2025}.
+In contrast, YOLO-E~\cite{wangYOLOERealTimeSeeing2025} unifies promptable zero-shot detection and instance segmentation within a single, efficient architecture. Building upon the YOLO framework~\cite{redmonYouOnlyLook2016} and incorporating CLIP-based vision-language alignment, YOLO-E achieves competitive detection accuracy while maintaining real-time inference. On the LVIS benchmark~\cite{guptaLVISDatasetLarge2019}, YOLO-E reports average precision values of 35.2 and 33.7 for text and image prompts, respectively, surpassing GLIPv2 and GroundingDINO, which achieve 29.0 and 27.4 AP@. Moreover, the \texttt{YOLOE-11-L} variant employs only 26\,M parameters for text prompting and 32\,M parameters for image prompting, compared to over 170\,M parameters for GroundingDINO and more than 230\,M parameters for GLIPv2. With reported inference speeds of 130\,Hz on an NVIDIA T4 GPU and 39.2\,Hz on mobile phone hardware, YOLO-E satisfies the bounded-latency requirements of online robotic exploration.
 
-
-\label{sec:methods:zero_shot_detection}
-% \begin{itemize}
-%     \item In this work YOLO-E \cite{wangYOLOERealTimeSeeing2025} is used as the promptable zero-shot detection model.
-%     \item YOLO-E has the following advantages:
-%     \begin{itemize}
-%         \item High inference speed suitable for real-time applications.
-%         \item Ability to handle open-vocabulary object detection based on text prompts.
-%         \item Integration of both visual and textual information for robust detection.
-%         \item Pre-trained on large-scale datasets, enabling zero-shot generalization to unseen object categories.
-%     \end{itemize}
-% \end{itemize}
-
+These properties make YOLO-E particularly well suited for semantic exploration scenarios that require flexible object specification, instance-level spatial reasoning, and real-time operation under limited computational resources.
 
 \subsection*{Open-Vocabulary Object Detection with YOLO-E}
+\label{sec:methods:open_vocabulary_detection}
+
 \begin{itemize}
     \item Utilization of the YOLO-E model for open-vocabulary object detection based on text prompts.
     \item Extraction of 2D bounding boxes and associated confidence scores for detected objects.
