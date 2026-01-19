@@ -1059,6 +1059,21 @@ e^{-\frac{\lVert \mathbf{x}_i - \mathbf{x}_k \rVert_2^2}{2\sigma_m^2}}
 % -------------------------------------------------------------
 % Weighted Noisy-OR fusion
 % -------------------------------------------------------------
+% Implicit form
+\begin{equation}
+s_i^{\mathrm{fused}}
+=
+1
+-
+\prod_{k \in \{\mathrm{det},\,\mathrm{map},\,\mathrm{mem}\}}
+\left(
+1 - \lambda_k \, s_i^{(k)}
+\right)
+\label{eq:graph_fusion:noisy_or_product}
+\end{equation}
+
+
+% Explicit form
 \begin{equation}
 s_i^{\mathrm{fused}}
 =
