@@ -863,36 +863,62 @@ Similar to the semantic clustering process described in Section~\ref{sec:methods
 \section{Fusion Strategy}
 \label{sec:methods:fusion_strategy}
 
-Similar to thhe gradient ascent analogy in Section~\ref{sec:semantic_frontier:value_map_generation}, the fusion strategy defines the reward function that guides the exploration policy toward promising regions in the environment. By integrating information from multiple sources, including short-term semantic frontiers, persistent memory nodes, and promptable detections, the fusion strategy balances exploration and exploitation to optimize object search performance. First, the frontier graph nodes, memory graph nodes and detection graph nodes are filtered by the Relevance Map (see Section~\ref{sec:methods:fusion_strategy:relevance_filtering}) which build continuously a map, where if Graph Nodes are within the relevance map mask, they are filtered out, to eliminate oscillation. Then the filtered Graph Nodes are fused into a unified representation. Figure~\ref{fig:fusion:pipeline} illustrates the overall fusion pipeline, which consists of two main components: (a) Exploration-Memory Weighting (see Chapter~\ref{sec:methods:fusion_strategy:exploration_memory_weighting}) and (b) Multi-Source Detection Fusion (see Chapter~\ref{sec:methods:fusion_strategy:multi_source_detection_fusion}). After the fusion process, where the Graph Nodes are fused into two Graph Nodes sets: Exploration-Memory Graph Nodes and Detection Graph Nodes, the final Graph Nodes set is forwarded to the BehaviorTree Navigation policy (see Chapter~\ref{sec:methods:behavior_tree}), which orchestrates low-level path planning and robot control to navigate toward high-reward regions identified by the fusion strategy.
+Analogous to the gradient ascent formulation introduced in
+Section~\ref{sec:semantic_frontier:value_map_generation}, the fusion strategy defines
+the reward function that guides the robot’s exploration and exploitation behavior.
+Its purpose is to combine heterogeneous sources of semantic information into a
+unified decision space that prioritizes promising regions for object search while
+maintaining navigational feasibility.
+
+The fusion strategy integrates three complementary types of graph nodes:
+(i) exploration frontier nodes, representing geometrically reachable but
+semantically unexplored regions,
+(ii) persistent memory nodes, encoding accumulated semantic evidence from
+past observations, and
+(iii) detection graph nodes, derived from promptable zero-shot object detections.
+By jointly reasoning over these sources, the system balances exploration of unknown
+space with exploitation of semantically relevant hypotheses.
+
+Prior to fusion, graph nodes from all sources are filtered using a relevance map
+(Section~\ref{sec:methods:fusion_strategy:relevance_filtering}). The relevance map is
+updated continuously during exploration and suppresses graph nodes located in regions
+that have already been observed and deemed irrelevant to the current semantic query.
+This mechanism prevents oscillatory behavior and repeated visitation of low-value
+areas.
+
+After relevance filtering, the remaining graph nodes are fused in two stages, as
+illustrated in Figure~\ref{fig:fusion:pipeline}. First, exploration frontier nodes and
+memory nodes are combined using an exploration-memory weighting scheme
+(Section~\ref{sec:methods:fusion_strategy:exploration_memory_weighting}), which
+explicitly trades off short-term exploration incentives against long-term semantic
+beliefs. Second, detection graph nodes are fused with semantic evidence from the value
+map and persistent memory via a multi-source detection fusion mechanism
+(Section~\ref{sec:methods:fusion_strategy:multi_source_detection_fusion}), yielding
+robust object hypotheses with aggregated confidence estimates.
+
+The fusion process produces two sets of graph nodes: an
+exploration-memory node set, which guides exploratory navigation, and a
+detection node set, which represents high-confidence object hypotheses.
+Both sets are forwarded to the behavior-tree-based navigation policy
+(Section~\ref{sec:methods:behavior_tree}), which orchestrates low-level path planning
+and robot control to navigate toward high-reward regions identified by the fusion
+strategy.
+
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1.0\textwidth]{Images/03_methods/fusion/fusion_pipeline.png}
-    \caption{}
+    \caption{Overview of the fusion pipeline, illustrating how exploration frontiers, persistent memory nodes, and promptable detection hypotheses are filtered, weighted, and fused into a unified graph representation used for navigation decisions.}
     \label{fig:fusion:pipeline}
 \end{figure}
-
-
 
 \subsection*{Exploration-Memory Weighting}
 \label{sec:methods:fusion_strategy:exploration_memory_weighting}
 
-% -------------------------------------------------------------
-% Notation
-% -------------------------------------------------------------
-\begin{equation}
-n_i = (\mathbf{x}_i, s_i),
-\qquad
-\mathbf{x}_i = (x_i, y_i) \in \mathbb{R}^2,
-\quad
-s_i \in [0,1]
-\label{eq:graph_fusion:node_definition}
-\end{equation}
+A Graph Node $n_i = (\mathbf{x}_i, s_i)$ is defined as a tuple consisting of a 3D position $\mathbf{x}_i \in \mathbb{R}^3$ and an associated semantic score $s_i \in [0,1]$. However, for the purpose of exploration-memory weighting, only the 2D position $\mathbf{x}_i = (x_i, y_i) \in \mathbb{R}^2$ is considered, as the robot operates on a planar navigation surface. This simplification is justified since navigation planning is performed on a 2D costmap, 
+and height variations are handled implicitly by the mapping and localization system.
+.Similar to classical frontier based approaches~\cite{yamauchiFrontierbasedApproachAutonomous1997,topiwalaFrontierBasedExploration2018}, closer frontiers are rewarded more highly to encourage efficient exploration. The proximity persistence weight $w_{\mathrm{prox}}(n_i)$ is defined in Equation~\eqref{eq:graph_fusion:proximity_weight} using a Gaussian kernel centered at the robot's current position $\mathbf{x}_r = (x_r, y_r)$. The parameters $\alpha_{\mathrm{prox}}$ and $r_{\mathrm{prox}}$ control the maximum weight increase and the spatial decay rate, respectively. This formulation biases the exploration policy toward nearby frontiers while still preserving the relative ordering induced by the semantic score.
 
-\begin{equation}
-\mathbf{x}_r = (x_r, y_r)
-\label{eq:graph_fusion:robot_pose}
-\end{equation}
 
 % -------------------------------------------------------------
 % Proximity persistence (exploration bias)
@@ -913,6 +939,7 @@ w_{\mathrm{prox}}(n_i)
 \label{eq:graph_fusion:proximity_weight}
 \end{equation}
 
+For navigation stability and success, each frontier exploration graph node gets penalized based on the local navigation costmap values. Similar to~\cite{bourgaultInformationBasedAdaptive2002}, a costmap penalty weight $w_{\mathrm{cost}}(n_i)$ is computed for each graph node using a Gaussian kernel to aggregate local costmap values within a radius $r_{\mathrm{cost}}$ (see Equation~\eqref{eq:graph_fusion:costmap_region}). The aggregated cost $\bar{c}_i$ is normalized to the range $[0, 1]$ (see Equations~\eqref{eq:graph_fusion:costmap_weighted_mean} and~\eqref{eq:graph_fusion:costmap_normalization}) and transformed into a penalty weight (see Equation~\eqref{eq:graph_fusion:costmap_penalty}) using the scaling factor $\lambda_{\mathrm{cost}}$. A minimum weight of $0.3$ is enforced to prevent complete suppression of nodes in high-cost areas.
 
 % -------------------------------------------------------------
 % Costmap penalty
@@ -957,6 +984,8 @@ w_{\mathrm{cost}}(n_i)
 \label{eq:graph_fusion:costmap_penalty}
 \end{equation}
 
+After the weighting functions have been defined, exploration frontier nodes are reweighted according to Equation~\eqref{eq:graph_fusion:exploration_score}, where $\beta \in [0, 1]$ controls the trade-off between exploration and memory exploitation.  A higher value of $\beta$ encourages exploration of new areas, while a lower value prioritizes revisiting known high-value regions. In all experiments, $\beta$ is treated as a global hyperparameter that can be adjusted 
+to favor exploration-dominated or exploitation-dominated behavior.
 % -------------------------------------------------------------
 % Exploration node reweighting
 % -------------------------------------------------------------
@@ -969,6 +998,8 @@ w_{\mathrm{cost}}(n_i)
 \label{eq:graph_fusion:exploration_score}
 \end{equation}
 
+Memory nodes are scaled using Equation~\eqref{eq:graph_fusion:memory_scaling} to reduce their influence during exploration.
+
 % -------------------------------------------------------------
 % Exploitation (memory) node scaling
 % -------------------------------------------------------------
@@ -979,15 +1010,6 @@ s_i^{\mathrm{memory}}
 \label{eq:graph_fusion:memory_scaling}
 \end{equation}
 
-
-% \begin{itemize}
-%     \item Exploration and memory graph nodes are fused and weighted as follows:
-%     \begin{itemize}
-%         \item Proximity weighting: Nodes closer to the robot's current position are given higher weights, similar to~\cite{bourgaultInformationBasedAdaptive2002}.
-%         \item Exploration vs Memory: Nodes from the exploration source are prioritized over memory nodes to encourage discovery of new information, similar to~\cite{ramakrishnanPONIPotentialFunctions2022}.
-%         \item Costmap weighting: Nodes located in areas with lower navigation costs are favored to optimize path planning and navigation efficiency, similar to~\cite{bourgaultInformationBasedAdaptive2002}.
-%     \end{itemize}
-% \end{itemize}
 
 \subsection*{Multi-Source Detection Fusion}
 \label{sec:methods:fusion_strategy:multi_source_detection_fusion}
