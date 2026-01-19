@@ -915,43 +915,48 @@ strategy.
 \subsection*{Exploration-Memory Weighting}
 \label{sec:methods:fusion_strategy:exploration_memory_weighting}
 
-A Graph Node $n_i = (\mathbf{x}_i, s_i)$ is defined as a tuple consisting of a 3D position $\mathbf{x}_i \in \mathbb{R}^3$ and an associated semantic score $s_i \in [0,1]$. However, for the purpose of exploration-memory weighting, only the 2D position $\mathbf{x}_i = (x_i, y_i) \in \mathbb{R}^2$ is considered, as the robot operates on a planar navigation surface. This simplification is justified since navigation planning is performed on a 2D costmap, 
-and height variations are handled implicitly by the mapping and localization system.
-.Similar to classical frontier based approaches~\cite{yamauchiFrontierbasedApproachAutonomous1997,topiwalaFrontierBasedExploration2018}, closer frontiers are rewarded more highly to encourage efficient exploration. The proximity persistence weight $w_{\mathrm{prox}}(n_i)$ is defined in Equation~\eqref{eq:graph_fusion:proximity_weight} using a Gaussian kernel centered at the robot's current position $\mathbf{x}_r = (x_r, y_r)$. The parameters $\alpha_{\mathrm{prox}}$ and $r_{\mathrm{prox}}$ control the maximum weight increase and the spatial decay rate, respectively. This formulation biases the exploration policy toward nearby frontiers while still preserving the relative ordering induced by the semantic score.
+A graph node is defined as $n_i = (\mathbf{x}_i, s_i)$, where $\mathbf{x}_i \in \mathbb{R}^3$ denotes the spatial position of the node in the global map frame and $s_i \in [0,1]$ represents its associated semantic relevance score. For the purpose of exploration-memory weighting, only the planar component $\mathbf{x}_i = (x_i, y_i) \in \mathbb{R}^2$ is considered, since navigation and motion planning are performed on a 2D planar representation. Height variations are handled implicitly by the mapping and localization system and are therefore omitted at this stage.
 
+Following classical frontier-based exploration strategies~\cite{yamauchiFrontierbasedApproachAutonomous1997,topiwalaFrontierBasedExploration2018},
+graph nodes that are spatially closer to the robot are favored to encourage efficient
+and stable exploration behavior. To this end, the Euclidean distance between a graph
+node $n_i$ and the current robot position $\mathbf{x}_r = (x_r, y_r) \in \mathbb{R}^2$ is computed in Equation~\eqref{eq:graph_fusion:distance_to_robot}.
 
-% -------------------------------------------------------------
-% Proximity persistence (exploration bias)
-% -------------------------------------------------------------
 \begin{equation}
-d_i = \lVert \mathbf{x}_i - \mathbf{x}_r \rVert_2
+d_i = \lVert \mathbf{x}_i - \mathbf{x}_r \rVert_2 ,
 \label{eq:graph_fusion:distance_to_robot}
 \end{equation}
+
+This distance is used to define a proximity persistence weight $w_{\mathrm{prox}}(n_i)$, which increases the influence of nearby nodes while smoothly decaying with distance. The weighting function is formulated as a Gaussian kernel in Equation~\eqref{eq:graph_fusion:proximity_weight}:
 
 \begin{equation}
 w_{\mathrm{prox}}(n_i)
 =
 1 + \alpha_{\mathrm{prox}}
-\, e^{-\frac{1}{2}
+\, \exp\!\left(
+-\frac{1}{2}
 \left(
 \frac{d_i}{r_{\mathrm{prox}}}
-\right)^2}
+\right)^2
+\right),
 \label{eq:graph_fusion:proximity_weight}
 \end{equation}
 
-For navigation stability and success, each frontier exploration graph node gets penalized based on the local navigation costmap values. Similar to~\cite{bourgaultInformationBasedAdaptive2002}, a costmap penalty weight $w_{\mathrm{cost}}(n_i)$ is computed for each graph node using a Gaussian kernel to aggregate local costmap values within a radius $r_{\mathrm{cost}}$ (see Equation~\eqref{eq:graph_fusion:costmap_region}). The aggregated cost $\bar{c}_i$ is normalized to the range $[0, 1]$ (see Equations~\eqref{eq:graph_fusion:costmap_weighted_mean} and~\eqref{eq:graph_fusion:costmap_normalization}) and transformed into a penalty weight (see Equation~\eqref{eq:graph_fusion:costmap_penalty}) using the scaling factor $\lambda_{\mathrm{cost}}$. A minimum weight of $0.3$ is enforced to prevent complete suppression of nodes in high-cost areas.
+where $\alpha_{\mathrm{prox}} > 0$ controls the maximum amplification of nearby nodes and $r_{\mathrm{prox}}$ defines the spatial decay radius of the Gaussian kernel. This formulation softly biases the exploration policy toward frontiers close to the robot while preserving the relative ordering induced by the semantic score $s_i$.
 
-% -------------------------------------------------------------
-% Costmap penalty
-% -------------------------------------------------------------
+In addition to proximity, navigation feasibility is taken into account by penalizing graph nodes located in regions with high traversal cost. Similar to the approach proposed in~\cite{bourgaultInformationBasedAdaptive2002}, a local neighborhood around each node is defined in Equation~\eqref{eq:graph_fusion:costmap_region}:
+
 \begin{equation}
 \Omega_i =
 \left\{
 \mathbf{x}_j \mid
 \lVert \mathbf{x}_j - \mathbf{x}_i \rVert_2 \le r_{\mathrm{cost}}
-\right\}
+\right\},
 \label{eq:graph_fusion:costmap_region}
 \end{equation}
+
+where $r_{\mathrm{cost}}$ denotes the radius within which costmap values are aggregated
+and $\mathbf{x}_j$ corresponds to individual costmap cell locations~\cite{macenskiDesksROSMaintainers2023}. The locally aggregated cost $\bar{c}_i$ is computed as a Gaussian-weighted average in Equation~\eqref{eq:graph_fusion:costmap_weighted_mean}:
 
 \begin{equation}
 \bar{c}_i
@@ -959,20 +964,22 @@ For navigation stability and success, each frontier exploration graph node gets 
 \frac{
 \sum\limits_{j \in \Omega_i}
 c_j \,
-e^{-\frac{\lVert \mathbf{x}_j - \mathbf{x}_i \rVert_2^2}{2\sigma_c^2}}
+\exp\!\left(
+-\frac{\lVert \mathbf{x}_j - \mathbf{x}_i \rVert_2^2}{2\sigma_c^2}
+\right)
 }{
 \sum\limits_{j \in \Omega_i}
-e^{-\frac{\lVert \mathbf{x}_j - \mathbf{x}_i \rVert_2^2}{2\sigma_c^2}}
-}
+\exp\!\left(
+-\frac{\lVert \mathbf{x}_j - \mathbf{x}_i \rVert_2^2}{2\sigma_c^2}
+\right)
+},
 \label{eq:graph_fusion:costmap_weighted_mean}
 \end{equation}
 
+where $c_j$ denotes the raw costmap value at location $\mathbf{x}_j$ and $\sigma_c$
+controls the spatial smoothing of the aggregation. The Gaussian-weighted average is used, because it emphasizes costmap values closer to the node location while still incorporating information from the broader neighborhood. This aggregation mirrors the spatial smoothing and inflation mechanisms commonly used in navigation costmaps~\cite{macenskiDesksROSMaintainers2023}.
 
-\begin{equation}
-\hat{c}_i =
-\mathrm{clip}\!\left(\frac{\bar{c}_i}{100}, 0, 1\right)
-\label{eq:graph_fusion:costmap_normalization}
-\end{equation}
+To ensure numerical stability and comparability, the aggregated cost is normalized to the interval $[0,1]$. The normalized cost is then transformed into a penalty weight in Equation~\eqref{eq:graph_fusion:costmap_penalty}:
 
 \begin{equation}
 w_{\mathrm{cost}}(n_i)
@@ -980,33 +987,29 @@ w_{\mathrm{cost}}(n_i)
 \max\!\left(
 0.3,\;
 1 - \lambda_{\mathrm{cost}} \hat{c}_i
-\right)
+\right),
 \label{eq:graph_fusion:costmap_penalty}
 \end{equation}
 
-After the weighting functions have been defined, exploration frontier nodes are reweighted according to Equation~\eqref{eq:graph_fusion:exploration_score}, where $\beta \in [0, 1]$ controls the trade-off between exploration and memory exploitation.  A higher value of $\beta$ encourages exploration of new areas, while a lower value prioritizes revisiting known high-value regions. In all experiments, $\beta$ is treated as a global hyperparameter that can be adjusted 
-to favor exploration-dominated or exploitation-dominated behavior.
-% -------------------------------------------------------------
-% Exploration node reweighting
-% -------------------------------------------------------------
+where $\lambda_{\mathrm{cost}}$ determines the influence of the costmap on the final score. A minimum weight of $0.3$ is enforced to prevent complete suppression of nodes in high-cost regions, thereby maintaining robustness in cluttered environments.
+
+After defining the proximity and cost-based weighting terms, exploration frontier nodes are reweighted according to Equation~\eqref{eq:graph_fusion:exploration_score}:
+
 \begin{equation}
 s_i^{\mathrm{explore}}
 =
 s_i \cdot \beta \cdot
 w_{\mathrm{prox}}(n_i) \cdot
-w_{\mathrm{cost}}(n_i)
+w_{\mathrm{cost}}(n_i),
 \label{eq:graph_fusion:exploration_score}
 \end{equation}
 
-Memory nodes are scaled using Equation~\eqref{eq:graph_fusion:memory_scaling} to reduce their influence during exploration.
+where $\beta \in [0,1]$ controls the trade-off between exploration and memory exploitation. Such explicit exploration-exploitation trade-offs are widely used in frontier-based and potential-based exploration methods~\cite{ramakrishnanPONIPotentialFunctions2022}. Larger values of $\beta$ prioritize the discovery of new areas, while smaller values emphasize revisiting previously observed high-relevance regions. In all experiments, $\beta$ is treated as a global hyperparameter that can be tuned to adjust the exploration-exploitation balance. Conversely, memory graph nodes are downscaled during exploration in Equation~\eqref{eq:graph_fusion:memory_scaling}.
 
-% -------------------------------------------------------------
-% Exploitation (memory) node scaling
-% -------------------------------------------------------------
 \begin{equation}
 s_i^{\mathrm{memory}}
 =
-(1 - \beta)\, s_i
+(1 - \beta)\, s_i,
 \label{eq:graph_fusion:memory_scaling}
 \end{equation}
 
