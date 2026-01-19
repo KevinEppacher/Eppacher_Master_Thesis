@@ -376,28 +376,28 @@ $\lambda \in [0,1]$ controls the persistence of past observations and prevents o
 
 (b) The set of map cells that can be updated at time step $t$ is determined by computing a
 top-down visibility mask $M_{\text{fov}}(\mathbf{p}_t)$ using raytracing within the current field
-of view, instead of relying solely on depth camera projections based on odometry~\cite{yokoyamaVLFMVisionLanguageFrontier2023,thrunProbabilisticRobotics2006}. Only cells that are geometrically visible from the robot's pose and not occluded by obstacles are considered for update. For these visible cells, an instantaneous observation confidence map $C_{\text{obs}}(\mathbf{p}_t, M_{\text{fov}})$ is computed, which models the reliability of the current observation as a function of the sensor geometry. Cells near the center of the field of view are assigned higher confidence, while confidence decreases toward the periphery due to reduced resolution and increased distortion. This behavior is modeled using a Gaussian weighting function over the angular deviation from the camera’s principal viewing direction. The observation confidence assigned to a visible cell $(i,j)$ is computed as
+of view, instead of relying solely on depth camera projections based on odometry~\cite{yokoyamaVLFMVisionLanguageFrontier2023,thrunProbabilisticRobotics2006}. Only cells that are geometrically visible from the robot's pose and not occluded by obstacles are considered for update. For these visible cells, an instantaneous observation confidence map $C_{\text{obs}}(\mathbf{p}_t, M_{\text{fov}})$ is computed, which models the reliability of the current observation as a function of the sensor geometry. Cells near the center of the \ac{FOV} are assigned higher confidence, while confidence decreases toward the periphery due to reduced resolution and increased distortion. This behavior is modeled using a Gaussian weighting function over the angular deviation from the camera’s principal viewing direction. The observation confidence assigned to a visible cell $(i,j)$ is computed as
 
 \begin{equation}
-\label{eq:value_map:confidence_weight}
 C_{\text{obs}}(i,j)
 =
 \mathrm{e}^{-\frac{1}{2}
 \left(
-\frac{\Delta\theta(i,j)}{\sigma}
-\right)^2},
+    \frac{\Delta\theta(i,j)}{\sigma}
+    \right)^2},
+\label{eq:value_map:confidence_weight}
 \end{equation}
 
 where $\Delta\theta(i,j)$ denotes the angular difference between the viewing ray toward cell
 $(i,j)$ and the robot’s forward-facing direction, and $\sigma$ controls the sharpness of the
-confidence decay within the field of view. Smaller values of $\sigma$ result in a narrower high-confidence region centered around the optical axis, while larger values produce a more uniform confidence distribution. This confidence formulation follows the angular weighting strategy used in VLFM to model observation reliability across the field of view~\cite{yokoyamaVLFMVisionLanguageFrontier2023}.
+confidence decay within the \ac{FOV}. Smaller values of $\sigma$ result in a narrower high-confidence region centered around the optical axis, while larger values produce a more uniform confidence distribution. This confidence formulation follows the angular weighting strategy used in VLFM to model observation reliability across the \ac{FOV}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}.
 
 
 (c) For each visible cell $(i,j)$, the semantic value stored in the map is updated toward the
 current similarity score $s_t$ using a confidence-weighted fusion rule.
 Let $V_{t-1}(i,j)$ and $C_{t-1}(i,j)$ denote the semantic value and confidence stored at cell $(i,j)$
 before the update, and let $C_{\text{obs}}(i,j)$ denote the instantaneous observation confidence
-computed from the current field of view.
+computed from the current \ac{FOV}.
 
 The semantic value update is formulated as a weighted interpolation between the previous value and
 the current similarity score (see Equation~\eqref{eq:value_map:update}):
@@ -863,47 +863,24 @@ Similar to the semantic clustering process described in Section~\ref{sec:methods
 \section{Fusion Strategy}
 \label{sec:methods:fusion_strategy}
 
-Analogous to the gradient ascent formulation introduced in
-Section~\ref{sec:semantic_frontier:value_map_generation}, the fusion strategy defines
-the reward function that guides the robot’s exploration and exploitation behavior.
-Its purpose is to combine heterogeneous sources of semantic information into a
-unified decision space that prioritizes promising regions for object search while
-maintaining navigational feasibility.
+Analogous to the gradient ascent formulation introduced in Section~\ref{sec:semantic_frontier:value_map_generation}, the fusion strategy defines the reward function that guides the robot’s exploration and exploitation behavior. Its purpose is to combine heterogeneous sources of semantic information into a unified decision space that prioritizes promising regions for object search while maintaining navigational feasibility.
 
 The fusion strategy integrates three complementary types of graph nodes:
-(i) exploration frontier nodes, representing geometrically reachable but
+(a) exploration frontier nodes, representing geometrically reachable but
 semantically unexplored regions,
-(ii) persistent memory nodes, encoding accumulated semantic evidence from
+(b) persistent memory nodes, encoding accumulated semantic evidence from
 past observations, and
-(iii) detection graph nodes, derived from promptable zero-shot object detections.
+(c) detection graph nodes, derived from promptable zero-shot object detections.
 By jointly reasoning over these sources, the system balances exploration of unknown
 space with exploitation of semantically relevant hypotheses.
 
-Prior to fusion, graph nodes from all sources are filtered using a relevance map
-(Section~\ref{sec:methods:fusion_strategy:relevance_filtering}). The relevance map is
-updated continuously during exploration and suppresses graph nodes located in regions
-that have already been observed and deemed irrelevant to the current semantic query.
-This mechanism prevents oscillatory behavior and repeated visitation of low-value
-areas.
+Prior to fusion, graph nodes from all sources are filtered using a relevance map (Section~\ref{sec:methods:fusion_strategy:relevance_filtering}). The relevance map is updated continuously during exploration and suppresses graph nodes located in regions that have already been observed and deemed irrelevant to the current semantic query. This mechanism prevents oscillatory behavior and repeated visitation of low-value areas.
 
-After relevance filtering, the remaining graph nodes are fused in two stages, as
-illustrated in Figure~\ref{fig:fusion:pipeline}. First, exploration frontier nodes and
-memory nodes are combined using an exploration-memory weighting scheme
-(Section~\ref{sec:methods:fusion_strategy:exploration_memory_weighting}), which
-explicitly trades off short-term exploration incentives against long-term semantic
-beliefs. Second, detection graph nodes are fused with semantic evidence from the value
-map and persistent memory via a multi-source detection fusion mechanism
-(Section~\ref{sec:methods:fusion_strategy:multi_source_detection_fusion}), yielding
+After relevance filtering, the remaining graph nodes are fused in two stages, as illustrated in Figure~\ref{fig:fusion:pipeline}. First, exploration frontier nodes and memory nodes are combined using an exploration-memory weighting scheme (Section~\ref{sec:methods:fusion_strategy:exploration_memory_weighting}), which explicitly trades off short-term exploration incentives against long-term semantic beliefs. Second, detection graph nodes are fused with semantic evidence from the value map and persistent memory via a multi-source detection fusion mechanism (Section~\ref{sec:methods:fusion_strategy:multi_source_detection_fusion}), yielding
 robust object hypotheses with aggregated confidence estimates.
 
-The fusion process produces two sets of graph nodes: an
-exploration-memory node set, which guides exploratory navigation, and a
-detection node set, which represents high-confidence object hypotheses.
-Both sets are forwarded to the behavior-tree-based navigation policy
-(Section~\ref{sec:methods:behavior_tree}), which orchestrates low-level path planning
-and robot control to navigate toward high-reward regions identified by the fusion
-strategy.
-
+The fusion process produces two sets of graph nodes: an exploration-memory node set, which guides exploratory navigation, and a detection node set, which represents high-confidence object hypotheses.
+Both sets are forwarded to the behavior-tree-based navigation policy (Section~\ref{sec:methods:behavior_tree}), which orchestrates low-level path planning and robot control to navigate toward high-reward regions identified by the fusion strategy.
 
 \begin{figure}[h!]
     \centering
@@ -1017,7 +994,7 @@ s_i^{\mathrm{memory}}
 \subsection*{Multi-Source Detection Fusion}
 \label{sec:methods:fusion_strategy:multi_source_detection_fusion}
 
-Aim of multi-source detection fusion is to robustly estimate the confidence of detection graph nodes by combining evidence from three complementary sources: (a) the raw confidence score provided by the promptable detection vision model, (b) the semantic value map generated from the cosine similarity of the \ac{VLM}, and (c) the persistent memory graph encoding accumulated semantic beliefs. A detection hypothesis must be present for fusion to occur: value map and memory cues can only reinforce an existing detection and cannot generate object hypotheses on their own. This prevents false positives caused by dense semantic similarity alone while still allowing consistent contextual and memory-based evidence to increase confidence. Inorder to effectively combine these heterogeneous sources, a weighted Noisy-OR model is employed, which is well suited for fusing independent probabilistic evidence~\cite{dedieuLearningNoisyORBayesian2023} (see Equation~\eqref{eq:graph_fusion:noisy_or_product}).
+The aim of multi-source detection fusion is to robustly estimate the confidence of detection graph nodes by combining evidence from three complementary sources: (a) the raw confidence score provided by the promptable detection vision model, (b) the semantic value map generated from the cosine similarity of the \ac{VLM}, and (c) the persistent memory graph encoding accumulated semantic beliefs. A detection hypothesis must be present for fusion to occur: value map and memory cues can only reinforce an existing detection and cannot generate object hypotheses on their own. This prevents false positives caused by dense semantic similarity alone while still allowing consistent contextual and memory-based evidence to increase confidence. In order to effectively combine these heterogeneous sources, a weighted Noisy-OR model is employed. It is well suited for fusing independent probabilistic evidence~\cite{dedieuLearningNoisyORBayesian2023} (see Equation~\eqref{eq:graph_fusion:noisy_or_product}).
 
 % -------------------------------------------------------------
 % Weighted Noisy-OR fusion
@@ -1035,7 +1012,7 @@ s_i^{\mathrm{fused}}
     \label{eq:graph_fusion:noisy_or_product}
 \end{equation}
 
-where $s_i^{(k)}$ denotes the confidence score from source $k$ and $\lambda_k \in [0,1]$ represents the corresponding source weight. The weights $\lambda_k$ allow tuning the influence of each source on the final fused confidence score. Equation~\eqref{eq:graph_fusion:noisy_or_fusion} shows the explicit form of the weighted Noisy-OR fusion for the three considered sources: detection confidence, value map score, and memory relevance.
+where $s_i^{(k)}$ denotes the confidence score from source $k$ and $\lambda_k \in [0,1]$ represents the corresponding source weight. The weights $\lambda_k$ allow tuning the influence of each source on the final fused confidence score. In this work, the weights are treated as fixed hyperparameters and tuned empirically. Equation~\eqref{eq:graph_fusion:noisy_or_fusion} shows the explicit form of the weighted Noisy-OR fusion for the three considered sources: detection confidence, value map score, and memory relevance.
 
 % Explicit form
 \begin{equation}
@@ -1099,7 +1076,9 @@ e^{-\frac{\lVert \mathbf{x}_i - \mathbf{x}_k \rVert_2^2}{2\sigma_m^2}}
 \label{eq:graph_fusion:memory_score}
 \end{equation}
 
-where $\mathcal{N}_{\mathrm{memory}}$ denotes the set of memory nodes within a radius $r_m$ of the detection node location $\mathbf{x}_i$, $s_k$ and $\mathbf{x}_k$ are the confidence score and spatial position of memory node $m_k$, respectively, and $\sigma_m$ controls the spatial decay of the Gaussian kernel. The final graph node representation after multi-source detection fusion is given in Equation~\eqref{eq:graph_fusion:final_node_representation}:
+where $\mathcal{N}_{\mathrm{memory}}$ denotes the set of memory graph nodes, $\mathbf{x}_k$ and $s_k$ are the spatial position and confidence score of memory node $m_k$, and $\sigma_m$ controls the spatial decay of influence. The Gaussian kernel ensures that nearby memory evidence contributes more strongly than distant or outdated observations, while maintaining smoothness and robustness. The memory relevance term acts as a soft spatial prior and does not perform explicit belief updating.
+
+The final graph node representation after multi-source detection fusion is given in Equation~\eqref{eq:graph_fusion:final_node_representation}:
 
 % -------------------------------------------------------------
 % Final node representation
@@ -1118,59 +1097,83 @@ s_i^{\mathrm{fused}}
 
 where $\mathbf{x}_i$ denotes the spatial position of the detection node, $s_i^{\mathrm{det}}$ is the raw detection confidence from the vision model, $s_i^{\mathrm{map}}$ is the aggregated value map score, $s_i^{\mathrm{mem}}$ is the aggregated memory relevance score, and $s_i^{\mathrm{fused}}$ is the final fused confidence score after multi-source detection fusion.
 
-Instead of relying solely on the raw detection confidence from a single vision model~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, or solely relying on thresholding the cosine similarity or memory~\cite{buschOneMapFind2025,gadreCoWsPastureBaselines2022}, the proposed multi-source detection fusion approach combines complementary evidence from multiple independent sources. This leads to higher confidence in true positive detections while reducing the likelihood of false positives, thereby enhancing the robustness and reliability of the object search system, by further increasing the confidence threshold.
-
+Instead of relying solely on the raw detection confidence from a single vision model~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, or solely relying on thresholding the cosine similarity or memory~\cite{buschOneMapFind2025,gadreCoWsPastureBaselines2022}, the proposed multi-source detection fusion approach combines complementary evidence from multiple independent sources. This leads to higher confidence in true positive detections while reducing the likelihood of false positives, thereby enhancing the robustness and reliability of the object search system by enabling higher confidence thresholds.
 
 \subsection*{Relevance Filtering and Node Suppression}
 \label{sec:methods:fusion_strategy:relevance_filtering}
 
-\begin{itemize}
-    \item Each source's graph nodes are filtered based on a relevance threshold to eliminate graph nodes within the fov map.
-    \item Relevance map is build over time
-    \item If a graph node is located in an area that has already been explored and found to be irrelevant to the prompt, it is suppressed.
-\end{itemize}
+To prevent repeated visitation of low-value areas and oscillatory behavior, a relevance map is maintained during exploration to suppress graph nodes located in regions that have already been observed and deemed irrelevant to the current semantic query. The relevance map is constructed analogously to the value map described in Section~\ref{sec:semantic_frontier:value_map_generation}, but instead of accumulating cosine similarity scores, it encodes spatial visibility and observation history.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=1.0\textwidth]{Images/03_methods/3d_relevance_map.png}
-    \caption{Fusion strategy for exploration, detection, and memory graph nodes}
-    \label{fig:3d_relevance_map}
-\end{figure}
+While the semantic value map relies exclusively on an angular confidence weighting to model the camera \ac{FOV} (see Equation~\eqref{eq:value_map:confidence_weight}), the relevance map extends this formulation by additionally incorporating a radial weighting term. This allows the relevance map to suppress regions that have already been observed within both the angular \ac{FOV} and a bounded spatial range.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=1.0\textwidth]{Images/03_methods/relevance_map_example.png}
-    \caption{Fusion strategy for exploration, detection, and memory graph nodes}
-    \label{fig:relevance_map_example}
+The radial weighting component is defined in Equation~\eqref{eq:relevance:radial_weight}:
+
+\begin{equation}
+w_{\mathrm{rad}}(\mathbf{x})
+=
+e^{-\frac{\lVert \mathbf{x} - \mathbf{x}_r \rVert_2^2}{2\sigma_r^2}},
+\label{eq:relevance:radial_weight}
+\end{equation}
+
+where $\mathbf{x}_r$ denotes the robot position and $\sigma_r$ controls the spatial
+decay of relevance with increasing distance. The angular weighting term is defined in Equation~\eqref{eq:value_map:confidence_weight} in Section~\ref{sec:semantic_frontier:value_map_generation}.
+
+The combined relevance weighting is obtained as the product of both components,
+resulting in high relevance values for regions that are close to the robot and aligned
+with the camera’s optical axis.
+
+Three instances of the relevance map are maintained with different parameterizations
+for exploration, detection, and memory graph nodes, respectively. Graph nodes whose
+relevance value exceeds a predefined threshold are suppressed, indicating that the
+corresponding region has already been sufficiently observed.
+
+To preserve robustness against missed detections, graph nodes whose detection
+confidence exceeds a high-confidence threshold (80\% in all experiments) are exempt
+from relevance-based suppression and are directly republished. This mechanism enables
+the robot to revisit locations with strong object evidence while avoiding repeated
+exploration of low-value regions.
+
+Figure~\ref{fig:relevance_map_example} illustrates the relevance filtering process
+over three consecutive timestamps.
+
+\begin{figure} 
+    \centering 
+    \includegraphics[width=1.0\textwidth]{Images/03_methods/relevance_map_example.png} 
+    \caption{Illustration of relevance-based graph node suppression over time. 
+    At $t{=}0$, a graph node is generated within the robot’s current field of view.
+    As the robot observes the region ($t{=}1$), the relevance map accumulates visibility
+    evidence, causing the node to be suppressed once the area is deemed sufficiently
+    observed. At $t{=}2$, only graph nodes outside previously observed regions or
+    associated with high-confidence detections remain active, preventing oscillatory
+    exploration while preserving strong semantic hypotheses.}
+    \label{fig:relevance_map_example} 
 \end{figure}
 
 \section{Behavior Tree for Semantic-Guided Exploration} 
 \label{sec:methods:behavior_tree}
 
+A behavior tree (BT) is implemented to manage the high-level task structure for semantic-guided exploration. The BT orchestrates the robot's actions based on the fused graph nodes produced by the fusion strategy (Section~\ref{sec:methods:fusion_strategy}). It integrates initialization, detection, exploration, and termination behaviors into a cohesive framework.
+
 \subsection*{High-Level Task Structure}
-\begin{itemize}
-    \item The behavior tree (BT) is designed to manage the high-level task structure for semantic-guided exploration.
-    \item The BT consists of the following main components:
-    \begin{itemize}
-        \item Initialization: Clearing Maps, Publishing Prompts
-        \item Detection Branch: If object is detected over a threshold, navigate to it, realign to object take picture
-        \item Exploration Branch: While object not detected, perform semantic frontier exploration navigating to highest valued frontiers or memory nodes
-        \item Termination: If object found, end mission; If time limit reached, end mission
-        \item Behavior tree is called with a ros2 action server, which returns on termination success or failure, and actual path taken
-    \end{itemize}
-\end{itemize}
+
+The behavior tree initializes, by publishing the user-defined object prompt and clearing previous maps. It then enters a detection branch, where it continuously monitors for detected objects using the fused detection graph nodes. If an object is detected with confidence exceeding a predefined threshold for a predefined duration (1 second), the robot navigates to the object's location, realigns its pose for optimal viewing, and after verification, captures an image of the object.
+
+If no object is detected, the BT transitions to the exploration branch, where it observes all available exploration-memory graph nodes, which are unexplored frontiers and persistent memory nodes, by spinning in place to gather additional observations. After observation, the robot navigates towards the highest-valued exploration-memory node, as determined by the fusion strategy. This process repeats until either an object is found or a time limit is reached in a closed loop manner. This behavior is illustrated in Figure~\ref{fig:bt:flowchart} as flowchart and as Behavior Tree in Figure~\ref{fig:appendix:bt:tree} in the Appendix.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.5\textwidth]{Images/03_methods/sage_bt_flowchart.png}
+    \includegraphics[width=0.5\textwidth]{Images/03_methods/bt/sage_bt_flowchart.png}
     \caption{System architecture}
-    \label{fig:system_overview}
+    \label{fig:bt:flowchart}
 \end{figure}
 
 \subsection*{Integration with Navigation Stack}
-\begin{itemize}
-    \item Navigation stack used for low-level path planning and obstacle avoidance.
-    \item Action used: navigate\_to\_pose, Spin
-\end{itemize}
+
+The multiple object search behaviors defined in the BT is wrapped in a high-level action server, which allows the user or agent to initiate a search task with a specified object prompt (optional zero-shot object prompt for ValueMap generation), a time limit, a soft and hard confidence threshold for object verification, and other parameters. The behavior tree interacts with the underlying ROS2 navigation stack to execute pre-determined behaviors. The \texttt{GoToGraphNode} uses the \texttt{/navigate\_to\_pose} action interface to send navigation goals to the navigation stack, while the \texttt{ObserveGraphNodes} and \texttt{RealignToObject} hehavior nodes use the \texttt{/spin} action interface to perform in-place rotations for environmental observation and object realignment, respectively. The navigation stack handles low-level path planning, obstacle avoidance, and robot control, allowing the BT to focus on high-level decision-making and task sequencing. The ApproachPoseAdjustor Decorator Node computes if possible, a target approachable pose for the robot to navigate to, given the target graph node position and the current robot pose and the global costmap. If no approachable pose is found, it still uses the original target graph node position as the navigation goal.
+
+% \begin{itemize}
+%     \item Navigation stack used for low-level path planning and obstacle avoidance.
+%     \item Action used: navigate\_to\_pose, Spin
+% \end{itemize}
     
 \newpage
