@@ -1017,6 +1017,46 @@ s_i^{\mathrm{memory}}
 \subsection*{Multi-Source Detection Fusion}
 \label{sec:methods:fusion_strategy:multi_source_detection_fusion}
 
+Aim of multi-source detection fusion is to robustly estimate the confidence of detection graph nodes by combining evidence from three complementary sources: (a) the raw confidence score provided by the promptable detection vision model, (b) the semantic value map generated from the cosine similarity of the \ac{VLM}, and (c) the persistent memory graph encoding accumulated semantic beliefs. A detection hypothesis must be present for fusion to occur: value map and memory cues can only reinforce an existing detection and cannot generate object hypotheses on their own. This prevents false positives caused by dense semantic similarity alone while still allowing consistent contextual and memory-based evidence to increase confidence. Inorder to effectively combine these heterogeneous sources, a weighted Noisy-OR model is employed, which is well suited for fusing independent probabilistic evidence~\cite{dedieuLearningNoisyORBayesian2023} (see Equation~\eqref{eq:graph_fusion:noisy_or_product}).
+
+% -------------------------------------------------------------
+% Weighted Noisy-OR fusion
+% -------------------------------------------------------------
+% Implicit form
+\begin{equation}
+s_i^{\mathrm{fused}}
+=
+1
+-
+\prod_{k \in \{\mathrm{det},\,\mathrm{map},\,\mathrm{mem}\}}
+\left(
+    1 - \lambda_k \, s_i^{(k)}
+    \right)
+    \label{eq:graph_fusion:noisy_or_product}
+\end{equation}
+
+where $s_i^{(k)}$ denotes the confidence score from source $k$ and $\lambda_k \in [0,1]$ represents the corresponding source weight. The weights $\lambda_k$ allow tuning the influence of each source on the final fused confidence score. Equation~\eqref{eq:graph_fusion:noisy_or_fusion} shows the explicit form of the weighted Noisy-OR fusion for the three considered sources: detection confidence, value map score, and memory relevance.
+
+% Explicit form
+\begin{equation}
+s_i^{\mathrm{fused}}
+=
+1
+-
+\left(
+1 - \lambda_{\mathrm{det}} s_i^{\mathrm{det}}
+\right)
+\left(
+1 - \lambda_{\mathrm{map}} s_i^{\mathrm{map}}
+\right)
+\left(
+1 - \lambda_{\mathrm{mem}} s_i^{\mathrm{mem}}
+\right)
+\label{eq:graph_fusion:noisy_or_fusion}
+\end{equation}
+
+The value map score $s_i^{\mathrm{map}}$ is computed by aggregating the semantic similarity values from the value map within a local neighborhood around the detection node (see Equation~\eqref{eq:graph_fusion:value_map_region} and Equation~\eqref{eq:graph_fusion:value_map_score}):
+
 % -------------------------------------------------------------
 % Value map confidence
 % -------------------------------------------------------------
@@ -1029,6 +1069,8 @@ s_i^{\mathrm{memory}}
 \label{eq:graph_fusion:value_map_region}
 \end{equation}
 
+$r_v$ defines the radius of the neighborhood around the detection node location $\mathbf{x}_i$, and $\mathbf{v}_j$ denotes individual value map cell locations. The value map score is then computed as the mean similarity within this neighborhood in Equation~\eqref{eq:graph_fusion:value_map_score}:
+
 \begin{equation}
 s_i^{\mathrm{map}}
 =
@@ -1037,6 +1079,8 @@ s_i^{\mathrm{map}}
 v_j
 \label{eq:graph_fusion:value_map_score}
 \end{equation}
+
+where $v_j$ denotes the semantic similarity value at location $\mathbf{v}_j$ and $|\mathcal{V}_i|$ is the cardinality of the neighborhood set.
 
 % -------------------------------------------------------------
 % Memory relevance (Gaussian kernel)
@@ -1056,40 +1100,8 @@ e^{-\frac{\lVert \mathbf{x}_i - \mathbf{x}_k \rVert_2^2}{2\sigma_m^2}}
 \end{equation}
 
 
-% -------------------------------------------------------------
-% Weighted Noisy-OR fusion
-% -------------------------------------------------------------
-% Implicit form
-\begin{equation}
-s_i^{\mathrm{fused}}
-=
-1
--
-\prod_{k \in \{\mathrm{det},\,\mathrm{map},\,\mathrm{mem}\}}
-\left(
-1 - \lambda_k \, s_i^{(k)}
-\right)
-\label{eq:graph_fusion:noisy_or_product}
-\end{equation}
 
 
-% Explicit form
-\begin{equation}
-s_i^{\mathrm{fused}}
-=
-1
--
-\left(
-1 - \lambda_{\mathrm{det}} s_i^{\mathrm{det}}
-\right)
-\left(
-1 - \lambda_{\mathrm{map}} s_i^{\mathrm{map}}
-\right)
-\left(
-1 - \lambda_{\mathrm{mem}} s_i^{\mathrm{mem}}
-\right)
-\label{eq:graph_fusion:noisy_or_fusion}
-\end{equation}
 
 % -------------------------------------------------------------
 % Final node representation
