@@ -862,27 +862,222 @@ Similar to the semantic clustering process described in Section~\ref{sec:methods
 
 \section{Fusion Strategy}
 \label{sec:methods:fusion_strategy}
-\subsection*{Exploration–Memory Weighting}
-\begin{itemize}
-    \item Exploration and memory graph nodes are fused and weighted as follows:
-    \begin{itemize}
-        \item Proximity weighting: Nodes closer to the robot's current position are given higher weights, similar to~\cite{bourgaultInformationBasedAdaptive2002}.
-        \item Exploration vs Memory: Nodes from the exploration source are prioritized over memory nodes to encourage discovery of new information, similar to~\cite{ramakrishnanPONIPotentialFunctions2022}.
-        \item Costmap weighting: Nodes located in areas with lower navigation costs are favored to optimize path planning and navigation efficiency, similar to~\cite{bourgaultInformationBasedAdaptive2002}.
-    \end{itemize}
-\end{itemize}
+
+Similar to thhe gradient ascent analogy in Section~\ref{sec:semantic_frontier:value_map_generation}, the fusion strategy defines the reward function that guides the exploration policy toward promising regions in the environment. By integrating information from multiple sources, including short-term semantic frontiers, persistent memory nodes, and promptable detections, the fusion strategy balances exploration and exploitation to optimize object search performance. First, the frontier graph nodes, memory graph nodes and detection graph nodes are filtered by the Relevance Map (see Section~\ref{sec:methods:fusion_strategy:relevance_filtering}) which build continuously a map, where if Graph Nodes are within the relevance map mask, they are filtered out, to eliminate oscillation. Then the filtered Graph Nodes are fused into a unified representation. Figure~\ref{fig:fusion:pipeline} illustrates the overall fusion pipeline, which consists of two main components: (a) Exploration-Memory Weighting (see Chapter~\ref{sec:methods:fusion_strategy:exploration_memory_weighting}) and (b) Multi-Source Detection Fusion (see Chapter~\ref{sec:methods:fusion_strategy:multi_source_detection_fusion}). After the fusion process, where the Graph Nodes are fused into two Graph Nodes sets: Exploration-Memory Graph Nodes and Detection Graph Nodes, the final Graph Nodes set is forwarded to the BehaviorTree Navigation policy (see Chapter~\ref{sec:methods:behavior_tree}), which orchestrates low-level path planning and robot control to navigate toward high-reward regions identified by the fusion strategy.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1.0\textwidth]{Images/03_methods/fusion/fusion_pipeline.png}
+    \caption{}
+    \label{fig:fusion:pipeline}
+\end{figure}
+
+
+
+\subsection*{Exploration-Memory Weighting}
+\label{sec:methods:fusion_strategy:exploration_memory_weighting}
+
+% -------------------------------------------------------------
+% Notation
+% -------------------------------------------------------------
+\begin{equation}
+n_i = (\mathbf{x}_i, s_i),
+\qquad
+\mathbf{x}_i = (x_i, y_i) \in \mathbb{R}^2,
+\quad
+s_i \in [0,1]
+\label{eq:graph_fusion:node_definition}
+\end{equation}
+
+\begin{equation}
+\mathbf{x}_r = (x_r, y_r)
+\label{eq:graph_fusion:robot_pose}
+\end{equation}
+
+% -------------------------------------------------------------
+% Proximity persistence (exploration bias)
+% -------------------------------------------------------------
+\begin{equation}
+d_i = \lVert \mathbf{x}_i - \mathbf{x}_r \rVert_2
+\label{eq:graph_fusion:distance_to_robot}
+\end{equation}
+
+\begin{equation}
+w_{\mathrm{prox}}(n_i)
+=
+1 + \alpha_{\mathrm{prox}}
+\, e^{-\frac{1}{2}
+\left(
+\frac{d_i}{r_{\mathrm{prox}}}
+\right)^2}
+\label{eq:graph_fusion:proximity_weight}
+\end{equation}
+
+
+% -------------------------------------------------------------
+% Costmap penalty
+% -------------------------------------------------------------
+\begin{equation}
+\Omega_i =
+\left\{
+\mathbf{x}_j \mid
+\lVert \mathbf{x}_j - \mathbf{x}_i \rVert_2 \le r_{\mathrm{cost}}
+\right\}
+\label{eq:graph_fusion:costmap_region}
+\end{equation}
+
+\begin{equation}
+\bar{c}_i
+=
+\frac{
+\sum\limits_{j \in \Omega_i}
+c_j \,
+e^{-\frac{\lVert \mathbf{x}_j - \mathbf{x}_i \rVert_2^2}{2\sigma_c^2}}
+}{
+\sum\limits_{j \in \Omega_i}
+e^{-\frac{\lVert \mathbf{x}_j - \mathbf{x}_i \rVert_2^2}{2\sigma_c^2}}
+}
+\label{eq:graph_fusion:costmap_weighted_mean}
+\end{equation}
+
+
+\begin{equation}
+\hat{c}_i =
+\mathrm{clip}\!\left(\frac{\bar{c}_i}{100}, 0, 1\right)
+\label{eq:graph_fusion:costmap_normalization}
+\end{equation}
+
+\begin{equation}
+w_{\mathrm{cost}}(n_i)
+=
+\max\!\left(
+0.3,\;
+1 - \lambda_{\mathrm{cost}} \hat{c}_i
+\right)
+\label{eq:graph_fusion:costmap_penalty}
+\end{equation}
+
+% -------------------------------------------------------------
+% Exploration node reweighting
+% -------------------------------------------------------------
+\begin{equation}
+s_i^{\mathrm{explore}}
+=
+s_i \cdot \beta \cdot
+w_{\mathrm{prox}}(n_i) \cdot
+w_{\mathrm{cost}}(n_i)
+\label{eq:graph_fusion:exploration_score}
+\end{equation}
+
+% -------------------------------------------------------------
+% Exploitation (memory) node scaling
+% -------------------------------------------------------------
+\begin{equation}
+s_i^{\mathrm{memory}}
+=
+(1 - \beta)\, s_i
+\label{eq:graph_fusion:memory_scaling}
+\end{equation}
+
+
+% \begin{itemize}
+%     \item Exploration and memory graph nodes are fused and weighted as follows:
+%     \begin{itemize}
+%         \item Proximity weighting: Nodes closer to the robot's current position are given higher weights, similar to~\cite{bourgaultInformationBasedAdaptive2002}.
+%         \item Exploration vs Memory: Nodes from the exploration source are prioritized over memory nodes to encourage discovery of new information, similar to~\cite{ramakrishnanPONIPotentialFunctions2022}.
+%         \item Costmap weighting: Nodes located in areas with lower navigation costs are favored to optimize path planning and navigation efficiency, similar to~\cite{bourgaultInformationBasedAdaptive2002}.
+%     \end{itemize}
+% \end{itemize}
 
 \subsection*{Multi-Source Detection Fusion}
-\begin{itemize}
-    \item Detection graph nodes are weighted based on:
-    \begin{itemize}
-        \item YOLO-E confidence scores: Higher confidence detections are given more weight.
-        \item BLIP-2 value map: Detections with higher semantic relevance to the text prompt are prioritized.
-        \item The nearer detection graph nodes are to memory graph nodes, the higher their weight.
-    \end{itemize}
-\end{itemize}
+\label{sec:methods:fusion_strategy:multi_source_detection_fusion}
+
+% -------------------------------------------------------------
+% Value map confidence
+% -------------------------------------------------------------
+\begin{equation}
+\mathcal{V}_i =
+\left\{
+\mathbf{v}_j \mid
+\lVert \mathbf{v}_j - \mathbf{x}_i \rVert_2 < r_v
+\right\}
+\label{eq:graph_fusion:value_map_region}
+\end{equation}
+
+\begin{equation}
+s_i^{\mathrm{map}}
+=
+\frac{1}{|\mathcal{V}_i|}
+\sum\limits_{\mathbf{v}_j \in \mathcal{V}_i}
+v_j
+\label{eq:graph_fusion:value_map_score}
+\end{equation}
+
+% -------------------------------------------------------------
+% Memory relevance (Gaussian kernel)
+% -------------------------------------------------------------
+\begin{equation}
+s_i^{\mathrm{mem}}
+=
+\frac{
+\sum\limits_{m_k \in \mathcal{N}_{\mathrm{memory}}}
+s_k \,
+e^{-\frac{\lVert \mathbf{x}_i - \mathbf{x}_k \rVert_2^2}{2\sigma_m^2}}
+}{
+\sum\limits_{m_k \in \mathcal{N}_{\mathrm{memory}}}
+e^{-\frac{\lVert \mathbf{x}_i - \mathbf{x}_k \rVert_2^2}{2\sigma_m^2}}
+}
+\label{eq:graph_fusion:memory_score}
+\end{equation}
+
+
+% -------------------------------------------------------------
+% Weighted Noisy-OR fusion
+% -------------------------------------------------------------
+\begin{equation}
+s_i^{\mathrm{fused}}
+=
+1
+-
+\left(
+1 - \lambda_{\mathrm{det}} s_i^{\mathrm{det}}
+\right)
+\left(
+1 - \lambda_{\mathrm{map}} s_i^{\mathrm{map}}
+\right)
+\left(
+1 - \lambda_{\mathrm{mem}} s_i^{\mathrm{mem}}
+\right)
+\label{eq:graph_fusion:noisy_or_fusion}
+\end{equation}
+
+% -------------------------------------------------------------
+% Final node representation
+% -------------------------------------------------------------
+\begin{equation}
+n_i =
+\left(
+\mathbf{x}_i,\;
+s_i^{\mathrm{det}},\;
+s_i^{\mathrm{map}},\;
+s_i^{\mathrm{mem}},\;
+s_i^{\mathrm{fused}}
+\right)
+\label{eq:graph_fusion:final_node_representation}
+\end{equation}
+
+% \begin{itemize}
+%     \item Detection graph nodes are weighted based on:
+%     \begin{itemize}
+%         \item YOLO-E confidence scores: Higher confidence detections are given more weight.
+%         \item BLIP-2 value map: Detections with higher semantic relevance to the text prompt are prioritized.
+%         \item The nearer detection graph nodes are to memory graph nodes, the higher their weight.
+%     \end{itemize}
+% \end{itemize}
 
 \subsection*{Relevance Filtering and Node Suppression}
+\label{sec:methods:fusion_strategy:relevance_filtering}
+
 \begin{itemize}
     \item Each source's graph nodes are filtered based on a relevance threshold to eliminate graph nodes within the fov map.
     \item Relevance map is build over time
