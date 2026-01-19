@@ -1080,7 +1080,7 @@ v_j
 \label{eq:graph_fusion:value_map_score}
 \end{equation}
 
-where $v_j$ denotes the semantic similarity value at location $\mathbf{v}_j$ and $|\mathcal{V}_i|$ is the cardinality of the neighborhood set.
+where $v_j$ denotes the semantic similarity value at location $\mathbf{v}_j$ and $|\mathcal{V}_i|$ is the cardinality of the neighborhood set. Intuitively, if a memory node is near to the detection node, then the detection is more likely to be correct, as the memory node encodes prior evidence for the object being present in that location. Consequently, the memory relevance score $s_i^{\mathrm{mem}}$ is computed by aggregating the confidence scores of nearby memory nodes using a Gaussian kernel in Equation~\eqref{eq:graph_fusion:memory_score}:
 
 % -------------------------------------------------------------
 % Memory relevance (Gaussian kernel)
@@ -1099,9 +1099,7 @@ e^{-\frac{\lVert \mathbf{x}_i - \mathbf{x}_k \rVert_2^2}{2\sigma_m^2}}
 \label{eq:graph_fusion:memory_score}
 \end{equation}
 
-
-
-
+where $\mathcal{N}_{\mathrm{memory}}$ denotes the set of memory nodes within a radius $r_m$ of the detection node location $\mathbf{x}_i$, $s_k$ and $\mathbf{x}_k$ are the confidence score and spatial position of memory node $m_k$, respectively, and $\sigma_m$ controls the spatial decay of the Gaussian kernel. The final graph node representation after multi-source detection fusion is given in Equation~\eqref{eq:graph_fusion:final_node_representation}:
 
 % -------------------------------------------------------------
 % Final node representation
@@ -1118,14 +1116,10 @@ s_i^{\mathrm{fused}}
 \label{eq:graph_fusion:final_node_representation}
 \end{equation}
 
-% \begin{itemize}
-%     \item Detection graph nodes are weighted based on:
-%     \begin{itemize}
-%         \item YOLO-E confidence scores: Higher confidence detections are given more weight.
-%         \item BLIP-2 value map: Detections with higher semantic relevance to the text prompt are prioritized.
-%         \item The nearer detection graph nodes are to memory graph nodes, the higher their weight.
-%     \end{itemize}
-% \end{itemize}
+where $\mathbf{x}_i$ denotes the spatial position of the detection node, $s_i^{\mathrm{det}}$ is the raw detection confidence from the vision model, $s_i^{\mathrm{map}}$ is the aggregated value map score, $s_i^{\mathrm{mem}}$ is the aggregated memory relevance score, and $s_i^{\mathrm{fused}}$ is the final fused confidence score after multi-source detection fusion.
+
+Instead of relying solely on the raw detection confidence from a single vision model~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, or solely relying on thresholding the cosine similarity or memory~\cite{buschOneMapFind2025,gadreCoWsPastureBaselines2022}, the proposed multi-source detection fusion approach combines complementary evidence from multiple independent sources. This leads to higher confidence in true positive detections while reducing the likelihood of false positives, thereby enhancing the robustness and reliability of the object search system, by further increasing the confidence threshold.
+
 
 \subsection*{Relevance Filtering and Node Suppression}
 \label{sec:methods:fusion_strategy:relevance_filtering}
