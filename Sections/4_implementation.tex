@@ -2,80 +2,123 @@
 
 \chapter{Implementation}
 \label{ch:implementation}
-This section details the practical implementation of the proposed approach, covering the simulation and real-world setup, datasets, software stack, and hardware configuration.
+This section details the practical implementation of the proposed approach, including the simulation and real-world setup, datasets, software stack, and hardware configuration and the evaluation metrics used in the experiments.
 
 \section{Simulation Environment}
-\begin{itemize}
-    \item Evaluation of simulation frameworks for indoor semantic navigation:
-    \begin{itemize}
-        \item HabitatSim: Realistic Matterport3D-based environments with semantic annotations.
-        \item Isaac Sim / Isaac Lab: GPU-accelerated simulation, advanced physics, support for RTX ray tracing.
-        \item MuJoCo: High-speed physics engine, limited support for complex indoor scenes.
-        \item Ignition Gazebo: Modular simulator, ROS2 integration, good for real-robot transfer.
-    \end{itemize}
-    \item \dots
-\end{itemize}
+
+HabitatSim~\cite{savvaHabitatPlatformEmbodied2019} has been widely adopted in embodied AI research due to its efficient rendering pipeline and support for large-scale datasets such as Matterport3D and HM3D~\cite{changMatterport3DLearningRGBD2017}. However, for this work, \ac{IsaacSim} was selected as the primary simulation platform because it provides high-fidelity photorealistic rendering, accurate physics simulation, and realistic sensor models. These properties are essential for reducing the sim-to-real gap and for ensuring that the proposed semantic exploration and fusion strategies transfer reliably to real robotic systems~\cite{zhouBuildingAICPSNVIDIA2024}.
+
+All experiments are conducted in \ac{IsaacSim} version~5.0.0 by NVIDIA, leveraging its GPU-accelerated rendering, physically based simulation, and tight integration with ROS~2~\cite{salimpourSimtoRealTransferMobile2025}. The pre-installed \texttt{Carter} mobile robot is used as the navigation platform and is equipped with an RGB-D camera, a 2D LiDAR sensor, and wheel odometry. The robot is controlled through ROS~2 nodes communicating with IsaacSim via Fast DDS, enabling direct reuse of the navigation and perception stack employed in real-world deployment.
+
+IsaacSim further supports importing complex indoor environments derived from Matterport3D~\cite{changMatterport3DLearningRGBD2017}, which are used as evaluation scenes in this work. To accommodate the physical footprint of the mobile robot and to ensure stable navigation behavior, all Matterport3D scenes are uniformly scaled by 50\% in each spatial dimension.
+
+Alternative simulators such as HabitatSim~\cite{savvaHabitatPlatformEmbodied2019}, MuJoCo~\cite{zakkaMuJoCoPlayground2025}, and Ignition Gazebo~\cite{koenigDesignUseParadigms2004} were considered. However, these platforms either lack full physics-based mobile robot simulation, photorealistic sensor rendering, or seamless ROS~2 integration, which are required by the proposed system.
 
 \section{Dataset}
+\label{sec:dataset}
+
+Prior work such as VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, CoW~\cite{gadreCoWsPastureBaselines2022}, and OneMap~\cite{buschOneMapFind2025} has demonstrated the effectiveness of Matterport3D-derived indoor environments for semantic exploration and object-goal navigation tasks. This experimental protocol closely follows the Habitat Navigation Challenge~2023~\cite{puigHabitat30CoHabitat2023}, which evaluates semantic navigation methods on the HM3D dataset~\cite{ramakrishnanHabitatMatterport3DDataset2021}.
+
+Accordingly, this work employs Matterport3D-based indoor scenes~\cite{changMatterport3DLearningRGBD2017} as the primary source of evaluation environments. The dataset provides a diverse set of real-world indoor spaces with high-quality 3D reconstructions and semantic annotations, making it well suited for evaluating open-vocabulary semantic exploration methods.
+
+Due to the custom simulation setup in Isaac Sim, all baseline methods are re-implemented to ensure a fair comparison under consistent conditions, following the evaluation protocol of the Habitat Navigation Challenge~2023 (see Section~\ref{sec:implementation:evaluation})~\cite{puigHabitat30CoHabitat2023}. All evaluations are conducted on the HM3Dv2 validation split, which contains scenes with diverse layouts, object distributions, and levels of complexity.
+
+The following scenes from the Matterport3D dataset are used in this work:
 \begin{itemize}
-    \item Use of \textbf{Matterport3D} scenes for realistic indoor environments with ground truth 3D reconstruction and semantic annotations.
-    \item While the Habitat Navigation Challenge 2023 defines Success Rate (SR) and Success weighted by Path Length (SPL) as standard evaluation metrics within the Habitat-Sim environment, this work extends their application to Isaac Sim.
-Using Isaac Sim allows for a more physically accurate and sensor-consistent setup, incorporating realistic depth noise, lighting variation, and robot dynamics.
-To ensure comparability, SR and SPL are calculated following the official Habitat definitions, maintaining consistency with prior benchmarks while improving the realism of scene interaction and perception.
+    \item \texttt{00800-TEEsavR23oF}
+    \item \texttt{00813-svBbv1Pavdk}
+    \item \texttt{00814-p53SfW6mjZe}
+    \item \texttt{00824-Dd4bFSTQ8gi}
+    \item \texttt{00848-ziup5kvtCCR}
+    \item \texttt{00876-mv2HUxq3B53}
 \end{itemize}
+
+These scenes are also used by~\citeauthor{yokoyamaVLFMVisionLanguageFrontier2023}
+and~\citeauthor{buschOneMapFind2025}, enabling direct and reproducible comparison of
+experimental results.
 
 \section{Used Software}
-\begin{itemize}
-    \item ROS2-based implementation (Humble Hawksbill) as middleware.
-    \item Navigation stack: Navigation2 (Nav2) for frontier-based exploration and path planning.
-    \item DDS communication layer for distributed communication between detection, mapping, and control nodes.
-    \item Integration of promptable models (OpenFusion, BLIP-2, YOLO-E) for real-time zero-shot detection during exploration and exploitation.
-\end{itemize}
+
+The proposed semantic exploration and fusion framework is implemented using \ac{ROS2} (Humble Hawksbill) as the middleware for inter-node communication and system integration. \ac{ROS2} provides a modular, distributed architecture that allows perception, mapping, fusion, and exploration components to operate as independent nodes while remaining tightly synchronized~\cite{macenskiImpactROS22023}.
+
+For navigation, localization, and obstacle avoidance, the \ac{Nav2} stack is employed~\cite{macenskiDesksROSMaintainers2023}. In combination with \ac{SLAM}-Toolbox~\cite{macenskiSLAMToolboxSLAM2021}, this enables robust 2D mapping, localization, and path planning within the simulated indoor environments. Inter-process and inter-container communication is handled via FastDDS, enabling reliable distributed communication between the detection, mapping, and exploration workspaces.
+
+Open-vocabulary object detection is realized using YOLO-E~\cite{wangYOLOERealTimeSeeing2025}, implemented via the Ultralytics framework~\cite{sapkotaUltralyticsYOLOEvolution2025}. YOLO-E is integrated as a \ac{ROS2} lifecycle node, allowing controlled initialization, activation, and shutdown during exploration episodes, and supporting real-time inference for promptable object detection.
+
+Semantic similarity scoring between visual observations and user-defined text queries is performed using BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023}, accessed through the LAVIS library~\cite{liLAVISLibraryLanguageVision2022}. This \ac{VLM} provides cosine similarity scores that are used to populate the semantic value map and guide exploration toward semantically relevant regions.
+
+Persistent 3D semantic mapping and memory generation are handled by OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}, which is wrapped as a dedicated \ac{ROS2} node. OpenFusion incrementally fuses RGB-D observations into a global semantic point cloud representation, serving as the long-term memory component of the proposed system.
+
+% \begin{itemize}
+%     \item ROS2-based implementation (Humble Hawksbill) as middleware.
+%     \item Navigation stack: Navigation2 (Nav2) for frontier-based exploration and path planning.
+%     \item DDS communication layer for distributed communication between detection, mapping, and control nodes.
+%     \item Integration of promptable models (OpenFusion, BLIP-2, YOLO-E) for real-time zero-shot detection during exploration and exploitation.
+% \end{itemize}
 
 \section{Used Hardware}
+
+All experiments are conducted on a dedicated workstation designed to support computationally demanding simulation, perception, and vision-language inference workloads. The hardware configuration is summarized as follows:
 \begin{itemize}
-    \item \textbf{PC:}
+    \item \textbf{Workstation PC}
     \begin{itemize}
-        \item CPU: AMD Ryzen 9 5950X 16-Core Processor
-        \item Motherboard: B550 Gaming X V2
-        \item GPU: ASUS TUF Gaming RTX 4090 24GB OC Edition
-        \item RAM: 64GB Corsair Vengeance LPX DDR4
+        \item \textbf{CPU:} AMD Ryzen~9~5950X (16 cores, 32 threads)
+        \item \textbf{Motherboard:} Gigabyte B550 Gaming X V2
+        \item \textbf{GPU:} NVIDIA GeForce RTX~4090 (ASUS TUF Gaming OC, 24~GB VRAM)
+        \item \textbf{Memory:} 64~GB Corsair Vengeance LPX DDR4
     \end{itemize}
-    \item \textbf{Real Robot:} Configuration and components to be determined (TurtleBot Waffle).
 \end{itemize}
 
-\section{Evaluation Metrics}
-This section defines the evaluation metrics used throughout the experiments and assigns them to each corresponding experiment.
+The high core count of the CPU enables parallel execution of multiple \ac{ROS2}
+nodes, while the RTX~4090 GPU provides sufficient compute and memory capacity for
+photorealistic simulation in IsaacSim~\cite{zhouBuildingAICPSNVIDIA2024}, real-time open-vocabulary object detection~\cite{wangYOLOERealTimeSeeing2025}, and \ac{VLM}~\cite{liBLIP2BootstrappingLanguageImage2023,yamazakiOpenFusionRealtimeOpenVocabulary2023,zouSegmentEverythingEverywhere2023} inference. This setup ensures that all components of the proposed system can operate in real time without artificial bottlenecks introduced by hardware limitations.
 
-\textbf{Evaluation Pipeline Overview}
+\section{Evaluation Pipeline Overview}
 \label{sec:implementation:evaluation}
 
-\begin{itemize}
-    \item \textbf{Semantic Map Generation:} OpenFusion performs semantic segmentation of RGB-D input using the Matterport3D class list. Each segment is assigned its most likely class label from the detection model.
-    
-    \item \textbf{Manual Correction:} Incorrectly labeled segments can be manually relabeled within a dedicated ROS~2 node for semantic correction.
-    
-    \item \textbf{Data Storage:} OpenFusion saves both the 3D semantic pointcloud and the corresponding 2D SLAM map for each episode. All experiment data follows the \texttt{sage\_datasets/matterport\_isaac} directory structure.
-    
-    \item \textbf{Evaluation Initialization:} During evaluation, the saved maps and class definitions are loaded together with a list of target objects (e.g., ``bed'', ``toilet'', ``chair'').
-    
-    \item \textbf{Class Filtering and Centroid Extraction:} The evaluator node filters the semantic pointcloud according to the target classes and extracts the 3D centroids of matching clusters.
-    
-    \item \textbf{Path Planning:} The shortest-path planner computes the geodesic-optimal path from the robot’s current pose to the nearest centroid of the selected target class, with the Global Path Planner from ROS2 Navigation2.
-    
-    \item \textbf{Metric Computation:} The evaluator node compares the planned and executed trajectories to compute Success Rate (SR), Success weighted by Path Length (SPL), and Multi-Object Success Rate (MSR).
-    
-    \item \textbf{Result Storage:} Evaluation metrics, trajectories, and intermediate results are stored per episode for analysis and benchmarking.
-\end{itemize}
+To ensure comparability with prior work such as VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023} and OneMap~\cite{buschOneMapFind2025}, a dedicated evaluation pipeline is implemented that reproduces
+the standard object-goal navigation metrics used in embodied \ac{AI} benchmarks~\cite{puigHabitat30CoHabitat2023}. The pipeline operates on recorded navigation trajectories and semantic maps generated during each exploration episode and is illustrated in Figure~\ref{fig:evaluation_pipeline}.
+
+The primary evaluation metrics considered in this work are \ac{SR},\ac{SPL}, and \ac{MSR}~\cite{yokoyamaVLFMVisionLanguageFrontier2023,buschOneMapFind2025,PIGEONVLMDrivenObject}. Computing \ac{SPL} requires knowledge of the geodesic shortest path from the robot’s initial pose to the nearest instance of the target object. Since all experiments are conducted in a custom IsaacSim-based environment with uniformly scaled Matterport3D scenes, the built-in shortest-path planner provided by HabitatSim cannot be directly used.
+
+Instead, the evaluation pipeline is composed of two main stages:  
+(a) semantic environment reconstruction, and  
+(b) geodesic shortest-path computation based on the reconstructed map.
+
+As described in Chapter~\ref{ch:methods} Section~\ref{sec:methods:semantic_map_construction}, OpenFusion is employed to reconstruct a 3D semantic point cloud from the recorded RGB-D observations~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}. The Matterport3D category set is used as the closed set of semantic classes during evaluation~\cite{changMatterport3DLearningRGBD2017}. For each episode, the stored semantic point cloud is filtered according to the target object category specified by the evaluation protocol. All clusters corresponding to the target class are extracted, and their 3D centroids are computed as candidate goal locations.
+
+The geodesic shortest path is then computed from the robot’s initial pose to the nearest target
+centroid using the global planner of the \ac{ROS2} Navigation2 stack~\cite{macenskiDesksROSMaintainers2023}. Path planning is performed on the 2D occupancy grid generated by SLAM Toolbox~\cite{macenskiSLAMToolboxSLAM2021}, ensuring consistency with the localization and navigation setup used during exploration. The resulting shortest path is compared to the executed trajectory to compute \ac{SR}, \ac{SPL}, and \ac{MSR} for each episode.
+
+In contrast to the evaluation procedure of the Habitat Navigation Challenge~2023~\cite{puigHabitat30CoHabitat2023}, which relies on HabitatSim’s internal shortest-path computation, the proposed evaluation pipeline is fully compatible with IsaacSim and the employed \ac{ROS2}-based navigation stack. This enables a fair comparison against prior methods while preserving identical metric definitions and avoiding bias introduced by simulator-specific planners.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{Images/04_implementation/evaluation_pipeline.png}
-    \caption{Evaluation pipeline for benchmarking SR, SPL, and MSR in the semantic exploration framework.}
+    \caption{Evaluation pipeline used to compute \ac{SR}, \ac{SPL}, and \ac{MSR}. Recorded RGB-D observations are converted into a semantic point cloud using OpenFusion, target object clusters are extracted, and the geodesic shortest path is computed via the \ac{ROS2} Navigation2 global planner for metric evaluation~\cite{macenskiDesksROSMaintainers2023,puigHabitat30CoHabitat2023}.}
     \label{fig:evaluation_pipeline}
 \end{figure}
 
+\section{Evaluation Metrics}
+This section defines the evaluation metrics used to assess the performance of the proposed semantic exploration framework and to ensure comparability with prior work in object-goal navigation. The selected metrics jointly evaluate task success, navigation efficiency, multi-object search capability, and detection robustness, thereby capturing both the quality of semantic reasoning and the reliability of perception-driven decision making. Each metric is explicitly assigned to a corresponding experiment, such that the experimental results directly address and answer the research questions defined in Chapter~\ref{ch:introduction}.
+
 \subsection*{Experiment 1: Overall Performance Benchmarking}
+
+The first experiment establishes a performance baseline by comparing the proposed hybrid semantic exploration framework against state-of-the-art methods on standard object-goal navigation metrics. This experiment addresses \textbf{RQ1} by quantifying the overall effectiveness of the integrated exploration–memory approach in realistic indoor environments. Overall performance is evaluated with respect to, using IsaacSIm instead of HabitatSim. \ac{SR} and \ac{SPL} are computed assuming, the captured RGB Image containes the desired object, \ac{SPL} is computed based on the geodesic shortest path from the robot’s initial pose to the nearest instance of the target object. Unlike HabitatSim, sucess is not restricted to tolerance of pre-defined viewpoints, but any position where the object is visible in the RGB image.
+
+For the first experiment, 6 scenes as proposed in Section~\ref{sec:dataset} are used to evaluate the overall performance. Across all scenes, \ac{SR} and \ac{SPL} are computed. \ac{SR} is defined as the proportion of successful episodes in which the robot reaches the queried goal object, defined in Equation~\ref{eq:evaluation:sr},
+
+\begin{equation}
+    \mathrm{SR}
+    =
+    \frac{1}{N}
+    \sum_{i=1}^{N}
+    S_i
+    \label{eq:evaluation:sr}
+\end{equation}
+
+where \( S_i = 1 \) if the goal was reached in episode \( i \), and \( 0 \) otherwise; \( N \) is the total number of episodes. 
+
 
 \begin{itemize}
     \item Compare SR, SPL and MSR across different baseline methods and the proposed hybrid approach.
