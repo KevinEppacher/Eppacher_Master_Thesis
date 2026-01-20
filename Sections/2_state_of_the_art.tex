@@ -355,7 +355,7 @@ Both methods construct a 2.5D top-down grid map in which semantic information is
 cell level in the form of language-aligned visual embeddings, enabling open-vocabulary querying
 via image-text similarity.
 
-In both frameworks, incoming \ac{RGB-D} observations are processed by a vision-language model to
+In both frameworks, incoming RGB-D observations are processed by a vision-language model to
 extract dense semantic features. In \ac{OneMap}, global \ac{CLIP} image embeddings are projected
 into the map using camera intrinsics and extrinsics, while \ac{VLMaps} employs language-driven
 semantic segmentation (LSeg) to obtain dense per-pixel language embeddings~\cite{buschOneMapFind2025,huangVisualLanguageMaps2023}. These features are associated with corresponding grid cells in the top-down map by back-projecting depth pixels into 3D space and discretizing them onto the 2.5D grid representation.
@@ -384,7 +384,7 @@ accurate 3D object localization for downstream tasks such as manipulation or gra
 
 % Pigeon
 
-\citeauthor{PIGEONVLMDrivenObject}~\cite{PIGEONVLMDrivenObject} introduced \textit{PIGEON}, a vision-language-model-driven exploration framework that replaces
+\citeauthor{PIGEONVLMDrivenObject}~\cite{PIGEONVLMDrivenObject} introduced \textit{PIGEON}, a \ac{VLM}-driven exploration framework that replaces
 persistent dense semantic maps with an episodic, object-centric memory abstraction.
 Instead of maintaining a globally consistent semantic map, PIGEON represents the environment
 as a set of semantically meaningful \textit{\acp{PoI}}, corresponding to geometrically salient
@@ -623,8 +623,7 @@ presented \textit{OpenFusion}, a real-time open-vocabulary semantic mapping fram
 volumetric \ac{TSDF}-based reconstruction with region-level semantic perception from foundation models.
 OpenFusion processes incoming RGB images using \ac{SEEM}~\cite{zouSegmentEverythingEverywhere2023}, a
 promptable \ac{VLM} capable of zero-shot semantic segmentation based on text or image prompts.
-For each frame, \ac{SEEM} produces soft region confidence maps along with a semantic embedding vector
-for each region.
+For each frame, \ac{SEEM}~\cite{zouSegmentEverythingEverywhere2023} produces soft region confidence maps along with a semantic embedding vector for each region.
 
 Depth images and camera poses are fused into a volumetric \ac{TSDF} map to reconstruct scene geometry.
 Rather than directly storing semantic embeddings per voxel, OpenFusion associates voxels with
@@ -857,12 +856,11 @@ Foundation-model-based exploration methods mitigate this limitation by leveragin
 language models to guide exploration in a zero-shot manner toward semantically relevant regions.
 VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023} combines classical frontier-based exploration with
 semantic value maps derived from image-text similarity, enabling efficient zero-shot navigation.
-However, the semantic representation in VLFM is episodic and reset after each navigation episode, preventing
-long-term semantic reasoning or refinement over time.
+However, the semantic representation in VLFM is episodic and reset after each navigation episode, preventing long-term semantic reasoning or refinement over time.
+
 OneMap~\cite{buschOneMapFind2025} addresses this limitation by accumulating semantic embeddings in a
-probabilistic 2D map, enabling persistent semantic querying across exploration episodes.
-Nevertheless, OneMap lacks explicit object verification and relies solely on similarity thresholds,
-which can lead to false positives when visually similar objects are present.
+probabilistic 2D map, enabling persistent semantic querying across exploration episodes. While OneMap integrates semantic similarity maps with open-vocabulary object detectors through consensus filtering, the detector output acts as a hard gating mechanism. Consequently, object hypotheses are only formed when the detector confidence exceeds a predefined threshold, preventing the accumulation of weak but consistent semantic evidence across views when detector confidence remains low.
+
 
 DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025} improves robustness by introducing explicit object
 detection and an object-centric dual-map structure that separates short-term observations from

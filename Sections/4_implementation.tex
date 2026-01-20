@@ -100,13 +100,16 @@ In contrast to the evaluation procedure of the Habitat Navigation Challenge~2023
 \end{figure}
 
 \section{Evaluation Metrics}
+
 This section defines the evaluation metrics used to assess the performance of the proposed semantic exploration framework and to ensure comparability with prior work in object-goal navigation. The selected metrics jointly evaluate task success, navigation efficiency, multi-object search capability, and detection robustness, thereby capturing both the quality of semantic reasoning and the reliability of perception-driven decision making. Each metric is explicitly assigned to a corresponding experiment, such that the experimental results directly address and answer the research questions defined in Chapter~\ref{ch:introduction}.
 
 \subsection*{Experiment 1: Overall Performance Benchmarking}
 
-The first experiment establishes a performance baseline by comparing the proposed hybrid semantic exploration framework against state-of-the-art methods on standard object-goal navigation metrics. This experiment addresses \textbf{RQ1} by quantifying the overall effectiveness of the integrated exploration–memory approach in realistic indoor environments. Overall performance is evaluated with respect to, using IsaacSIm instead of HabitatSim. \ac{SR} and \ac{SPL} are computed assuming, the captured RGB Image containes the desired object, \ac{SPL} is computed based on the geodesic shortest path from the robot’s initial pose to the nearest instance of the target object. Unlike HabitatSim, sucess is not restricted to tolerance of pre-defined viewpoints, but any position where the object is visible in the RGB image.
+The first experiment establishes a performance baseline by comparing the proposed hybrid semantic exploration framework against state-of-the-art methods on standard object-goal navigation metrics. This experiment addresses \textbf{RQ1} by quantifying the overall effectiveness of the integrated exploration–memory approach in realistic indoor environments. Results are compared against representative baselines including \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, \ac{OneMap}~\cite{buschOneMapFind2025}, and Pigeon~\cite{PIGEONVLMDrivenObject}. Overall performance is evaluated using \ac{SR} and \ac{SPL}.
 
-For the first experiment, 6 scenes as proposed in Section~\ref{sec:dataset} are used to evaluate the overall performance. Across all scenes, \ac{SR} and \ac{SPL} are computed. \ac{SR} is defined as the proportion of successful episodes in which the robot reaches the queried goal object, defined in Equation~\ref{eq:evaluation:sr},
+In this experiment, an episode is defined as a single object-goal navigation task from the HM3Dv2 validation split, in which the robot is tasked with locating a specified target object within a Matterport3D-derived indoor scene~\cite{puigHabitat30CoHabitat2023}.
+
+The \ac{SR} metric measures the proportion of successful episodes in which the robot reaches the queried target object and is defined in Equation~\ref{eq:evaluation:sr},
 
 \begin{equation}
     \mathrm{SR}
@@ -117,93 +120,38 @@ For the first experiment, 6 scenes as proposed in Section~\ref{sec:dataset} are 
     \label{eq:evaluation:sr}
 \end{equation}
 
-where \( S_i = 1 \) if the goal was reached in episode \( i \), and \( 0 \) otherwise; \( N \) is the total number of episodes. 
+where \( S_i = 1 \) if the target object is successfully reached in episode \( i \), and \( 0 \) otherwise; \( N \) denotes the total number of evaluated episodes.
 
+Navigation efficiency is quantified using \ac{SPL}, which compares the geodesic shortest path to the actual path executed by the robot. The metric penalizes unnecessary detours and is defined only for successful episodes in Equation~\ref{eq:evaluation:spl},
 
-\begin{itemize}
-    \item Compare SR, SPL and MSR across different baseline methods and the proposed hybrid approach.
-    \item Baselines include:
-    \begin{itemize}
-        \item \ac{VLFM} \cite{shah2023vlm},
-        \item \ac{VLMaps} \cite{liu2023vlmaps},
-        \item \ac{OneMap} \cite{yang20233don},
-        \item \ac{Pigeon} \cite{qi2023pigeon}.
-    \end{itemize}
-    \item Every scene within the ObjectNav HM3D v2 validation split:
-    % \item (wget https://dl.fbaipublicfiles.com/habitat/data/datasets/objectnav/hm3d/v2/objectnav_hm3d_v2.zip)
-    \item Within this dataset, each scene contains a set of episodes with the starting pose and target object specified.
-    \item Due to the custom nature of the Isaac Sim environment, all baselines are re-implemented to ensure fair comparison under similar conditions.
-    \item Limitations with IsaacSims Environment setup:
-    \begin{itemize}
-        \item Starting Pose Variability
-        \item Amount of episodes per scene (5 per scene per floor with each 5 sub-episodes for multi-object search)
-        \item Different requirements:
-        \begin{itemize}
-            \item IsaacSim: Photorealistic rendering, physics simulation, realistic sensor noise
-            \item HabitatSim: Optimized for fast navigation and large-scale datasets
-        \end{itemize}
-    \end{itemize}
-\end{itemize}
+\begin{equation}
+    \mathrm{SPL}
+    =
+    \frac{1}{N}
+    \sum_{i=1}^{N}
+    S_i \cdot \frac{l_i}{\max(p_i, l_i)}
+    \label{eq:evaluation:spl}
+\end{equation}
 
-\begin{itemize}
-    \item \textbf{Success Rate (SR):}  
-    Measures the proportion of tasks in which the robot successfully reaches the queried single goal object. This metric reflects the system’s ability to semantically ground a user-specified object and to navigate toward it reliably. It serves as a fundamental indicator of task success and is essential for evaluating overall system effectiveness in basic search scenarios.
-    \textit{Evaluation against:} \ac{VLFM}, \ac{VLMaps}, \ac{OneMap}, \ac{GeFF}
+where \( l_i \) is the geodesic shortest path length to the target, \( p_i \) is the executed path length, and \( S_i \) indicates task success for episode \( i \).
 
-    \[
-    \text{SR} = \frac{1}{N} \sum_{i=1}^{N} S_i
-    \]
-    where \( S_i = 1 \) if the goal was reached in episode \( i \), and \( 0 \) otherwise; \( N \) is the total number of episodes.
+An episode is considered successful if the target object is visible in the RGB image captured by the robot’s onboard camera. The geodesic shortest path \( l_i \) is computed from the robot’s initial pose to the nearest instance of the target object. In contrast to HabitatSim-based evaluations, success is not restricted to predefined viewpoint tolerances, but instead includes any robot pose from which the target object is visually observable. All reported results were manually verified by inspecting the recorded RGB-D sequences for each episode. For every episode, the target object class is selected from the HM3Dv2 annotated category set~\cite{ramakrishnanHabitatMatterport3DDataset2021}.
 
+\subsection*{Experiment 2: Exploration-Memory Fusion Weighting}
 
-    \item \textbf{Path Efficiency (SPL):}  
-    SPL measures the efficiency of successful navigation by comparing the shortest possible path to the actual path taken. It is defined only for successful runs and penalizes overly long trajectories. In the context of semantic exploration, SPL provides insight into how effectively the system prioritizes relevant regions and minimizes detours when searching for target objects.
+This experiment investigates the influence of the exploration-memory fusion weighting on navigation performance and behavioral stability, addressing \textbf{RQ2}. By systematically varying the trade-off between live semantic exploration and persistent 3D semantic memory, the experiment evaluates how different fusion configurations affect task success, navigation efficiency, and long-horizon search behavior. The primary objective is to identify which weighting configuration yields the best balance between reactivity to newly observed information and stability derived from accumulated semantic memory.
 
-    \[
-    \text{SPL} = \frac{1}{N} \sum_{i=1}^{N} S_i \cdot \frac{l_i}{\max(p_i, l_i)}
-    \]
-    where \( S_i \) is the success indicator for episode \( i \), \( l_i \) is the shortest path length to the goal, \( p_i \) is the actual path length taken, and \( N \) is the total number of episodes.
+The fusion weighting parameter
+\[
+    \lambda_{\text{exploration}} \in [0,1]
+\]
+controls the relative influence of frontier-based exploration and memory-driven exploitation during graph node fusion. A value of $\lambda_{\text{exploration}} = 0$ corresponds to purely memory-driven behavior, while $\lambda_{\text{exploration}} = 1$ corresponds to purely exploration-driven behavior. The parameter is varied in increments of $0.2$. For each configuration, multiple navigation episodes are executed in the HM3Dv2 validation scenes, and performance is evaluated using \ac{SR} and \ac{SPL}.
 
-    \item \textbf{Multi-Object Success Rate (MSR):}  
-    The average number of successfully found objects per episode (\textit{Progress, PR}) captures partial success in multi-goal navigation. SPL is computed separately for each object in sequence, conditioned on the success of the previous one. This highlights the system’s ability to reuse semantic map information and improve efficiency across successive targets.
+In contrast to Experiment~1, this experiment employs multi-object search episodes in order to explicitly evaluate the benefit of persistent semantic memory across sequential object queries. Within a single episode, the robot is required to locate multiple target objects in sequence without resetting the environment or clearing the semantic map. This setting reflects realistic long-horizon search scenarios in which previously acquired semantic information can be reused to improve subsequent navigation decisions.
 
-    \[
-    \text{PR} = \frac{1}{N} \sum_{i=1}^{N} C_i
-    \]
-    where \( C_i \) is the number of successfully found objects in episode \( i \), and \( N \) is the total number of episodes.
+For evaluation, \ac{SR} and \ac{SPL} are computed per target object and aggregated across all episodes. Success for an individual target is defined identically to Experiment~1, and \ac{SPL} is computed using the geodesic shortest path from the robot’s pose at the start of each sub-task to the nearest instance of the corresponding target object.
 
-\end{itemize}
-
-\subsection*{Experiment 2: Exploration--Memory Fusion Weighting}
-
-\begin{itemize}
-
-    \item \textbf{Objective:}  
-    Evaluate how varying the weighting between live semantic exploration and persistent 3D semantic memory influences navigation performance, stability, and overall search efficiency in the hybrid framework.
-
-    \item \textbf{Fusion Parameter:}  
-    The trade-off between exploration and memory is controlled through a scalar weighting parameter
-    \[
-        \lambda_{\text{exploration}} \in [0, 1],
-    \]
-    which determines the relative influence of frontier-based exploration versus memory-driven exploitation during graph node fusion.
-
-    \item \textbf{Research Questions:}
-    \begin{itemize}
-        \item \textbf{RQ2a:} How do Success Rate (SR) and Success weighted by Path Length (SPL) vary as the weighting shifts from exploration (\(\lambda \rightarrow 1\)) toward memory-driven behavior (\(\lambda \rightarrow 0\))?
-        \item \textbf{RQ2b:} Which weighting configuration yields the best trade-off between reactivity (fast adaptation to newly observed information) and stability (robust semantic localization using persistent memory)?
-    \end{itemize}
-
-    \item \textbf{Evaluation Procedure:}
-    \begin{itemize}
-        \item Multiple runs are conducted across a range of \(\lambda_{\text{exploration}}\) values.
-        \item Performance is measured using the metrics SR and SPL.
-    \end{itemize}
-
-    \item \textbf{Expected Outcome:}  
-    This experiment highlights whether hybrid fusion provides measurable benefits over purely exploration-driven or purely memory-driven behavior, and identifies the optimal balance for multi-object search tasks.
-
-\end{itemize}
+For each episode, five target objects are selected from the HM3Dv2 annotated category set~\cite{ramakrishnanHabitatMatterport3DDataset2021} and queried in a fixed random order. A global random seed of 42 is used to ensure reproducibility across different fusion weight configurations. Similar to Experiment~1, six Matterport3D scenes from the HM3Dv2 validation split are used for evaluation, with two distinct starting positions per scene.
 
 \subsection*{Experiment 3: Sensitivity to Semantic Map Granularity}
 

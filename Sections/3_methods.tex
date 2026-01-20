@@ -10,7 +10,7 @@ exploitation in existing approaches.
 
 The proposed system integrates zero-shot semantic perception with frontier-based exploration and persistent 3D semantic mapping into a unified, closed-loop decision-making framework. Semantic evidence acquired during exploration is continuously fused into a long-term spatial memory, while exploration behavior is adaptively modulated based on the reliability of accumulated semantic beliefs.
 
-An overview of the system architecture is provided in Section~\ref{sec:methods:system_overview}, followed by detailed descriptions of the core components: semantic frontier exploration (Section~\ref{sec:methods:semantic_frontier}), promptable zero-shot detection (Section~\ref{sec:methods:zero_shot_detection}), persistent semantic 3D mapping (Section~\ref{sec:methods:persistent_mapping}), the multi-source fusion strategy governing semantic belief updates (Section~\ref{sec:methods:fusion_strategy}), and the behavior tree used to orchestrate semantic-guided exploration and navigation (Section~\ref{sec:methods:behavior_tree}).
+An overview of the system architecture is provided in Section~\ref{sec:methods:system_overview}, followed by detailed descriptions of the core components: semantic frontier exploration (Section~\ref{sec:methods:semantic_frontier}), promptable zero-shot detection (Section~\ref{sec:methods:open_vocabulary_detection}), persistent semantic 3D mapping (Section~\ref{sec:methods:persistent_mapping}), the multi-source fusion strategy governing semantic belief updates (Section~\ref{sec:methods:fusion_strategy}), and the behavior tree used to orchestrate semantic-guided exploration and navigation (Section~\ref{sec:methods:behavior_tree}).
 
 
 \section{System Overview}
@@ -1098,7 +1098,7 @@ s_i^{\mathrm{fused}}
 
 where $\mathbf{x}_i$ denotes the spatial position of the detection node, $s_i^{\mathrm{det}}$ is the raw detection confidence from the vision model, $s_i^{\mathrm{map}}$ is the aggregated value map score, $s_i^{\mathrm{mem}}$ is the aggregated memory relevance score, and $s_i^{\mathrm{fused}}$ is the final fused confidence score after multi-source detection fusion.
 
-Instead of relying solely on the raw detection confidence from a single vision model~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, or solely relying on thresholding the cosine similarity or memory~\cite{buschOneMapFind2025,gadreCoWsPastureBaselines2022}, the proposed multi-source detection fusion approach combines complementary evidence from multiple independent sources. This leads to higher confidence in true positive detections while reducing the likelihood of false positives, thereby enhancing the robustness and reliability of the object search system by enabling higher confidence thresholds.
+Instead of relying solely on the raw detection confidence from a single vision model~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, or solely relying on thresholding the cosine similarity or memory~\cite{gadreCoWsPastureBaselines2022}, the proposed multi-source detection fusion approach combines complementary evidence from multiple independent sources. This leads to higher confidence in true positive detections while reducing the likelihood of false positives, thereby enhancing the robustness and reliability of the object search system by enabling higher confidence thresholds.
 
 \subsection*{Relevance Filtering and Node Suppression}
 \label{sec:methods:fusion_strategy:relevance_filtering}

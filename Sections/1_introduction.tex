@@ -194,7 +194,7 @@ capabilities.
 
 methods such as SemExp~\cite{chaplotObjectGoalNavigation2020}, Pigeon~\cite{PIGEONVLMDrivenObject}, and GeFF~\cite{qiuLearningGeneralizableFeature2024} rely on offline training to construct persistent semantic representations. In the case of policy-learning approaches, this dependence on extensive training limits adaptability to previously seen environments and unseen object categories. Other approaches, such as \ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023} and \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, construct persistent open-vocabulary maps using pretrained foundation models but often require pre-mapping and lack real-time performance, which restricts their use in dynamic or large-scale settings.
 
-While \ac{OneMap}~\cite{buschOneMapFind2025} achieves real-time performance on embedded hardware such as the Jetson Orin AGX, its computational cost limits operation to approximately 2~Hz, which may be insufficient for high-speed navigation tasks. Additionally, noise in depth perception directly degrades the quality of the probabilistic feature map, reducing overall semantic reliability. The detector used in \ac{OneMap}~\cite{buschOneMapFind2025} relies solely on \ac{VLM}-based CLIP image-text similarity, which makes it prone to false positives under open-vocabulary conditions~\cite{zareianOpenVocabularyObjectDetection2021}. 
+While \ac{OneMap}~\cite{buschOneMapFind2025} demonstrates real-time onboard operation on embedded platforms such as the Jetson Orin AGX, its overall map update rate of approximately 2 Hz may limit applicability to high-speed navigation scenarios. Moreover, the quality of the probabilistic semantic belief map remains sensitive to depth sensing noise, as feature localization uncertainty increases with distance, directly affecting the spatial accuracy of semantic information. Although \ac{OneMap} incorporates a consensus-filtering mechanism combining CLIP-based similarity maps with open-vocabulary object detectors to mitigate false positives, its semantic reasoning ultimately relies on vision-language similarity, which remains inherently ambiguous under open-vocabulary conditions.
 
 \ac{GeFF}~\cite{qiuLearningGeneralizableFeature2024} provides a compact implicit 3D representation by distilling CLIP-aligned features into a neural field, enabling both geometric and semantic understanding. However, it requires pretraining on large-scale datasets such as ScanNet, limiting its direct generalization to arbitrary environments. RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025} introduces a hybrid 3D representation that combines voxel-based semantics with ray-based frontier expansion, offering real-time operation and high efficiency for open-set semantic search. Nevertheless, its computational complexity grows with environment size, and its planner-agnostic design prevents it from actively guiding exploration toward semantically relevant regions.
 
@@ -221,19 +221,19 @@ Table~\ref{tab:introduction:identified_gaps} summarizes the key limitations obse
     & No long-term fusion or recall; repeated exploration of known areas. \\
 
     \textbf{Offline training required}
-    & ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}, PONI~\cite{ramakrishnanPONIPotentialFunctions2022}, PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023}, \ac{SemExp}~\cite{chaplotObjectGoalNavigation2020}
+    & ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}, PONI~\cite{ramakrishnanPONIPotentialFunctions2022}, PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023}, SemExp~\cite{chaplotObjectGoalNavigation2020}
     & Heavy RL/supervised training; poor adaptability to new scenes. \\
 
-    \textbf{No balance between exploration and memory}
+    \textbf{No explicit exploration-memory trade-off}
     & \ac{OneMap}~\cite{buschOneMapFind2025}, RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025}, \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}
     & Either passive mapping or short-term exploration; inefficient search. \\
 
     \textbf{No zero-shot exploration}
-    & \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, CoW~\cite{gadreCoWsPastureBaselines2022}, LGX~\cite{dorbalaCanEmbodiedAgent2024}
+    & CoW~\cite{gadreCoWsPastureBaselines2022}, LGX~\cite{dorbalaCanEmbodiedAgent2024}
     & Detect novel objects but fail to explore unseen regions strategically. \\
 
     \textbf{Premapping needed}
-    & \ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}, \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, \ac{GeFF}~\cite{qiuLearningGeneralizableFeature2024}
+    & \ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}, \ac{GeFF}~\cite{qiuLearningGeneralizableFeature2024}
     & Depend on pre-recorded data; not suited for online autonomy. \\
 
     \textbf{Limited robustness}
@@ -241,7 +241,7 @@ Table~\ref{tab:introduction:identified_gaps} summarizes the key limitations obse
     & Closed-set categories; fragile under real-world variation. \\
 
     \textbf{Low real-world applicability}
-    & \ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}, \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, Pigeon~\cite{PIGEONVLMDrivenObject}
+    & \ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}, \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}
     & High GPU cost or simulation-only evaluation; limited deployability on mobile robots. \\
 
     \bottomrule
