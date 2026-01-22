@@ -2,13 +2,22 @@
 
 \chapter{Discussion and Results}
 \label{ch:results}
-This chapter presents the experimental evaluation of the proposed hybrid semantic exploration system. Each experiment targets a specific research question and is evaluated using quantitative performance metrics.
+Aim of this chapter is to anser the research questions posed in Chapter~\ref{ch:introduction} through a series of experiments designed to evaluate the performance of the proposed multi-object search framework. The first experiment establishes baseline performance against state-of-the-art methods, while subsequent experiments systematically analyze the impact of key design choices on navigation efficiency, mapping robustness, and detection reliability. Each experiment is structured to isolate specific variables, allowing for a clear assessment of their contributions to overall system performance.
 
 \section{Experiment 1: Benchmarking on Matterport Scenes}
+\label{sec:experiments:results:1}
 Evaluates baseline performance in multi-object search compared to state-of-the-art frameworks (OneMap, VLFM, Pigeon) using SR, SPL, and MSR.
 
-\section{Experiment 2: Impact of Exploration–Memory Weighting}
-Analyzes how varying the balance between live exploration and persistent memory influences navigation efficiency and task success.
+\section{Experiment 2: Impact of Exploration-Memory Weighting}
+\label{sec:experiments:results:2}
+
+% How does the interaction between live exploration and accumulated semantic
+% memory influence overall system performance?
+% The weighting factor between exploration and memory is varied during graph node fusion
+% to assess impacts on SR and SPL, identifying optimal trade-offs between reactivity and
+% exploitation.
+
+Analyzes how varying the balance between live exploration and persistent memory influences navigation efficiency and task success. The results in Figures~\ref{fig:results:rq2:sr} and~\ref{fig:results:rq2:spl} indicate the best trade off between reactivity to new observations and exploitation of accumulated knowledge occurs at an intermediate weighting factor, between 0.2 and 0.4 exploitation weight.
 
 \begin{figure}[h!]
 \centering
@@ -27,6 +36,8 @@ Analyzes how varying the balance between live exploration and persistent memory 
 \end{minipage}
 \end{figure}
 
+The failure mode breakdowns in Figures~\ref{fig:results:rq2:failure_mode_breakdown_across_scenes},~\ref{fig:results:rq2:exp_60_failure_mode}, and~\ref{fig:results:rq2:exp_40_failure_mode} further illustrate how different weighting strategies impact the types of failures encountered, highlighting the importance of balancing exploration and memory for robust performance. Overall, the biggest failure was due to misdetections with 11.6\% of all episodes for this experiment, followed by not seeing the target (7.8\%) and ignoring the target (4.4\%). The failure mode "Stopped at wrong object" was the biggest contributor to misdetections, accounting for 11.6\% of all episodes. This is due to the Noisy-OR fusion strategy being too lenient in accepting false positive detections from the object detector (see Section~\ref{sec:experiments:results:4} for more details). The second biggest failure mode was "Did not see target" with 4.9\% of this experiment, which can be attributed to the exploration strategy not adequately covering the environment or the object being occluded. The third biggest failure mode was "Ignored target" with 4.6\% of all episodes, likely due to strict detection thresholds or misclassifications by the object detector.
+
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ2/failure_mode_breakdown.png}
@@ -34,13 +45,151 @@ Analyzes how varying the balance between live exploration and persistent memory 
     \label{fig:results:rq2:failure_mode_breakdown_across_scenes}
 \end{figure}
 
+Figure~\ref{fig:results:rq2:exp_60_failure_mode} and Figure~\ref{fig:results:rq2:exp_40_failure_mode} show the failure mode breakdowns for the 0.6 and 0.4 exploitation weight settings, respectively. At 0.6 exploitation weight, the system tends to rely more on accumulated memory, which may lead to false hints, especially for early exploration stages. OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} uses the Top-k most relevant clusters from the semantic embedded dictionary, for zero-shot capability. However, this can lead to incorrect associations if the memory contains false positives, because the robot did not yet observe the target object. Conversely, at 0.4 exploitation weight, the system is more reactive to new observations, which can help correct false hints from memory, and if the robot’s current observations, eg semantic frontier nodes are low in confidence, the robot can still rely on memory to guide exploration, to the most promising areas.
+
+If exploitation is dominant, especially in early exploration stages, the robot may be guided to similar objects that are not the target, leading to misdetections. On the other hand, if exploration is too dominant, the robot may miss opportunities to leverage accumulated knowledge, resulting in inefficient search patterns and potentially overlooking the target object. Interestingly, both have a similar \ac{SPL} score for pure exploration (0.0 exploitation weight) and pure exploitation (1.0 exploitation weight), indicating that both extremes lead to inefficient navigation paths. \ac{SR} at pure exploration is slightly better than pure exploitation, likely because the robot can adapt to new observations, whereas pure exploitation may lead to following false hints from memory.
+
+\begin{figure}[h!]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\includegraphics[width=\textwidth]{Images/05_experimental_results/RQ2/exp_60_failure_mode_breakdown.png}
+\caption{TODO: Replace with relevant figure for Experiment 4}
+\label{fig:results:rq2:exp_60_failure_mode}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\includegraphics[width=\textwidth]{Images/05_experimental_results/RQ2/exp_40_failure_mode_breakdown.png}
+\caption{TODO: Replace with relevant figure for Experiment 4}
+\label{fig:results:rq2:exp_40_failure_mode}
+\end{minipage}
+\end{figure}
+
+For the best performance, an exploitation weight between 0.2 and 0.4 is recommended, as it provides a good balance between leveraging accumulated knowledge and adapting to new observations, leading to improved navigation efficiency and task success. For the following experiments, an exploitation weight of 0.4 is used as it provided the best overall performance in this experiment.
+
 \section{Experiment 3: Sensitivity to Semantic Map Granularity}
+\label{sec:experiments:results:3}
+
 Investigates how varying the semantic retrieval depth affects mapping robustness and overall navigation stability.
 
+\begin{figure}[h!]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\includegraphics[width=\textwidth]{Images/05_experimental_results/RQ3/sr.png}
+\caption{TODO: Replace with relevant figure for Experiment 3}
+\label{fig:results:rq3:sr}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\includegraphics[width=\textwidth]{Images/05_experimental_results/RQ3/spl.png}
+\caption{TODO: Replace with relevant figure for Experiment 3}
+\label{fig:results:rq3:spl}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\includegraphics[width=\textwidth]{Images/05_experimental_results/RQ3/exp_60_failure_mode_breakdown.png}
+\caption{TODO: Replace with relevant figure for Experiment 3}
+\label{fig:results:rq3:sr}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\includegraphics[width=\textwidth]{Images/05_experimental_results/RQ3/exp_0_failure_mode_breakdown.png}
+\caption{TODO: Replace with relevant figure for Experiment 3}
+\label{fig:results:rq3:spl}
+\end{minipage}
+\end{figure}
+
 \section{Experiment 4: Effect of Multi-Source Semantic Fusion}
+\label{sec:experiments:results:4}
+
 Examines how combining detection confidence, semantic similarity, and memory reliability improves detection robustness and reduces false positives.
 
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.25}
+    \begin{tabular}{l c c c c c c c c c}
+        \toprule
+        Fusion Variant & $\tau$ &
+        $P\,(\uparrow)$ &
+        $R\,(\uparrow)$ &
+        $F1\,(\uparrow)$ &
+        $FPR\,(\downarrow)$ &
+        TP & FP & FN & TN \\
+        \midrule
+        % ===== tau = 0.5 =====
+        Single source detection
+            & 0.5 & \textbf{0.910} & 0.909 & 0.910 & \textbf{0.364} & 528 & 52 & 53 & 91 \\
+        Detection + VLM score
+            & 0.5 & 0.903 & \textbf{0.928} & \textbf{0.915} & 0.406 & 539 & 58 & 42 & 85 \\
+        Detection + Memory
+            & 0.5 & 0.909 & 0.914 & 0.912 & 0.371 & 531 & 53 & 50 & 90 \\
+        Multi-source Fusion
+            & 0.5 & 0.906 & 0.917 & 0.912 & 0.385 & 533 & 55 & 48 & 88 \\
+        \midrule
+        % ===== tau = 0.6 =====
+        Single source detection
+            & 0.6 & \textbf{0.914} & 0.892 & 0.902 & \textbf{0.343} & 518 & 49 & 63 & 94 \\
+        Detection + VLM score
+            & 0.6 & 0.910 & \textbf{0.910} & \textbf{0.910} & 0.364 & 529 & 52 & 52 & 91 \\
+        Detection + Memory
+            & 0.6 & 0.910 & 0.905 & 0.908 & 0.364 & 526 & 52 & 55 & 91 \\
+        Multi-source Fusion
+            & 0.6 & 0.910 & \textbf{0.910} & \textbf{0.910} & 0.364 & 529 & 52 & 52 & 91 \\
+        \midrule
+        % ===== tau = 0.8 =====
+        Single source detection
+            & 0.8 & \textbf{0.941} & 0.632 & 0.756 & \textbf{0.161} & 367 & 23 & 214 & 120 \\
+        Detection + VLM score
+            & 0.8 & 0.912 & 0.876 & 0.894 & 0.343 & 509 & 49 & 72 & 94 \\
+        Detection + Memory
+            & 0.8 & 0.913 & 0.799 & 0.852 & 0.308 & 464 & 44 & 117 & 99 \\
+        Multi-source Fusion
+            & 0.8 & 0.913 & \textbf{0.888} & \textbf{0.901} & 0.343 & 516 & 49 & 65 & 94 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Detection performance metrics across fusion strategies and thresholds.
+    Arrows indicate whether higher ($\uparrow$) or lower ($\downarrow$) values are better.
+    Best values per threshold $\tau$ are highlighted in bold. TODO: Check numbers. May need to be updated.}
+\end{table}
+
+
+
+\begin{figure}[h!]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\includegraphics[width=\textwidth]{Images/05_experimental_results/RQ4/cm_multi_source_fusion.png}
+\caption{TODO: Replace with relevant figure for Experiment 4}
+\label{fig:results:rq4:cm_multi_source_fusion}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\includegraphics[width=\textwidth]{Images/05_experimental_results/RQ4/cm_detection_only.png}
+\caption{TODO: Replace with relevant figure for Experiment 4}
+\label{fig:results:rq4:cm_detection_only}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ4/pr_curve.png}
+    \caption{TODO: Replace with relevant figure for Experiment 4}
+    \label{fig:results:rq4:pr_curve}
+\end{figure}
+
 \section{Experiment 5: System Efficiency and Real-World Validation}
+\label{sec:experiments:results:5}
+
 Assesses runtime performance, resource utilization, and stability under real-world sensor noise during physical deployment.
 
 \newpage

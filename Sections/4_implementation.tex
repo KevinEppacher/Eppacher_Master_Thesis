@@ -2,15 +2,18 @@
 
 \chapter{Implementation}
 \label{ch:implementation}
-This section details the practical implementation of the proposed approach, including the simulation and real-world setup, datasets, software stack, and hardware configuration and the evaluation metrics used in the experiments.
+This chapter details the practical implementation of the proposed approach, including
+the simulation setup, datasets, software stack, hardware configuration, and the
+evaluation metrics used in the experiments.
 
 \section{Simulation Environment}
 
 HabitatSim~\cite{savvaHabitatPlatformEmbodied2019} has been widely adopted in embodied AI research due to its efficient rendering pipeline and support for large-scale datasets such as Matterport3D and HM3D~\cite{changMatterport3DLearningRGBD2017}. However, for this work, \ac{IsaacSim} was selected as the primary simulation platform because it provides high-fidelity photorealistic rendering, accurate physics simulation, and realistic sensor models. These properties are essential for reducing the sim-to-real gap and for ensuring that the proposed semantic exploration and fusion strategies transfer reliably to real robotic systems~\cite{zhouBuildingAICPSNVIDIA2024}.
 
-All experiments are conducted in \ac{IsaacSim} version~5.0.0 by NVIDIA, leveraging its GPU-accelerated rendering, physically based simulation, and tight integration with ROS~2~\cite{salimpourSimtoRealTransferMobile2025}. The pre-installed \texttt{Carter} mobile robot is used as the navigation platform and is equipped with an RGB-D camera, a 2D LiDAR sensor, and wheel odometry. The robot is controlled through ROS~2 nodes communicating with IsaacSim via Fast DDS, enabling direct reuse of the navigation and perception stack employed in real-world deployment.
+All experiments are conducted in \ac{IsaacSim} version~5.0.0 by NVIDIA, leveraging its GPU-accelerated rendering, physically based simulation, and tight integration with ROS~2~\cite{salimpourSimtoRealTransferMobile2025}. The pre-installed \texttt{Carter} mobile robot is used as the navigation platform and is equipped with an RGB-D camera, a 2D LiDAR sensor, and wheel odometry. The robot is controlled through ROS~2 nodes communicating with IsaacSim via Fast DDS~\cite{leeOptimizingROS22025}, enabling direct reuse of the navigation and perception stack employed in real-world deployment.
 
-IsaacSim further supports importing complex indoor environments derived from Matterport3D~\cite{changMatterport3DLearningRGBD2017}, which are used as evaluation scenes in this work. To accommodate the physical footprint of the mobile robot and to ensure stable navigation behavior, all Matterport3D scenes are uniformly scaled by 50\% in each spatial dimension.
+IsaacSim further supports importing complex indoor environments derived from Matterport3D~\cite{changMatterport3DLearningRGBD2017}, which are used as evaluation scenes in this work. To accommodate the physical footprint of the mobile robot and to ensure stable navigation behavior, all Matterport3D scenes are uniformly scaled by 50\% in each spatial dimension to accommodate the physical footprint
+of the mobile robot and ensure stable navigation behavior.
 
 Alternative simulators such as HabitatSim~\cite{savvaHabitatPlatformEmbodied2019}, MuJoCo~\cite{zakkaMuJoCoPlayground2025}, and Ignition Gazebo~\cite{koenigDesignUseParadigms2004} were considered. However, these platforms either lack full physics-based mobile robot simulation, photorealistic sensor rendering, or seamless ROS~2 integration, which are required by the proposed system.
 
@@ -49,23 +52,16 @@ Semantic similarity scoring between visual observations and user-defined text qu
 
 Persistent 3D semantic mapping and memory generation are handled by OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}, which is wrapped as a dedicated \ac{ROS2} node. OpenFusion incrementally fuses RGB-D observations into a global semantic point cloud representation, serving as the long-term memory component of the proposed system.
 
-% \begin{itemize}
-%     \item ROS2-based implementation (Humble Hawksbill) as middleware.
-%     \item Navigation stack: Navigation2 (Nav2) for frontier-based exploration and path planning.
-%     \item DDS communication layer for distributed communication between detection, mapping, and control nodes.
-%     \item Integration of promptable models (OpenFusion, BLIP-2, YOLO-E) for real-time zero-shot detection during exploration and exploitation.
-% \end{itemize}
-
 \section{Used Hardware}
 
 All experiments are conducted on a dedicated workstation designed to support computationally demanding simulation, perception, and vision-language inference workloads. The hardware configuration is summarized as follows:
 \begin{itemize}
-    \item \textbf{Workstation PC}
+    \item \textbf{PC Workstation:}
     \begin{itemize}
         \item \textbf{CPU:} AMD Ryzen~9~5950X (16 cores, 32 threads)
         \item \textbf{Motherboard:} Gigabyte B550 Gaming X V2
         \item \textbf{GPU:} NVIDIA GeForce RTX~4090 (ASUS TUF Gaming OC, 24~GB VRAM)
-        \item \textbf{Memory:} 64~GB Corsair Vengeance LPX DDR4
+        \item \textbf{RAM Memory:} 64~GB Corsair Vengeance LPX DDR4
     \end{itemize}
 \end{itemize}
 
@@ -79,7 +75,7 @@ photorealistic simulation in IsaacSim~\cite{zhouBuildingAICPSNVIDIA2024}, real-t
 To ensure comparability with prior work such as VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023} and OneMap~\cite{buschOneMapFind2025}, a dedicated evaluation pipeline is implemented that reproduces
 the standard object-goal navigation metrics used in embodied \ac{AI} benchmarks~\cite{puigHabitat30CoHabitat2023}. The pipeline operates on recorded navigation trajectories and semantic maps generated during each exploration episode and is illustrated in Figure~\ref{fig:evaluation_pipeline}.
 
-The primary evaluation metrics considered in this work are \ac{SR},\ac{SPL}, and \ac{MSR}~\cite{yokoyamaVLFMVisionLanguageFrontier2023,buschOneMapFind2025,PIGEONVLMDrivenObject}. Computing \ac{SPL} requires knowledge of the geodesic shortest path from the robot’s initial pose to the nearest instance of the target object. Since all experiments are conducted in a custom IsaacSim-based environment with uniformly scaled Matterport3D scenes, the built-in shortest-path planner provided by HabitatSim cannot be directly used.
+The primary evaluation metrics considered in this work are \ac{SR} and \ac{SPL}~\cite{yokoyamaVLFMVisionLanguageFrontier2023,buschOneMapFind2025,PIGEONVLMDrivenObject}. Computing \ac{SPL} requires knowledge of the geodesic shortest path from the robot’s initial pose to the nearest instance of the target object. Since all experiments are conducted in a custom IsaacSim-based environment with uniformly scaled Matterport3D scenes, the built-in shortest-path planner provided by HabitatSim cannot be directly used.
 
 Instead, the evaluation pipeline is composed of two main stages:  
 (a) semantic environment reconstruction, and  
@@ -88,24 +84,26 @@ Instead, the evaluation pipeline is composed of two main stages:
 As described in Chapter~\ref{ch:methods} Section~\ref{sec:methods:semantic_map_construction}, OpenFusion is employed to reconstruct a 3D semantic point cloud from the recorded RGB-D observations~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}. The Matterport3D category set is used as the closed set of semantic classes during evaluation~\cite{changMatterport3DLearningRGBD2017}. For each episode, the stored semantic point cloud is filtered according to the target object category specified by the evaluation protocol. All clusters corresponding to the target class are extracted, and their 3D centroids are computed as candidate goal locations.
 
 The geodesic shortest path is then computed from the robot’s initial pose to the nearest target
-centroid using the global planner of the \ac{ROS2} Navigation2 stack~\cite{macenskiDesksROSMaintainers2023}. Path planning is performed on the 2D occupancy grid generated by SLAM Toolbox~\cite{macenskiSLAMToolboxSLAM2021}, ensuring consistency with the localization and navigation setup used during exploration. The resulting shortest path is compared to the executed trajectory to compute \ac{SR}, \ac{SPL}, and \ac{MSR} for each episode.
+centroid using the global planner of the \ac{ROS2} Navigation2 stack~\cite{macenskiDesksROSMaintainers2023}. Path planning is performed on the 2D occupancy grid generated by SLAM Toolbox~\cite{macenskiSLAMToolboxSLAM2021}, ensuring consistency with the localization and navigation setup used during exploration. The resulting shortest path is compared to the executed trajectory to compute \ac{SR} and \ac{SPL} for each episode.
 
 In contrast to the evaluation procedure of the Habitat Navigation Challenge~2023~\cite{puigHabitat30CoHabitat2023}, which relies on HabitatSim’s internal shortest-path computation, the proposed evaluation pipeline is fully compatible with IsaacSim and the employed \ac{ROS2}-based navigation stack. This enables a fair comparison against prior methods while preserving identical metric definitions and avoiding bias introduced by simulator-specific planners.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{Images/04_implementation/evaluation_pipeline.png}
-    \caption{Evaluation pipeline used to compute \ac{SR}, \ac{SPL}, and \ac{MSR}. Recorded RGB-D observations are converted into a semantic point cloud using OpenFusion, target object clusters are extracted, and the geodesic shortest path is computed via the \ac{ROS2} Navigation2 global planner for metric evaluation~\cite{macenskiDesksROSMaintainers2023,puigHabitat30CoHabitat2023}.}
+    \caption{Evaluation pipeline used to compute \ac{SR} and \ac{SPL}. Recorded RGB-D observations are converted into a semantic point cloud using OpenFusion, target object clusters are extracted, and the geodesic shortest path is computed via the \ac{ROS2} Navigation2 global planner for metric evaluation~\cite{macenskiDesksROSMaintainers2023,puigHabitat30CoHabitat2023}.}
     \label{fig:evaluation_pipeline}
 \end{figure}
 
 \section{Evaluation Metrics}
+\label{sec:implementation:metrics}
 
 This section defines the evaluation metrics used to assess the performance of the proposed semantic exploration framework and to ensure comparability with prior work in object-goal navigation. The selected metrics jointly evaluate task success, navigation efficiency, multi-object search capability, and detection robustness, thereby capturing both the quality of semantic reasoning and the reliability of perception-driven decision making. Each metric is explicitly assigned to a corresponding experiment, such that the experimental results directly address and answer the research questions defined in Chapter~\ref{ch:introduction}.
 
 \subsection*{Experiment 1: Overall Performance Benchmarking}
+\label{sec:implementation:metrics:experiment1}
 
-The first experiment establishes a performance baseline by comparing the proposed hybrid semantic exploration framework against state-of-the-art methods on standard object-goal navigation metrics. This experiment addresses \textbf{RQ1} by quantifying the overall effectiveness of the integrated exploration–memory approach in realistic indoor environments. Results are compared against representative baselines including \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, \ac{OneMap}~\cite{buschOneMapFind2025}, and Pigeon~\cite{PIGEONVLMDrivenObject}. Overall performance is evaluated using \ac{SR} and \ac{SPL}.
+The first experiment establishes a performance baseline by comparing the proposed hybrid semantic exploration framework against state-of-the-art methods on standard object-goal navigation metrics. This experiment addresses \textbf{RQ1} by quantifying the overall effectiveness of the integrated exploration-memory approach in realistic indoor environments. Results are compared against representative baselines including \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, \ac{OneMap}~\cite{buschOneMapFind2025}, and Pigeon~\cite{PIGEONVLMDrivenObject}. Overall performance is evaluated using \ac{SR} and \ac{SPL}, which are widely adopted metrics in embodied \ac{AI} research~\cite{puigHabitat30CoHabitat2023} and adopted by comparable prior work~\cite{yokoyamaVLFMVisionLanguageFrontier2023,buschOneMapFind2025}.
 
 In this experiment, an episode is defined as a single object-goal navigation task from the HM3Dv2 validation split, in which the robot is tasked with locating a specified target object within a Matterport3D-derived indoor scene~\cite{puigHabitat30CoHabitat2023}.
 
@@ -135,9 +133,10 @@ Navigation efficiency is quantified using \ac{SPL}, which compares the geodesic 
 
 where \( l_i \) is the geodesic shortest path length to the target, \( p_i \) is the executed path length, and \( S_i \) indicates task success for episode \( i \).
 
-An episode is considered successful if the target object is visible in the RGB image captured by the robot’s onboard camera. The geodesic shortest path \( l_i \) is computed from the robot’s initial pose to the nearest instance of the target object. In contrast to HabitatSim-based evaluations, success is not restricted to predefined viewpoint tolerances, but instead includes any robot pose from which the target object is visually observable. All reported results were manually verified by inspecting the recorded RGB-D sequences for each episode. For every episode, the target object class is selected from the HM3Dv2 annotated category set~\cite{ramakrishnanHabitatMatterport3DDataset2021}.
+An episode is considered successful, if the target object is visible in the RGB image captured by the robot’s onboard camera, as verified through post-hoc inspection of the recorded observations. The geodesic shortest path \( l_i \) is computed from the robot’s initial pose to the nearest instance of the target object. In contrast to HabitatSim-based evaluations, success is not restricted to predefined viewpoint tolerances, but instead includes any robot pose from which the target object is visually observable. All reported results were manually verified to confirm correct target visibility and episode termination. For every episode, the target object class is selected from the HM3Dv2 annotated category set~\cite{ramakrishnanHabitatMatterport3DDataset2021}.
 
 \subsection*{Experiment 2: Exploration-Memory Fusion Weighting}
+\label{sec:implementation:metrics:experiment2}
 
 This experiment investigates the influence of the exploration-memory fusion weighting on navigation performance and behavioral stability, addressing \textbf{RQ2}. By systematically varying the trade-off between live semantic exploration and persistent 3D semantic memory, the experiment evaluates how different fusion configurations affect task success, navigation efficiency, and long-horizon search behavior. The primary objective is to identify which weighting configuration yields the best balance between reactivity to newly observed information and stability derived from accumulated semantic memory.
 
@@ -154,152 +153,115 @@ For evaluation, \ac{SR} and \ac{SPL} are computed per target object and aggregat
 For each episode, five target objects are selected from the HM3Dv2 annotated category set~\cite{ramakrishnanHabitatMatterport3DDataset2021} and queried in a fixed random order. A global random seed of 42 is used to ensure reproducibility across different fusion weight configurations. Similar to Experiment~1, six Matterport3D scenes from the HM3Dv2 validation split are used for evaluation, with two distinct starting positions per scene.
 
 \subsection*{Experiment 3: Sensitivity to Semantic Map Granularity}
+\label{sec:implementation:metrics:experiment3}
 
-\begin{itemize}
+This work employs a 3D semantic mapping approach based on OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}, which fuses \ac{VLM} embeddings into a volumetric representation. The granularity of semantic retrieval directly influences the quality of the resulting semantic map, with coarser retrievals introducing increased noise and ambiguity.
 
-    \item \textbf{Objective:}  
-    Investigate how the granularity of semantic retrieval in the 3D semantic mapper affects global map quality, navigation performance, and robustness of the hybrid exploration system.  
-    Specifically, this experiment evaluates whether dynamic rebalancing between exploration and memory can compensate for increased semantic noise introduced by higher retrieval depths.
+Granularity is controlled via the retrieval depth parameter top-k, which retrieves the top \( k \) most similar semantic regions from the \ac{SEEM}~\cite{zouSegmentEverythingEverywhere2023} embedding dictionary within OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}. Lower top-k values yield sharper but potentially incomplete semantic representations, while higher top-k values produce denser semantic maps at the cost of increased noise. The top-k parameter affects the semantic retrieval stage prior to fusion and thus indirectly controls the density of the semantic map~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}.
 
-    \item \textbf{Semantic Granularity Parameter:}  
-    Semantic map quality is controlled through the retrieval depth \emph{top-k}, which specifies how many semantic candidates (from the VLM embedding space) are fused into each voxel:
-    \begin{itemize}
-        \item Low \emph{top-k}: sharper but potentially incomplete semantics.  
-        \item High \emph{top-k}: denser semantics but increased noise and ambiguity.
-    \end{itemize}
+To counteract noise introduced by higher top-k values, the exploration weight \( \lambda_{\text{exploration}} \) is increased across experimental configurations, shifting trust from memory-based semantic cues toward frontier-driven exploration. The top-k parameter is systematically varied from 5 to 25 in increments of 5. For each configuration, multiple navigation episodes are executed in the HM3Dv2 validation scenes, and performance is evaluated using \ac{SR} and \ac{SPL}.
 
-    \item \textbf{Dynamic Fusion Weighting:}  
-    To counteract noise introduced by larger \emph{top-k} values, the exploration weight  
-    \[
-        \lambda_{\text{exploration}}
-    \]
-    is progressively increased, shifting trust toward frontier-driven exploration and away from noisy memory components.
+To isolate the effect of semantic granularity, the starting pose is fixed across all runs. For each top-k value, two weighting configurations are evaluated:
+(a) a memory-dominant setting (\( \lambda_{\text{exploration}} = 0 \)) and
+(b) an exploration-dominant configuration using the optimal weighting identified
+in Experiment~2 (RQ2). This design enables a direct assessment of whether increased reliance on frontier-based exploration can compensate for semantic noise introduced by higher top-k values.
 
-    \item \textbf{Research Questions:}
-    \begin{itemize}
-        \item \textbf{RQ4a:} How do Success Rate (SR) and Success weighted by Path Length (SPL) degrade as \emph{top-k} increases while relying primarily on memory?
-        \item \textbf{RQ4b:} Can adaptive rebalancing toward exploration (i.e., increasing \( \lambda_{\text{exploration}} \)) restore stable performance at higher \emph{top-k} values?
-    \end{itemize}
+\subsection*{Experiment 4: Evaluation of Multi-Source Detection Fusion}
+\label{sec:implementation:metrics:experiment4}
 
-    \item \textbf{Evaluation Metrics:}
-    \begin{itemize}
-        \item SR: ability to consistently reach goal objects under different semantic retrieval granularities.
-        \item SPL: navigation efficiency and the influence of semantic noise on path quality.
-        \item Additional qualitative assessment of map sharpness, cluster correctness, and temporal stability of semantic memory.
-    \end{itemize}
+This experiment evaluates the effectiveness of the multi-source semantic fusion strategy proposed in Chapter~\ref{ch:methods} Section~\ref{sec:methods:fusion_strategy} in fusing with a Noisy-OR model to improve detection robustness and suppress false positives during exploration, by increasing the detection thresholds, thereby addressing \textbf{RQ3}. Following prior work on open-vocabulary semantic perception, detection robustness is evaluated using confusion-matrix-based metrics such as precision, recall and F1-score, which are commonly employed to assess semantic retrieval quality in open-vocabulary settings~\cite{schwaigerOTASOpenvocabularyToken2025,wangYOLOERealTimeSeeing2025,redmonYouOnlyLook2016}
 
-    \item \textbf{Evaluation Procedure:}
-    \begin{itemize}
-        \item Generate semantic maps at multiple \emph{top-k} levels (e.g., 1, 3, 5, 10).
-        \item For each \emph{top-k}:
-        \begin{itemize}
-            \item Evaluate SR and SPL under memory-dominant settings.
-            \item Incrementally increase \( \lambda_{\text{exploration}} \) and re-evaluate.
-        \end{itemize}
-        \item Compare results to determine:
-        \begin{itemize}
-            \item tolerance of the system to semantic noise,
-            \item optimal balance between exploration and memory at different granularity levels,
-            \item interaction effects between map resolution and fusion stability.
-        \end{itemize}
-    \end{itemize}
+Each episode is manually annotated based on the executed navigation trajectory, the recorded YOLO-E detection overlay, and system logs, with a semantic outcome describing whether the robot correctly reached the target object, detected the wrong object, or observed the target but ignored it. Failure modes that are unrelated to the detection process itself, such as exploration timeouts, lack of motion, or insufficient proximity to the target, are excluded from
+the detection evaluation and treated as neutral cases.
 
-    \item \textbf{Purpose:}  
-    This experiment analyzes the coupling between semantic map granularity and the stability of exploration–memory fusion.  
-    Results reveal how coarse or noisy semantic retrieval affects overall navigation and whether adaptive weighting can maintain robust performance in open-vocabulary mapping environments.
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{
+        c|
+        >{\centering\arraybackslash}p{3.0cm}
+        >{\centering\arraybackslash}p{6.0cm}
+    }
+    \toprule
+    \textbf{Label}
+    & \textbf{Condition}
+    & \textbf{Interpretation} \\
+    \midrule
 
-\end{itemize}
+    TP
+    & Successful target reach with \( S \geq \tau \)
+    & Correct detection and navigation to the target object. \\
 
+    FP
+    & Object mismatch with \( S \geq \tau \)
+    & Robot selects a visually or semantically similar but incorrect object. \\
 
-\subsection*{Experiment 4: Robustness to False Positives Through Multi-Source Detection Fusion}
+    FN
+    & Threshold rejection
+    & Target object is observed but not selected because all detection scores remain below \( \tau \). \\
 
-\begin{itemize}
+    TN
+    & Exploration-related failure
+    & Episode outcome is determined by exploration or navigation limitations rather than detection quality. \\
 
-    \item \textbf{Objective:}  
-    Evaluate how combining multiple semantic evidence sources, instance detection (YOLO-E), semantic similarity scoring (BLIP-2), and memory confidence from the 3D semantic map, improves detection robustness and suppresses false positives during exploration.
+    \bottomrule
+    \end{tabular}
+    \caption{Abstracted confusion-matrix mapping for detection robustness evaluation.}
+\end{table}
 
-    \item \textbf{Fusion Model (Weighted Noisy-OR):}  
-    The proposed fusion strategy follows a weighted Noisy-OR formulation, in which independent semantic evidence sources jointly increase the probability of a valid detection:
-    \[
-        S_{\text{fusion}}
-        = 1 - (1 - w_d S_{\text{det}})
-            (1 - w_c S_{\text{map}})
-            (1 - w_m S_{\text{mem}}).
-    \]
-    Here,
-    \begin{itemize}
-        \item \( S_{\text{det}} \): YOLO-E detector confidence,
-        \item \( S_{\text{map}} \): similarity score from the value map (BLIP-2),
-        \item \( S_{\text{mem}} \): confidence from persistent 3D semantic memory,
-        \item \( w_d, w_c, w_m \): weights defining the contribution of each source.
-    \end{itemize}
-    This formulation ensures that high confidence from any source can compensate for uncertainty in others while suppressing spurious detections that lack multi-source agreement.
+Four fusion strategies are evaluated: (a) detector-only (YOLO-E), (b) detector + semantic similarity (BLIP-2), (c) detector + memory confidence, and (d) the full Noisy-OR fusion strategy combining all three sources. All fusion strategies must contain the detector source, as the other components are complementary and cannot independently trigger detections, only reinforce them. Across each fusion strategy, all experiments are executed using a fixed detection threshold of \( \tau = 0.8 \), which defines the robot’s online decision-making behaviour and serves as the basis for manual annotation. The resulting detection confidences are then reused in a post-hoc evaluation to compute confusion matrices and classification metrics for additional thresholds \( \tau = 0.5 \) and \( 0.6 \).
 
-    \item \textbf{Research Questions:}
-    \begin{itemize}
-        \item \textbf{RQ3a:} How does overall task performance (SR) change under different weight configurations \( (w_d, w_c, w_m) \)?
-        \item \textbf{RQ3b:} How do precision, recall, F1-score, and false-positive rate vary across:
-        \begin{itemize}
-            \item COCO-style closed-set categories,
-            \item open-vocabulary object classes,
-            \item zero-shot categories not seen during detector training?
-        \end{itemize}
-        \item \textbf{RQ3c:} What drawbacks arise when detection thresholds are increased or when a single evidence source is overemphasised  
-        (e.g., memory bias, detector hallucination, missed low-confidence but valid detections)?
-    \end{itemize}
+Precision in this context measures the proportion of correct detections among all positive detections made by the robot and is defined in Equation~\ref{eq:evaluation:precision}:
 
-    \item \textbf{Evaluation Metrics:}
-    Robustness is quantified using classification metrics derived from the confusion matrix:
-    \[
-        \text{Precision} = \frac{TP}{TP + FP}, \qquad
-        \text{Recall} = \frac{TP}{TP + FN},
-    \]
-    \[
-        \text{F1} = 2 \cdot 
-        \frac{\text{Precision} \cdot \text{Recall}}
-             {\text{Precision} + \text{Recall}},
-    \]
-    \[
-        \text{FPR} = \frac{FP}{FP + TN}.
-    \]
-    Additionally, downstream Success Rate (SR) is recorded for each weight triplet \( (w_d, w_c, w_m) \) to evaluate the effect of false positives on the overall navigation pipeline.
+\begin{equation}
+    \mathrm{Precision}
+    =
+    \frac{TP}{TP + FP}
+    \label{eq:evaluation:precision}
+\end{equation}
 
-    \item \textbf{Evaluation Procedure:}
-    \begin{itemize}
-        \item Evaluate a range of weight combinations \( (w_d, w_c, w_m) \) spanning detector-dominant, map-dominant, memory-dominant, and balanced regimes, whereas the detection source is mandatory (i.e., \( w_d > 0 \)).
-        \item Compare against single-source baselines:
-        \begin{itemize}
-            \item detector-only (YOLO-E),
-            \item similarity-only (BLIP-2),
-            \item memory-only retrieval,
-            \item the full Noisy-OR fusion strategy.
-        \end{itemize}
-        \item Analyse outcomes under:
-        \begin{itemize}
-            \item closed-set (COCO) categories,
-            \item open-vocabulary targets,
-            \item zero-shot targets.
-        \end{itemize}
-        \item Quantify how false positives propagate into:
-        \begin{itemize}
-            \item erroneous graph node generation,
-            \item unnecessary navigation actions,
-            \item degraded SR and SPL.
-        \end{itemize}
-    \end{itemize}
+where \( TP \) denotes true positives, meaning the object was correctly detected, and \( FP \) denotes false positives, meaning an incorrect object was detected. Recall measures the proportion of actual target objects that were correctly detected and is defined in Equation~\ref{eq:evaluation:recall},
 
-    \item \textbf{Purpose:}  
-    This experiment evaluates whether multi-source, Noisy-OR-based semantic fusion provides a measurable improvement in detection robustness and false-positive suppression compared to single-source methods, thereby enabling more reliable semantic exploration in open-vocabulary indoor environments.
+\begin{equation}
+    \mathrm{Recall}
+    =
+    \frac{TP}{TP + FN}
+    \label{eq:evaluation:recall}
+\end{equation}
 
-\end{itemize}
+where \( FN \) denotes false negatives, meaning the target object was observed but not selected
+because all detection confidences remained below the decision threshold \( \tau \). Importantly, false negatives in this experiment exclusively arise from conservative thresholding decisions and do not indicate a failure of the perception pipeline to observe the target object. The F1-score is the harmonic mean of precision and recall, providing a balanced measure of detection performance, and is defined in Equation~\ref{eq:evaluation:f1},
 
+\begin{equation}
+    \mathrm{F1}
+    =
+    2 \cdot
+    \frac{\mathrm{Precision} \cdot \mathrm{Recall}}
+         {\mathrm{Precision} + \mathrm{Recall}}
+    \label{eq:evaluation:f1}
+\end{equation}
 
+The \ac{FPR} quantifies the proportion of incorrect detections among all negative cases and is defined in Equation~\ref{eq:evaluation:fpr},
 
-\subsection*{Experiment 5: Real-World System Performance:}  
-\begin{itemize}
-    \item SR, MSR and SP for search performance under real-world conditions.
-    \item System metrics: CPU/GPU usage, FPS, inference latency.
-\end{itemize}
-\textit{Objective: Assess robustness, efficiency, and deployability in physical environments.}
+\begin{equation}
+    \mathrm{FPR}
+    =
+    \frac{FP}{FP + TN}
+    \label{eq:evaluation:fpr}
+\end{equation}
+
+where \( TN \) denotes true negatives, corresponding to episodes in which no detection decision
+is evaluated due to exploration-related failure modes or insufficient observability. \( TN \) corresponds to neutral episodes in which no detection decision was made and is included solely for the computation of the false-positive rate.
+
+The confusion matrix for single-source and multi-source fusion is primarily reported for the operational threshold \( \tau = 0.8 \), which was empirically selected to provide a balanced trade-off between sensitivity and specificity in preliminary tests. In addition, precision–recall curves are generated by sweeping the decision threshold \( \tau \) from 0 to 1 in increments of 0.01 using the same annotated episodes. This threshold sweep enables an analysis of detection robustness across different operating points without requiring additional experimental runs.
+
+\subsection*{Experiment 5: Real-World System Performance}
+
+This experiment defines a deployment-oriented evaluation protocol for assessing the real-world performance of the proposed semantic exploration framework on a physical mobile robot platform. The objective is to characterize system robustness, efficiency, and deployability in realistic indoor environments, thereby addressing \textbf{RQ5}.
+
+The evaluation focuses on monitoring computational resource utilization, including CPU, GPU, and RAM usage, as well as inference latency and effective frame rate (FPS) of the perception and mapping components during live operation. Each component’s computational load is logged to enable fine-grained performance analysis.
+
+In addition, the semantic map voxel resolution in OpenFusion is systematically reduced to analyze the trade-off between GPU memory consumption and runtime performance. This analysis is intended to assess the feasibility of deploying the system on resource-constrained robotic platforms.
 
 \newpage
