@@ -8,72 +8,6 @@ Aim of this chapter is to anser the research questions posed in Chapter~\ref{ch:
 \label{sec:experiments:results:1}
 Evaluates baseline performance in multi-object search compared to state-of-the-art frameworks (OneMap, VLFM, Pigeon) using SR, SPL, and MSR.
 
-
-\section{Experiment 2: Impact of Exploration-Memory Weighting}
-\label{sec:experiments:results:2}
-
-This experiment directly addresses \textbf{RQ2} by analyzing how the balance between live exploration and accumulated semantic memory influences navigation performance and failure characteristics. The results in Figures~\ref{fig:results:rq2:sr} and~\ref{fig:results:rq2:spl} indicate that the optimal trade-off between reactivity to new observations and exploitation of accumulated knowledge occurs at an intermediate exploitation weight, between 0.2 and 0.4.
-
-\begin{figure}[h!]
-    \centering
-    \begin{minipage}[t]{0.48\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ2/sr.png}
-        \subcaption{\ac{SR}}
-        \label{fig:results:rq2:sr}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{0.48\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ2/spl.png}
-        \subcaption{\ac{SPL}}
-        \label{fig:results:rq2:spl}
-    \end{minipage}
-
-    \caption{Navigation performance as a function of the exploration-memory weighting in Experiment~2. 
-    SR captures task success, while SPL reflects navigation efficiency conditioned on success.}
-    \label{fig:results:rq2:performance}
-\end{figure}
-
-\begin{table}[h!]
-    \centering
-    \footnotesize
-    \renewcommand{\arraystretch}{1.1}
-    \begin{tabular}{l c}
-        \toprule
-        \textbf{Statistic} & \textbf{Value} \\
-        \midrule
-        Total episodes evaluated & 12 \\
-        Multi-object episodes & 12 \\
-        Total object queries (prompts) & 345 \\
-        \bottomrule
-    \end{tabular}
-    \caption{Evaluation scale for Experiment~2 (Exploration--Memory Weighting).}
-    \label{tab:rq2:evaluation_scale}
-\end{table}
-
-
-To contextualize the observed performance trends, the failure mode distributions
-summarized in Figure~\ref{fig:results:rq2:failure_mode_breakdown_across_scenes}
-and the comparative breakdowns in
-Figure~\ref{fig:results:rq2:failure_mode_comparison}
-illustrate how different exploration–memory weighting strategies affect the types
-of failures encountered.
-
-Across all configurations, misdetection is the dominant failure mode, accounting
-for 11.6\% of all evaluated episodes. This is followed by failures caused by not
-observing the target object (4.9\%) and by ignoring the target despite successful
-observation (4.6\%).
-
-The prevalence of misdetections is primarily driven by the failure mode
-\texttt{Stopped at wrong object}, indicating premature commitment to visually or
-semantically similar distractors. As discussed in
-Section~\ref{sec:experiments:results:4}, this behavior is a direct consequence of
-the Noisy-OR fusion strategy, which is intentionally permissive when aggregating
-weak but consistent detection evidence and is therefore susceptible to false
-positives.
-
-Failures categorized as \texttt{Did not see target} are mainly attribut
 \section{Experiment 2: Impact of Exploration-Memory Weighting}
 \label{sec:experiments:results:2}
 
@@ -104,7 +38,7 @@ To contextualize the observed performance trends, the failure mode distributions
 summarized in Figure~\ref{fig:results:rq2:failure_mode_breakdown_across_scenes}
 and the comparative breakdowns in
 Figure~\ref{fig:results:rq2:failure_mode_comparison}
-illustrate how different exploration–memory weighting strategies affect the types
+illustrate how different exploration-memory weighting strategies affect the types
 of failures encountered.
 
 Across all configurations, misdetection is the dominant failure mode, accounting
@@ -121,7 +55,6 @@ whereas \texttt{Ignored target} failures arise from conservative thresholding or
 semantic ambiguity that suppresses confident target selection despite visual
 availability.
 
-
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ2/failure_mode_breakdown.png}
@@ -129,7 +62,7 @@ availability.
     \label{fig:results:rq2:failure_mode_breakdown_across_scenes}
 \end{figure}
 
-Figures~\ref{fig:results:rq2:exp_60_failure_mode} and~\ref{fig:results:rq2:exp_40_failure_mode} illustrate the failure mode distributions for exploitation weights of 0.6 and 0.4, respectively. At an exploitation weight of 0.6, the system relies more heavily on accumulated semantic memory, which can introduce misleading memory cues during early exploration stages. OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} retrieves the top-$k$ most relevant semantic clusters from its embedding dictionary to enable zero-shot generalization; however, if the semantic memory contains false positives, these cues may guide the robot toward visually or semantically similar but incorrect objects before sufficient direct observations are available.
+Figures~\ref{fig:results:rq2:exp_60_failure_mode} and~\ref{fig:results:rq2:exp_40_failure_mode} illustrate the failure mode distributions for exploitation weights of 0.6 and 0.4, respectively. At an exploitation weight of 0.6, the system relies more on semantic memory, which can introduce misleading memory cues during early exploration stages. OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} retrieves the top-$k$ most relevant semantic clusters from its embedding dictionary to enable zero-shot generalization. However, if the semantic memory contains false positives, these cues may guide the robot toward visually or semantically similar but incorrect objects before sufficient direct observations are available.
 
 In contrast, at an exploitation weight of 0.4, the system remains more responsive to newly acquired observations. This increased reactivity enables the correction of spurious semantic hypotheses stored in memory, while still allowing accumulated knowledge to guide exploration toward promising regions when semantic frontier nodes exhibit low confidence. As a result, the balance between exploration and memory exploitation reduces premature commitment to incorrect targets.
 
@@ -149,7 +82,7 @@ In contrast, at an exploitation weight of 0.4, the system remains more responsiv
         \label{fig:results:rq2:exp_40_failure_mode}
     \end{minipage}
 
-    \caption{Failure mode breakdowns for two exploration--memory weighting configurations in Experiment~2. 
+    \caption{Failure mode breakdowns for two exploration-memory weighting configurations in Experiment~2. 
     A higher exploitation weight increases susceptibility to misdetections due to premature reliance on semantic memory, 
     while a more balanced weighting reduces false positives by incorporating corrective exploratory evidence.}
     \label{fig:results:rq2:failure_mode_comparison}
@@ -157,7 +90,9 @@ In contrast, at an exploitation weight of 0.4, the system remains more responsiv
 
 At the extremes, pure exploration (0.0 exploitation weight) and pure exploitation (1.0 exploitation weight) exhibit similar \ac{SPL} scores, indicating that both strategies lead to inefficient navigation behavior. While pure exploration allows the robot to adapt to newly observed evidence, it fails to leverage previously acquired semantic knowledge. Conversely, pure exploitation overly commits to stored memory cues, which may include false positives that cannot be corrected without sufficient exploratory evidence. The slightly higher \ac{SR} observed for pure exploration compared to pure exploitation further suggests that adaptability to new observations is preferable to rigid reliance on semantic memory.
 
-Overall, these results demonstrate that the interaction between exploration and memory is inherently non-linear. Semantic memory is essential for efficient long-horizon search; however, excessive reliance on memory leads to premature commitment to noisy or incomplete hypotheses that degrade performance. An exploitation weight between 0.2 and 0.4 provides the most robust balance, yielding improved navigation efficiency and task success. Consequently, an exploitation weight of 0.4 is selected for all subsequent experiments, as it achieves the best overall performance in this study.
+Overall, these results demonstrate that the interaction between exploration and memory is inherently non-linear. Semantic memory is essential for efficient long-horizon search. However, excessive reliance on memory leads to premature commitment to noisy or incomplete hypotheses that degrade performance. Furthermore, if no cues are in the semantic memory, the robot effectively operates in a blind exploration mode, by exploring randomly, resulting in inefficient navigation.
+
+An exploitation weight between 0.2 and 0.4 provides the most robust balance, yielding improved navigation efficiency and task success. Consequently, an exploitation weight of 0.4 is selected for all subsequent experiments, as it achieves the best overall performance in this study.
 
 \section{Experiment 3: Sensitivity to Semantic Map Granularity}
 \label{sec:experiments:results:3}

@@ -138,19 +138,59 @@ An episode is considered successful, if the target object is visible in the RGB 
 \subsection*{Experiment 2: Exploration-Memory Fusion Weighting}
 \label{sec:implementation:metrics:experiment2}
 
-This experiment investigates the influence of the exploration-memory fusion weighting on navigation performance and behavioral stability, addressing \textbf{RQ2}. By systematically varying the trade-off between live semantic exploration and persistent 3D semantic memory, the experiment evaluates how different fusion configurations affect task success, navigation efficiency, and long-horizon search behavior. The primary objective is to identify which weighting configuration yields the best balance between reactivity to newly observed information and stability derived from accumulated semantic memory.
+This experiment is designed to address \textbf{RQ2} by systematically analyzing how the balance between live semantic exploration and persistent 3D semantic memory influences navigation performance and behavioral stability. By varying the relative contribution of exploration-driven and memory-driven cues during graph node fusion, the experiment evaluates the impact of different fusion configurations on task success, navigation efficiency, and long-horizon search behavior. The primary objective is to identify a weighting configuration that provides an optimal trade-off between reactivity to newly observed information and stability derived from accumulated semantic memory.
 
-The fusion weighting parameter
+The fusion behavior is controlled by the exploration-memory weighting parameter
 \[
-    \lambda_{\text{exploration}} \in [0,1]
+    \lambda_{\text{exploration}} \in [0,1],
 \]
-controls the relative influence of frontier-based exploration and memory-driven exploitation during graph node fusion. A value of $\lambda_{\text{exploration}} = 0$ corresponds to purely memory-driven behavior, while $\lambda_{\text{exploration}} = 1$ corresponds to purely exploration-driven behavior. The parameter is varied in increments of $0.2$. For each configuration, multiple navigation episodes are executed in the HM3Dv2 validation scenes, and performance is evaluated using \ac{SR} and \ac{SPL}.
+which determines the relative influence of frontier-based exploration and memory-driven exploitation during graph node fusion. A value of $\lambda_{\text{exploration}} = 0$ corresponds to purely memory-driven behavior, while $\lambda_{\text{exploration}} = 1$ corresponds to purely exploration-driven behavior. The parameter is varied in discrete increments of $0.2$. For each weighting configuration, multiple navigation episodes are executed, and performance is evaluated using the standard object-goal navigation metrics \ac{SR} and \ac{SPL} (see Equation~\ref{eq:evaluation:sr} and Equation~\ref{eq:evaluation:spl}).
 
-In contrast to Experiment~1, this experiment employs multi-object search episodes in order to explicitly evaluate the benefit of persistent semantic memory across sequential object queries. Within a single episode, the robot is required to locate multiple target objects in sequence without resetting the environment or clearing the semantic map. This setting reflects realistic long-horizon search scenarios in which previously acquired semantic information can be reused to improve subsequent navigation decisions.
+To ensure consistency and reproducibility across configurations, Experiment~2 follows a fixed hierarchical evaluation protocol. Each episode is defined by a unique combination of scene, starting position, and exploration-memory weighting, and consists of multiple sequential object queries executed on a persistent semantic map without resetting the environment or clearing the accumulated memory.
 
-For evaluation, \ac{SR} and \ac{SPL} are computed per target object and aggregated across all episodes. Success for an individual target is defined identically to Experiment~1, and \ac{SPL} is computed using the geodesic shortest path from the robot’s pose at the start of each sub-task to the nearest instance of the corresponding target object.
+\begin{table}[h!]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{l c}
+        \toprule
+        \textbf{Evaluation Dimension} & \textbf{Configuration} \\
+        \midrule
+        Scenes & 6 Matterport3D scenes \\
+        Starting positions per scene & 2 \\
+        Episodes per starting position & 5 (one per weighting) \\
+        Prompts per multi-object episode & 5 object queries \\
+        Exploration-memory weight & Unique value per episode \\
+        Semantic map reset & No (persistent across prompts) \\
+        \bottomrule
+    \end{tabular}
+    \caption{Hierarchical evaluation structure used in Experiment~2. Each episode corresponds to a distinct exploration-memory weighting configuration and contains multiple sequential object queries executed on a persistent semantic map.}
+    \label{tab:rq2:evaluation_structure}
+\end{table}
 
-For each episode, five target objects are selected from the HM3Dv2 annotated category set~\cite{ramakrishnanHabitatMatterport3DDataset2021} and queried in a fixed random order. A global random seed of 42 is used to ensure reproducibility across different fusion weight configurations. Similar to Experiment~1, six Matterport3D scenes from the HM3Dv2 validation split are used for evaluation, with two distinct starting positions per scene.
+The resulting evaluation scale for this experiment is summarized in Table~\ref{tab:rq2:evaluation_scale}. In total, 12 multi-object episodes are executed, yielding 345 individual object-level queries across all weighting configurations.
+
+\begin{table}[h!]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabular}{l c}
+        \toprule
+        \textbf{Statistic} & \textbf{Value} \\
+        \midrule
+        Multi-object episodes & 12 \\
+        Total object queries (prompts) & 345 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Evaluation scale for Experiment~2 (Exploration-Memory Fusion Weighting).}
+    \label{tab:rq2:evaluation_scale}
+\end{table}
+
+In contrast to Experiment~1, which evaluates single-object navigation episodes, Experiment~2 employs multi-object search episodes to explicitly assess the benefit of persistent semantic memory across sequential object queries. Within a single episode, the robot is required to locate multiple target objects in sequence while maintaining a shared semantic map, reflecting realistic long-horizon search scenarios in which previously acquired semantic information can be reused to inform subsequent navigation decisions.
+
+For evaluation, \ac{SR} and \ac{SPL} are computed on a per-target basis and subsequently aggregated across all episodes. Success for an individual target is defined identically to Experiment~1, and \ac{SPL} is computed using the geodesic shortest path from the robot’s pose at the start of each sub-task to the nearest instance of the corresponding target object.
+
+For each episode, five target objects are sampled from the HM3Dv2 annotated category set~\cite{ramakrishnanHabitatMatterport3DDataset2021} and queried in a fixed random order. A global random seed of 42 is used to ensure reproducibility across different exploration-memory weighting configurations. All evaluations are conducted on the HM3Dv2 validation split, using six Matterport3D scenes with two distinct starting positions per scene.
 
 \subsection*{Experiment 3: Sensitivity to Semantic Map Granularity}
 \label{sec:implementation:metrics:experiment3}
