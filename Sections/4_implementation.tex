@@ -158,9 +158,9 @@ To ensure consistency and reproducibility across configurations, Experiment~2 fo
         \midrule
         Scenes & 6 Matterport3D scenes \\
         Starting positions per scene & 2 \\
-        Episodes per starting position & 5 (one per weighting) \\
+        Multi-object episodes per starting position & 6 (one per weighting) \\
         Prompts per multi-object episode & 5 object queries \\
-        Exploration-memory weight & Unique value per episode \\
+        Exploration-memory weight & \shortstack{Unique value per episode\\(0.0, 0.2, 0.4, 0.6, 0.8, 1.0)} \\
         Semantic map reset & No (persistent across prompts) \\
         \bottomrule
     \end{tabular}
@@ -168,7 +168,7 @@ To ensure consistency and reproducibility across configurations, Experiment~2 fo
     \label{tab:rq2:evaluation_structure}
 \end{table}
 
-The resulting evaluation scale for this experiment is summarized in Table~\ref{tab:rq2:evaluation_scale}. In total, 12 multi-object episodes are executed, yielding 345 individual object-level queries across all weighting configurations.
+The resulting evaluation scale for this experiment is summarized in Table~\ref{tab:rq2:evaluation_scale}. In total, 72 multi-object episodes are executed, yielding 345 individual object-level queries across all weighting configurations.
 
 \begin{table}[h!]
     \centering
@@ -178,7 +178,7 @@ The resulting evaluation scale for this experiment is summarized in Table~\ref{t
         \toprule
         \textbf{Statistic} & \textbf{Value} \\
         \midrule
-        Multi-object episodes & 12 \\
+        Multi-object episodes & 72 \\
         Total object queries (prompts) & 345 \\
         \bottomrule
     \end{tabular}
@@ -205,6 +205,25 @@ To isolate the effect of semantic granularity, the starting pose is fixed across
 (a) a memory-dominant setting (\( \lambda_{\text{exploration}} = 0 \)) and
 (b) an exploration-dominant configuration using the optimal weighting identified
 in Experiment~2 (RQ2). This design enables a direct assessment of whether increased reliance on frontier-based exploration can compensate for semantic noise introduced by higher top-k values.
+
+The resulting evaluation scale for Experiment~3 is summarized in
+Table~\ref{tab:rq3:evaluation_scale}.
+
+\begin{table}[h!]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabular}{l c}
+        \toprule
+        \textbf{Statistic} & \textbf{Value} \\
+        \midrule
+        Multi-object episodes & 60 \\
+        Total object queries (prompts) & 324 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Evaluation scale for Experiment~3 (Sensitivity to Semantic Map Granularity).}
+    \label{tab:rq3:evaluation_scale}
+\end{table}
 
 \subsection*{Experiment 4: Evaluation of Multi-Source Detection Fusion}
 \label{sec:implementation:metrics:experiment4}

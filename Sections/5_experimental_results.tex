@@ -49,11 +49,12 @@ observation (4.6\%).
 The prevalence of misdetections is primarily driven by the failure mode
 \texttt{Stopped at wrong object}, indicating premature commitment to visually or
 semantically similar distractors. As discussed in
-Section~\ref{sec:experiments:results:4}, this behavior is a direct consable to
-incomplete environment coverage or temporary occlusions during exploration,
-whereas \texttt{Ignored target} failures arise from conservative thresholding or
-semantic ambiguity that suppresses confident target selection despite visual
-availability.
+Section~\ref{sec:experiments:results:4}, this behavior is a direct consequence of
+over-reliance on semantic memory cues that may include false positives. In contrast,
+failures categorized as \texttt{Did not see target} are mainly attributable to
+incomplete environment coverage or temporary occlusions during exploration, whereas
+\texttt{Ignored target} failures arise from conservative thresholding or semantic
+ambiguity that suppresses confident target selection despite visual availability.
 
 \begin{figure}[h!]
     \centering
@@ -97,41 +98,65 @@ An exploitation weight between 0.2 and 0.4 provides the most robust balance, yie
 \section{Experiment 3: Sensitivity to Semantic Map Granularity}
 \label{sec:experiments:results:3}
 
-Investigates how varying the semantic retrieval depth affects mapping robustness and overall navigation stability.
+This experiment proves, that even if the map granularity is varied significantly by adjusting the top-k retrieval parameter in OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}, the navigation performance remains relatively stable. Figure~\ref{fig:results:rq3:map_granularity_example} illustrates how different top-k values affect the density and noise characteristics of the resulting semantic map. As expected, lower top-k values (e.g., top-1) yield sparser but cleaner semantic representations, while higher top-k values (e.g., top-60) produce denser maps with increased noise levels, but more cues for semantically similar objects. However, for OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}, higher top-k values also introduce more false positives, which can been seen for example for the prompt \texttt{"couch"}, which marks a stove and a table as a couch (see Figure~\ref{fig:results:rq3:map_granularity_example}).
 
 \begin{figure}[h!]
-\centering
-\begin{minipage}[t]{0.48\textwidth}
-\centering
-\includegraphics[width=\textwidth]{Images/05_experimental_results/RQ3/sr.png}
-\caption{TODO: Replace with relevant figure for Experiment 3}
-\label{fig:results:rq3:sr}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.48\textwidth}
-\centering
-\includegraphics[width=\textwidth]{Images/05_experimental_results/RQ3/spl.png}
-\caption{TODO: Replace with relevant figure for Experiment 3}
-\label{fig:results:rq3:spl}
-\end{minipage}
+    \centering
+    \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ3/map_granularity_example.png}
+    \caption{TODO: Replace with relevant figure for Experiment 3}
+    \label{fig:results:rq3:map_granularity_example}
 \end{figure}
 
+For all 60 multi-object episodes, with 324 object-level queries in total, the trade-off balance between exploration and memory exploitation to to pure exploitation, shows that a the 60\% exploration--40\% memory configuration consistently outperforms a pure exploitation strategy (100\% memory) across all top-k values, as shown in Figures~\ref{fig:results:rq3:sr} and~\ref{fig:results:rq3:spl}, in both \ac{SR} and \ac{SPL} metrics. This finding reinforces the conclusions from Experiment~2, highlighting the benefits of maintaining a balance between responsiveness to new observations and leveraging accumulated semantic knowledge.
+
+As OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} memory backbone, the best performance is achieved at a top-k value of 15, which provides a good compromise between map density and noise. However, the performance differences across top-k values are relatively minor, indicating that the proposed framework is robust to variations in semantic map granularity. Moreover, the \ac{IQR} for pure exploitation (100\% memory) is significantly larger than for the balanced configuration (60\% exploration), suggesting that relying solely on semantic memory increases susceptibility to noise introduced by higher top-k values.
+
 \begin{figure}[h!]
-\centering
-\begin{minipage}[t]{0.48\textwidth}
-\centering
-\includegraphics[width=\textwidth]{Images/05_experimental_results/RQ3/exp_60_failure_mode_breakdown.png}
-\caption{TODO: Replace with relevant figure for Experiment 3}
-\label{fig:results:rq3:sr}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.48\textwidth}
-\centering
-\includegraphics[width=\textwidth]{Images/05_experimental_results/RQ3/exp_0_failure_mode_breakdown.png}
-\caption{TODO: Replace with relevant figure for Experiment 3}
-\label{fig:results:rq3:spl}
-\end{minipage}
+    \centering
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ3/sr.png}
+        \subcaption{\ac{SR} as a function of semantic map granularity}
+        \label{fig:results:rq3:sr}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ3/spl.png}
+        \subcaption{\ac{SPL} as a function of semantic map granularity}
+        \label{fig:results:rq3:spl}
+    \end{minipage}
+
+    \caption{Impact of semantic map retrieval granularity (top-$k$) on navigation performance in Experiment~3.
+    Results are shown for a memory-dominant configuration (100\% exploitation) and a balanced configuration
+    (60\% exploration).}
+    \label{fig:results:rq3:performance}
 \end{figure}
+
+To further elucidate the effects of semantic map granularity on failure modes, Figures~\ref{fig:results:rq3:exp_60_failure_mode} and~\ref{fig:results:rq3:exp_0_failure_mode} present failure mode breakdowns for the balanced (60\% exploration) and pure exploitation (100\% exploitation) configurations, respectively. On average has a total failures of 18.0\% for the balanced configuration and 34.2\% for the pure exploitation configuration. Interstingly, the biggest failure rate of the 60\% exploration configuration is \texttt{"Stopped ar wrong object"} with 8.0\%, which is a similar failure rate as for the pure exploitation configuration with 8.1\%. This further proves, that the detection pipeline is nicely decoupled from exploration and memory strategies and remains consistent across different configurations. However, the pure exploitation configuration shows significantly higher failure rates for \texttt{"Did not see goal"} with 12.8\% and \texttt{"Ignored target"} with 6.0\%, compared to only 2.0\% and 7.3\% for the balanced configuration, respectively. This indicates, that further guiding the robot towards semantically promising regions through exploration helps to mitigate failures related to incomplete environment coverage and conservative target selection. Interestingly, the failure mode \texttt{"Navigation failure"} is significantly higher for the pure exploitation configuration with 7.4\% compared to only 0.7\% for the balanced configuration, which indicates the effect of punishing graph nodes near to obstacles during exploration, which helps to avoid navigation failures through better path planning. With respect to solely exploration, \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023} only scores based on the cosine similarity from the \ac{VLM} , whereas the proposed framework also incorporates scores Frontiers, based on the costmap and rewards closer frontiers to the robot, which further helps to avoid navigation failures.
+
+\begin{figure}[h!]
+    \centering
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ3/exp_60_failure_mode_breakdown.png}
+        \subcaption{Balanced configuration (60\% exploration)}
+        \label{fig:results:rq3:exp_60_failure_mode}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ3/exp_0_failure_mode_breakdown.png}
+        \subcaption{Pure exploitation (100\% exploitation)}
+        \label{fig:results:rq3:exp_0_failure_mode}
+    \end{minipage}
+
+    \caption{Failure mode breakdowns for Experiment~3 under different exploration--memory weighting configurations.
+    A higher reliance on semantic memory increases susceptibility to observation-related failures,
+    while a balanced exploration-memory strategy mitigates premature commitment and improves robustness.}
+    \label{fig:results:rq3:failure_mode_comparison}
+\end{figure}
+
 
 \section{Experiment 4: Effect of Multi-Source Semantic Fusion}
 \label{sec:experiments:results:4}
