@@ -2,11 +2,53 @@
 
 \chapter{Discussion and Results}
 \label{ch:results}
-Aim of this chapter is to anser the research questions posed in Chapter~\ref{ch:introduction} through a series of experiments designed to evaluate the performance of the proposed multi-object search framework. The first experiment establishes baseline performance against state-of-the-art methods, while subsequent experiments systematically analyze the impact of key design choices on navigation efficiency, mapping robustness, and detection reliability. Each experiment is structured to isolate specific variables, allowing for a clear assessment of their contributions to overall system performance.
+Aim of this chapter is to answer the research questions posed in Chapter~\ref{ch:introduction} through a series of experiments designed to evaluate the performance of the proposed multi-object search framework. The first experiment establishes baseline performance against state-of-the-art methods, while subsequent experiments systematically analyze the impact of key design choices on navigation efficiency, mapping robustness, and detection reliability. Each experiment is structured to isolate specific variables, allowing for a clear assessment of their contributions to overall system performance.
 
 \section{Experiment 1: Benchmarking on Matterport Scenes}
 \label{sec:experiments:results:1}
-Evaluates baseline performance in multi-object search compared to state-of-the-art frameworks (OneMap, VLFM, Pigeon) using SR, SPL, and MSR.
+
+This experiment evaluates the performance of the proposed multi-object search framework in comparison to existing state-of-the-art methods on the HM3Dv2 benchmark~\cite{ramrakhyaPIRLNavPretrainingImitation2023}. Table~\ref{tab:hm3dv2_comparison} reports navigation success and efficiency metrics for a range of prior approaches and for \textbf{SAGE}.
+
+While the experimental setup differs from prior work in terms of simulator and evaluation pipeline (Isaac Sim instead of Habitat Sim, as detailed in Chapter~\ref{ch:implementation}), the results indicate that \textbf{SAGE} achieves substantially higher navigation efficiency, with a mean \ac{SPL} of 63.6\% and a mean \ac{SR} of 77.5\%. This corresponds to an improvement of over 26.2\% in \ac{SPL} compared to the next best reported method, OneMap~\cite{buschOneMapFind2025}, while maintaining competitive success rates.
+
+\begin{table}[t]
+    \centering
+    \renewcommand{\arraystretch}{1.25}
+    \begin{tabular}{lcccc}
+        \toprule
+        Approach
+        & \multicolumn{2}{c}{\textsc{Training}}
+        & \multicolumn{2}{c}{\textsc{HM3Dv2}} \\
+        \cmidrule(lr){2-3} \cmidrule(lr){4-5}
+        & Locom. & Sem.
+        & SPL $\uparrow$ & SR $\uparrow$ \\
+        \midrule
+        PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023}
+            & \cmark & \cmark & 27.1 & 64.1 \\
+        ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}
+            & \cmark & \cmark & 12.6 & 25.5 \\
+        \midrule
+        ESC~\cite{zhouESCExplorationSoft2023}
+            & \xmark & \xmark & 22.3 & 39.2 \\
+        VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}
+            & \cmark & \xmark & 30.4 & 52.5 \\
+        OneMap~\cite{buschOneMapFind2025}
+            & \xmark & \xmark & 37.4 & 55.8 \\
+        PIGEON-ZeroShot~\cite{PIGEONVLMDrivenObject}
+            & \cmark & \cmark & 36.8 & 79.2 \\
+        \midrule
+        \textbf{SAGE (this work)}
+            & \xmark & \xmark
+            & $\mathbf{63.6}^{\scriptscriptstyle +16.2}_{\scriptscriptstyle -16.2}$
+            & $77.5^{\scriptscriptstyle +17.4}_{\scriptscriptstyle -17.4}$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Quantitative comparison of navigation performance on HM3Dv2.}
+    \label{tab:hm3dv2_comparison}
+\end{table}
+
+
+These results establish a strong reference point for the subsequent experiments, in which individual components of the framework and key hyperparameters are analyzed in isolation. All following ablation studies therefore build upon the configuration evaluated in this benchmark and aim to explain which design choices contribute most to the observed performance gains.
 
 \section{Experiment 2: Impact of Exploration-Memory Weighting}
 \label{sec:experiments:results:2}
@@ -98,18 +140,25 @@ An exploitation weight between 0.2 and 0.4 provides the most robust balance, yie
 \section{Experiment 3: Sensitivity to Semantic Map Granularity}
 \label{sec:experiments:results:3}
 
-This experiment proves, that even if the map granularity is varied significantly by adjusting the top-k retrieval parameter in OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}, the navigation performance remains relatively stable. Figure~\ref{fig:results:rq3:map_granularity_example} illustrates how different top-k values affect the density and noise characteristics of the resulting semantic map. As expected, lower top-k values (e.g., top-1) yield sparser but cleaner semantic representations, while higher top-k values (e.g., top-60) produce denser maps with increased noise levels, but more cues for semantically similar objects. However, for OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}, higher top-k values also introduce more false positives, which can been seen for example for the prompt \texttt{"couch"}, which marks a stove and a table as a couch (see Figure~\ref{fig:results:rq3:map_granularity_example}).
+This experiment addresses \textbf{RQ3} by analyzing the sensitivity of the proposed exploration-memory framework to variations in semantic map granularity induced by the top-$k$ retrieval parameter of the OpenFusion-based semantic memory~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}. Specifically, the experiment evaluates whether navigation performance degrades when the density and noise level of the semantic map are systematically varied.
+
+Figure~\ref{fig:results:rq3:map_granularity_example} illustrates the qualitative effect of different top-$k$ values on the resulting semantic map. As expected, lower top-$k$ values yield sparser but cleaner semantic representations, while higher
+top-$k$ values produce denser maps that contain more semantic cues but also increased noise. In particular, higher top-$k$ retrievals introduce additional false positives, as semantically similar but incorrect objects may be assigned non-negligible relevance scores. This effect is exemplified by the prompt \texttt{"couch"}, for which unrelated objects such as a stove or table are incorrectly highlighted at higher granularity levels.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ3/map_granularity_example.png}
-    \caption{TODO: Replace with relevant figure for Experiment 3}
+    \caption{Qualitative effect of semantic map granularity on the OpenFusion memory.
+    Increasing the top-$k$ retrieval depth densifies the semantic map but also introduces
+    additional noise and false positive associations.}
     \label{fig:results:rq3:map_granularity_example}
 \end{figure}
 
-For all 60 multi-object episodes, with 324 object-level queries in total, the trade-off balance between exploration and memory exploitation to to pure exploitation, shows that a the 60\% exploration--40\% memory configuration consistently outperforms a pure exploitation strategy (100\% memory) across all top-k values, as shown in Figures~\ref{fig:results:rq3:sr} and~\ref{fig:results:rq3:spl}, in both \ac{SR} and \ac{SPL} metrics. This finding reinforces the conclusions from Experiment~2, highlighting the benefits of maintaining a balance between responsiveness to new observations and leveraging accumulated semantic knowledge.
+Across all 60 multi-object episodes, comprising a total of 324 object-level queries, navigation performance remains relatively stable under substantial variations in semantic map granularity. Figures~\ref{fig:results:rq3:sr} and~\ref{fig:results:rq3:spl} show the \ac{SR} and \ac{SPL} as a function of top-$k$ for two exploration-memory configurations: a balanced strategy with 60\% exploration and a memory-dominant strategy with 100\% exploitation. 
 
-As OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} memory backbone, the best performance is achieved at a top-k value of 15, which provides a good compromise between map density and noise. However, the performance differences across top-k values are relatively minor, indicating that the proposed framework is robust to variations in semantic map granularity. Moreover, the \ac{IQR} for pure exploitation (100\% memory) is significantly larger than for the balanced configuration (60\% exploration), suggesting that relying solely on semantic memory increases susceptibility to noise introduced by higher top-k values.
+Consistent with the findings of Experiment~2, the balanced configuration (60\% exploration) consistently outperforms pure exploitation across all top-$k$ values for both \ac{SR} and \ac{SPL}. While the absolute best performance is achieved at a top-$k$ value of 15, the overall performance differences across granularity levels remain modest, indicating that the proposed framework is robust to variations in semantic map density and noise.
+
+Notably, the \ac{IQR} for pure exploitation is substantially larger than for the balanced configuration. This increased variance suggests that exclusive reliance on semantic memory amplifies sensitivity to noisy semantic cues introduced at higher top-$k$ values, whereas incorporating exploratory evidence stabilizes performance.
 
 \begin{figure}[h!]
     \centering
@@ -127,13 +176,25 @@ As OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} memory backbon
         \label{fig:results:rq3:spl}
     \end{minipage}
 
-    \caption{Impact of semantic map retrieval granularity (top-$k$) on navigation performance in Experiment~3.
-    Results are shown for a memory-dominant configuration (100\% exploitation) and a balanced configuration
-    (60\% exploration).}
+    \caption{Impact of semantic map retrieval granularity (top-$k$) on navigation
+    performance in Experiment~3. Results are shown for a balanced exploration-memory
+    configuration (60\% exploration) and a memory-dominant configuration (100\%
+    exploitation).}
     \label{fig:results:rq3:performance}
 \end{figure}
 
-To further elucidate the effects of semantic map granularity on failure modes, Figures~\ref{fig:results:rq3:exp_60_failure_mode} and~\ref{fig:results:rq3:exp_0_failure_mode} present failure mode breakdowns for the balanced (60\% exploration) and pure exploitation (100\% exploitation) configurations, respectively. On average has a total failures of 18.0\% for the balanced configuration and 34.2\% for the pure exploitation configuration. Interstingly, the biggest failure rate of the 60\% exploration configuration is \texttt{"Stopped ar wrong object"} with 8.0\%, which is a similar failure rate as for the pure exploitation configuration with 8.1\%. This further proves, that the detection pipeline is nicely decoupled from exploration and memory strategies and remains consistent across different configurations. However, the pure exploitation configuration shows significantly higher failure rates for \texttt{"Did not see goal"} with 12.8\% and \texttt{"Ignored target"} with 6.0\%, compared to only 2.0\% and 7.3\% for the balanced configuration, respectively. This indicates, that further guiding the robot towards semantically promising regions through exploration helps to mitigate failures related to incomplete environment coverage and conservative target selection. Interestingly, the failure mode \texttt{"Navigation failure"} is significantly higher for the pure exploitation configuration with 7.4\% compared to only 0.7\% for the balanced configuration, which indicates the effect of punishing graph nodes near to obstacles during exploration, which helps to avoid navigation failures through better path planning. With respect to solely exploration, \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023} only scores based on the cosine similarity from the \ac{VLM} , whereas the proposed framework also incorporates scores Frontiers, based on the costmap and rewards closer frontiers to the robot, which further helps to avoid navigation failures.
+To further analyze the effect of semantic map granularity on system robustness, Figure~\ref{fig:results:rq3:failure_mode_comparison} compares the failure mode distributions for the balanced and pure exploitation configurations. Overall failure rates are substantially lower for the balanced configuration (18.0\%) than for pure
+exploitation (34.2\%).
+
+Interestingly, the dominant failure mode for both configurations is \texttt{Stopped at wrong object}, with comparable rates of 8.0\% and 8.1\% for balanced and pure exploitation, respectively. This consistency indicates that the detection pipeline itself behaves similarly across configurations and that misdetections are not directly caused by the exploration-memory weighting.
+
+In contrast, pure exploitation exhibits markedly higher rates of \texttt{Did not see goal} (12.8\%) and \texttt{Ignored target} (6.0\%) failures compared to the balanced configuration (2.0\% and 7.3\%, respectively). These failures are primarily associated with insufficient environment coverage and conservative target selection in the absence of corrective exploratory behavior.
+
+Furthermore, navigation failures occur substantially more often under pure exploitation (7.4\%) than under the balanced configuration (0.7\%). Navigation failures are defined as situations in which the robot becomes trapped between obstacles, no valid navigation plan can be generated, or the selected plan leads into a dead-end that moves the robot farther away from the target. 
+
+The pronounced reduction in navigation failures under the balanced configuration is attributed to the exploration component of the proposed framework, which incorporates costmap-based information to penalize frontiers located near obstacles and to bias
+navigation toward safer, more traversable regions. In contrast to purely similarity-driven approaches such as \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, the proposed method explicitly integrates geometric and navigational constraints into
+frontier scoring, thereby improving path feasibility and overall navigation robustness.
 
 \begin{figure}[h!]
     \centering
@@ -151,29 +212,38 @@ To further elucidate the effects of semantic map granularity on failure modes, F
         \label{fig:results:rq3:exp_0_failure_mode}
     \end{minipage}
 
-    \caption{Failure mode breakdowns for Experiment~3 under different exploration--memory weighting configurations.
-    A higher reliance on semantic memory increases susceptibility to observation-related failures,
-    while a balanced exploration-memory strategy mitigates premature commitment and improves robustness.}
+    \caption{Failure mode breakdowns for Experiment~3 under different
+    exploration-memory weighting strategies. Increased reliance on semantic memory
+    amplifies observation- and navigation-related failures, whereas balanced
+    exploration mitigates premature commitment to noisy semantic hypotheses.}
     \label{fig:results:rq3:failure_mode_comparison}
 \end{figure}
 
+The best-performing configurations in Experiment~3 are consistent with the results of Experiment~2. In both experiments, the highest \ac{SR} and \ac{SPL} are achieved for top-$k$ values in the range of 10 to 15. This alignment is expected, as Experiment~2 was conducted using a top-$k$ value of 10, which was selected empirically during preliminary testing and used as a reasonable initial configuration for subsequent experiments.
+
+Overall, these results demonstrate that the proposed framework is robust to substantial variations in semantic map granularity. While semantic memory density influences noise levels, balanced integration of exploration and memory prevents degradation in
+navigation performance. Excessive reliance on memory alone leads to higher failure rates due to uncorrected false positives and incomplete environment coverage. In contrast, maintaining exploratory feedback enables the system to compensate for noisy
+semantic cues, confirming the importance of hybrid exploration-memory strategies for long-horizon semantic navigation.
 
 \section{Experiment 4: Effect of Multi-Source Semantic Fusion}
 \label{sec:experiments:results:4}
 
-Examines how combining detection confidence, semantic similarity, and memory reliability improves detection robustness and reduces false positives.
+A key component of the proposed framework is the multi-source fusion strategy introduced in Chapter~\ref{ch:methods} Section~\ref{sec:methods:fusion_strategy}. Detecting target objects reliably in cluttered, real-world environments is inherently challenging due to occlusions, varying lighting conditions, and visual ambiguities. Relying on a single detection source increases susceptibility to false positives and negatives, which can mislead navigation decisions. To mitigate this, the proposed method fuses detection cues from multiple sources: (a) live detections from an open-vocabulary detector (YOLO-E~\cite{wangYOLOERealTimeSeeing2025}), (b) semantic similarity score from the \ac{VLM}~\cite{liBLIP2BootstrappingLanguageImage2023}, and (c) accumulated temporal evidence from the semantic memory (OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}). This experiment evaluates the effectiveness of this multi-source fusion strategy compared to single-source detection and pairwise combinations, with a Noisy-Or fusion approach as described in Chapter~\ref{ch:methods} Section~\ref{sec:methods:fusion_strategy:multi_source_detection_fusion}. Experiment~\ref{sec:experiments:results:4} isolates the perception and decision layer by evaluating how multi-source semantic fusion affects detection robustness, false positives, and threshold sensitivity, independent of exploration strategy.
+
+Table~\ref{tab:results:rq4:detection_performance} reports detection performance across different fusion strategies and decision thresholds. Results are shown for three operating points corresponding to increasing levels of conservativeness: a low
+threshold ($\tau = 0.5$), a medium threshold ($\tau = 0.6$), and a high threshold ($\tau = 0.8$). For each threshold, four fusion variants are compared: single-source detection using YOLO-E, detection combined with \ac{VLM}-based semantic similarity, detection combined with semantic memory evidence, and the proposed multi-source fusion integrating all three cues via a Noisy-Or formulation.
 
 \begin{table}[H]
     \centering
     \footnotesize
     \renewcommand{\arraystretch}{1.25}
-    \begin{tabular}{l c c c c c c c c c}
+    \begin{tabular}{l | c | c c c c | c c c c}
         \toprule
         Fusion Variant & $\tau$ &
-        $P\,(\uparrow)$ &
-        $R\,(\uparrow)$ &
-        $F1\,(\uparrow)$ &
-        $FPR\,(\downarrow)$ &
+        $P\,\uparrow$ &
+        $R\,\uparrow$ &
+        $F1\,\uparrow$ &
+        $FPR\,\downarrow$ &
         TP & FP & FN & TN \\
         \midrule
         % ===== tau = 0.5 =====
@@ -209,38 +279,225 @@ Examines how combining detection confidence, semantic similarity, and memory rel
     \end{tabular}
     \caption{Detection performance metrics across fusion strategies and thresholds.
     Arrows indicate whether higher ($\uparrow$) or lower ($\downarrow$) values are better.
-    Best values per threshold $\tau$ are highlighted in bold. TODO: Check numbers. May need to be updated.}
+    For each threshold $\tau$, the best-performing value per metric is highlighted in bold.}
+    \label{tab:results:rq4:detection_performance}
 \end{table}
 
 
+At the low threshold ($\tau = 0.5$), all variants achieve high recall values close to or
+above $0.91$, indicating that most true target observations are accepted. Differences
+between fusion strategies are relatively small in this regime. Single-source detection
+achieves the highest precision and the lowest false-positive rate, while incorporating
+semantic similarity improves recall at the cost of increased false positives. The
+multi-source fusion yields a balanced trade-off, with slightly reduced precision compared
+to detection-only but improved recall relative to the single-source baseline.
+
+At the medium threshold ($\tau = 0.6$), performance across all fusion variants becomes
+more balanced. Precision values cluster around $0.91$, and recall differences are
+reduced. In this regime, both the detection+VLM variant and the full multi-source fusion
+achieve the highest \ac{F1}-scores, indicating an effective balance between sensitivity
+and specificity. The corresponding confusion-matrix counts show that fusion-based
+approaches reduce false negatives compared to detection-only, while maintaining
+comparable false-positive rates.
+
+At the high threshold ($\tau = 0.8$), clear differences between fusion strategies emerge.
+Single-source detection attains the highest precision ($0.941$) and the lowest
+false-positive rate, but suffers from a substantial drop in recall ($0.632$), resulting
+in a large number of false negatives. In contrast, all fusion-based variants
+significantly improve recall under this conservative operating point. The proposed
+multi-source fusion achieves the highest recall ($0.888$) and \ac{F1}-score ($0.901$),
+while maintaining precision above $0.91$. This improvement corresponds to a pronounced
+reduction in false negatives compared to detection-only, with only a moderate increase
+in false positives.
+
+Figure~\ref{fig:results:rq4:confusion_matrices} provides a qualitative comparison of
+the detection behavior at a conservative operating point ($\tau = 0.8$) for the
+proposed multi-source fusion strategy and the detection-only baseline.
+The detection-only configuration exhibits a pronounced imbalance between precision
+and recall: while most predicted positives are correct, a large number of true target
+instances are rejected, resulting in a high false-negative count.
+This behavior reflects the brittleness of relying on a single detection signal under
+strict thresholding, where ambiguous or partially occluded targets are frequently
+missed.
 
 \begin{figure}[h!]
-\centering
-\begin{minipage}[t]{0.48\textwidth}
-\centering
-\includegraphics[width=\textwidth]{Images/05_experimental_results/RQ4/cm_multi_source_fusion.png}
-\caption{TODO: Replace with relevant figure for Experiment 4}
-\label{fig:results:rq4:cm_multi_source_fusion}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.48\textwidth}
-\centering
-\includegraphics[width=\textwidth]{Images/05_experimental_results/RQ4/cm_detection_only.png}
-\caption{TODO: Replace with relevant figure for Experiment 4}
-\label{fig:results:rq4:cm_detection_only}
-\end{minipage}
+    \centering
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ4/cm_multi_source_fusion.png}
+        \subcaption{Multi-source semantic fusion ($\tau = 0.8$)}
+        \label{fig:results:rq4:cm_fusion}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ4/cm_detection_only.png}
+        \subcaption{Detection-only baseline ($\tau = 0.8$)}
+        \label{fig:results:rq4:cm_detection_only}
+    \end{minipage}
+
+    \caption{Confusion matrices comparing the proposed multi-source semantic fusion
+    strategy with a detection-only baseline at a fixed decision threshold
+    $\tau = 0.8$. While detection-only achieves high precision, it suffers from a large
+    number of false negatives. In contrast, multi-source fusion substantially improves
+    recall by reducing missed detections, while maintaining a comparable false-positive
+    rate.}
+    \label{fig:results:rq4:confusion_matrices}
 \end{figure}
+
+In contrast, the multi-source fusion strategy substantially reduces the number of false negatives by integrating complementary semantic cues from the \ac{VLM} similarity score and accumulated memory evidence. The additional contextual information allows the system to recover target instances that would otherwise fall below the detection confidence threshold. Importantly, this gain in recall is achieved without a disproportionate increase in false positives, indicating that the fusion mechanism does not merely relax the decision criterion but selectively reinforces consistent evidence across sources.
+
+Figure~\ref{fig:results:rq4:pr_curve} illustrates the precision-recall characteristics
+of detection-only and multi-source semantic fusion over a full sweep of the decision
+threshold $\tau$. While both approaches achieve high precision at low recall levels,
+the detection-only baseline exhibits a steeper precision drop as recall increases,
+indicating reduced robustness when operating beyond conservative thresholds.
+In contrast, the proposed multi-source fusion maintains consistently higher precision
+over a broader recall range (0.6--0.9 Recall), demonstrating improved stability under varying confidence
+requirements.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ4/pr_curve.png}
-    \caption{TODO: Replace with relevant figure for Experiment 4}
+    \caption{Precision-recall curves for detection-only and multi-source semantic fusion
+    obtained by sweeping the decision threshold $\tau$ in Experiment~4. The multi-source
+    fusion maintains higher precision over a wider recall range, indicating improved
+    robustness compared to single-source detection.}
     \label{fig:results:rq4:pr_curve}
 \end{figure}
+
+This behavior reflects the complementary nature of the fused cues. When detection
+confidence alone is insufficient, semantic similarity and accumulated memory evidence
+reinforce plausible target hypotheses, allowing true positives to be recovered without
+a disproportionate increase in false positives. As a result, the multi-source fusion
+achieves a more favorable precision-recall trade-off, particularly in the mid- to
+high-recall regime that is critical for reliable downstream decision-making.
+
+In the deployed behavior tree, this trade-off is explicitly exploited through a
+two-stage verification strategy. Candidate objects are initially detected using a
+permissive threshold ($\tau = 0.6$) to trigger alignment and viewpoint refinement
+toward the object. Final confirmation is then performed at a stricter threshold
+($\tau = 0.8$), ensuring high-confidence approval before task completion.
+The precision-recall characteristics observed in Figure~\ref{fig:results:rq4:pr_curve}
+support this design choice, as multi-source fusion preserves recall at lower thresholds
+while retaining high precision at conservative operating points.
+
+Overall, the results demonstrate that while single-source detection performs well at
+permissive thresholds, it becomes increasingly brittle as the decision threshold is
+raised. Incorporating semantic similarity and memory evidence stabilizes detection
+performance across thresholds, and the proposed multi-source fusion provides the most
+robust trade-off between precision and recall, particularly in conservative regimes that
+are critical for reliable downstream navigation decisions.
 
 \section{Experiment 5: System Efficiency and Real-World Validation}
 \label{sec:experiments:results:5}
 
-Assesses runtime performance, resource utilization, and stability under real-world sensor noise during physical deployment.
+This experiment addresses \textbf{RQ5} by evaluating the computational efficiency and real-time feasibility of the proposed system in a real-world deployment setting. Figures~\ref{fig:results:rq5:gpu_vram} and~\ref{fig:results:rq5:openfusion_max_voxel} (see Appendix~\ref{ch:appendix:results:details}) summarize the GPU memory consumption of the overall system and an example of a semantic Map for the given total voxel allocation, respectively.
+
+The \textbf{SAGE} framework consists of three primary GPU-intensive components:
+(a) the open-vocabulary detector YOLO-E~\cite{wangYOLOERealTimeSeeing2025},
+(b) the \ac{VLM} BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023} for semantic similarity scoring, and
+(c) the OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} semantic memory module for persistent 3D fusion.
+YOLO-E and BLIP-2 exhibit fixed GPU memory footprints of approximately 1200\,MB and 2280\,MB of \ac{VRAM}, respectively, and do not vary during runtime. In contrast to VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, which utilizes four different \ac{VLM} and detectors, which cumulatively require over 16\,GB of GPU memory,~\textbf{SAGE} only uses 3480\,MB for the same functionality, making it more suitable for consumer-grade hardware.
+
+In contrast, the GPU memory consumption of OpenFusion depends on the number of allocated voxels in the volumetric map. In the evaluated configuration, a total of 191{,}941 voxels are allocated, resulting in a GPU memory usage of approximately 6122\,MB for the semantic memory. This configuration is sufficient to represent an apartment-scale environment, as illustrated in Figure~\ref{fig:results:rq5:openfusion_max_voxel}. Overall, the complete \textbf{SAGE} system requires approximately 9.6\,GB of GPU \ac{VRAM}, making it compatible with contemporary consumer-grade GPUs.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ5/gpu_vram.png}
+    \caption{GPU memory consumption of the \textbf{SAGE} system during runtime, decomposed by major components.}
+    \label{fig:results:rq5:gpu_vram}
+\end{figure}
+
+Real-time performance is evaluated by measuring the effective processing rates of the system during deployment. Figure~\ref{fig:results:rq5:fps} reports the observed execution frequencies of the major processing loops. The architecture follows a deliberate multi-rate design comprising three distinct loops:
+(a) a high-rate reactive exploration loop driven by the BLIP-2 ValueMap,
+(b) a perception loop responsible for YOLO-E detections, and
+(c) a low-rate persistent semantic mapping loop for OpenFusion-based fusion.
+
+The reactive exploration loop operates at approximately 10\,Hz, enabling timely responses to newly observed semantic cues. The perception loop runs at approximately 3.5\,Hz, which is sufficient for stable object detection in indoor navigation scenarios. The persistent semantic mapping loop operates at a significantly lower frequency of approximately 0.36\,Hz, reflecting the high computational cost of volumetric fusion. This design choice ensures that computationally expensive operations do not impede system responsiveness.
+
+Due to the comparatively high latency of OpenFusion, the semantic memory is queried only at the beginning of a new exploration step and during candidate object confirmation. Downstream processing stages, including clustering of semantic point clouds into graph nodes, are executed at a fixed rate of 10\,Hz, ensuring that higher-level decision-making components always have access to the most recent fused semantic information. The graph node fusion stage integrates signals from detection, semantic similarity for the value map, and memory at approximately 1.6\,Hz during exploration and 1.7\,Hz during detection, which was found to be sufficient for reliable navigation without excessive computational overhead.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Images/05_experimental_results/RQ5/fps.png}
+    \caption{Observed execution frequencies of the main processing loops during real-world deployment.}
+    \label{fig:results:rq5:fps}
+\end{figure}
+
+% \begin{table}[t]
+% \centering
+% \footnotesize
+% \renewcommand{\arraystretch}{1.15}
+
+% \begin{tabular}{
+%     l 
+%     l 
+%     c 
+%     c 
+%     c
+% }
+% \hline
+% \textbf{Component} & \textbf{ROS Topic} & \textbf{Mean [Hz]} & \textbf{Min--Max [Hz]} & \textbf{Std. Dev.} \\
+% \hline
+
+% \multicolumn{5}{l}{\textit{Reactive Perception}} \\[2pt]
+% YOLO-E Detector 
+% & \texttt{/yoloe/overlay} 
+% & 6.2 
+% & 2.9 -- 13.0 
+% & 0.06 \\
+
+% \multicolumn{5}{l}{\textit{Semantic Scoring}} \\[2pt]
+% Value Map Similarity 
+% & \texttt{/value\_map/cosine\_similarity} 
+% & 10.0 
+% & 9.7 -- 10.3 
+% & 0.0015 \\
+
+% \multicolumn{5}{l}{\textit{Graph-Based Reasoning}} \\[2pt]
+% Exploration Graph 
+% & \texttt{/exploration\_graph\_nodes/graph\_nodes} 
+% & 6.3 
+% & 4.9 -- 7.4 
+% & 0.02 \\
+
+% Exploitation Graph 
+% & \texttt{/exploitation\_graph\_nodes/graph\_nodes} 
+% & 10.0 
+% & 9.6 -- 10.6 
+% & 0.002 \\
+
+% Fused Exploration Graph 
+% & \texttt{/fused/exploration\_graph\_nodes/graph\_nodes} 
+% & 1.6 
+% & 1.3 -- 2.0 
+% & 0.04 \\
+
+% Fused Detection Graph 
+% & \texttt{/fused/detection\_graph\_nodes/graph\_nodes} 
+% & 1.7 
+% & 1.5 -- 2.0 
+% & 0.05 \\
+
+% \multicolumn{5}{l}{\textit{Persistent 3D Semantic Mapping}} \\[2pt]
+% OpenFusion Query Cloud 
+% & \texttt{/openfusion\_ros/query\_pointcloud\_xyzi} 
+% & 0.32 
+% & 0.19 -- 0.36 
+% & 1.09 \\
+
+% \hline
+% \end{tabular}
+
+% \caption{Observed topic publication frequencies during real-world deployment. 
+% The system follows a deliberate multi-rate design: reactive perception and exploitation 
+% operate at high frequency, while persistent semantic fusion is performed sparsely to 
+% limit computational overhead.}
+% \label{tab:rq5_topic_frequencies}
+% \end{table}
+
+% 3346 MB -> 206915 Voxels
+% 5368 MB -> 285685 Voxels
 
 \newpage
