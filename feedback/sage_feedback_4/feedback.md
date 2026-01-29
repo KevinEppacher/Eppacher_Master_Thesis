@@ -35,7 +35,7 @@ Nummerierte Punkte
 7. Kommentare right-aligned, dass die gleichmäßig übereinander sind
 7.1. Algorithmen caption
 8. Hier geht's um die Methode -> Topicnamen und Nodenamen weglassen. Fokus ist hier Algorithmik
-9. Die ganzen Algorithmik-Blöcke konsistent gestalten
+<!-- 9. Die ganzen Algorithmik-Blöcke konsistent gestalten -->
 <!-- 10. Würde ich similarity score oder nur score oder value signal oder sowas nennen. "Reward" ist in der Domäne reserviert für RL -->
 <!-- 11. "Robust" ist gefährlich -> Du kannst das nicht quantifizieren -->
 <!-- 12. Das ist interessant -> Ein Satz extra Detail und Begründung hinzufügen -->

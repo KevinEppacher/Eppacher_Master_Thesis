@@ -109,34 +109,38 @@ Let $\mathcal{G} \in \{-1, 0, 100\}^{W \times H}$ denote the exploration occupan
     $d_{\text{match}}$,
     $\{\mathbf{c}_{i}^{t-1}\}$
 }
-    \State $\mathcal{F}_t \gets \emptyset$ \Comment{Output set of clustered frontiers}
+    \State \algcomment{Initialize empty frontier set}
+    \State $\mathcal{F}_t \gets \emptyset$
 
-    \ForAll{cells $(x,y)$ with $\mathcal{G}(x,y)=0$} \Comment{Iterate over free cells}
+    \State \algcomment{Iterate over free cells}
+    \ForAll{cells $(x,y)$ with $\mathcal{G}(x,y)=0$}
         \If{$\mathcal{G}(x,y)=0$ \textbf{and} any 4-neighbor is unknown}
-            \State Mark $(x,y)$ as frontier \Comment{Free-unknown boundary}
+            \State \algcomment{Free-unknown boundary}
+            \State Mark $(x,y)$ as frontier
         \EndIf
     \EndFor
 
     \ForAll{unvisited frontier cells $(x,y)$}
+        \State \algcomment{Spatially connected frontier region}
         \State Grow a cluster $\mathcal{P}$ using 8-connected BFS
-        \Comment{Spatially connected frontier region}
 
         \If{$N_{\min} \le |\mathcal{P}| \le N_{\max}$}
+            \State \algcomment{Representative frontier location}
             \State Compute centroid $\mathbf{c} \gets \frac{1}{|\mathcal{P}|} \sum_{\mathbf{p} \in \mathcal{P}} \mathbf{p}$
-            \Comment{Representative frontier location}
-
             \State Assign frontier ID via nearest centroid match within $d_{\text{match}} \in \mathbb{R}$
 
             \If{no match found}
-                \State Assign new frontier ID \Comment{Newly discovered frontier}
+                \State \algcomment{Newly discovered frontier}
+                \State Assign new frontier ID
             \EndIf
 
+            \State \algcomment{Store valid frontier}
             \State Add $(\mathcal{P}, \mathbf{c})$ to $\mathcal{F}_t$
-            \Comment{Store valid frontier}
         \EndIf
     \EndFor
-
-    \State \Return $\mathcal{F}_t$ \Comment{Set of clustered, tracked frontiers}
+    
+    \State \algcomment{Set of clustered, tracked frontiers}
+    \State \Return $\mathcal{F}_t$ 
 \EndFunction
 
 \end{algorithmic}
@@ -164,14 +168,15 @@ The frontier centroids are tracked over time by matching them to previously dete
     $\mathcal{C}$,
     $\mathbf{p}$
 }
-    \State $r \gets 0.3$ \Comment{Query radius}
+    \State \algcomment{Query radius}
+    \State $r \gets 0.3$
     \State $s_{\max} \gets 0$
     \State $\text{observed} \gets \text{false}$
     
     \ForAll{points $q \in \mathcal{C}$}
         \If{$\lVert q - \mathbf{p} \rVert_2 < r$}
+            \State \algcomment{Max semantic response}
             \State $s_{\max} \gets \max(s_{\max}, s(q))$
-            \Comment{Max semantic response}
             \State $\text{observed} \gets \text{true}$
         \EndIf
     \EndFor
@@ -209,15 +214,15 @@ nodes by combining geometric frontier extraction with semantic scoring.
     $\mathcal{V}$,
     $\{\mathbf{c}_{i}^{t-1}\}$
 }
+    \State \algcomment{Geometric frontier extraction}
     \State $\mathcal{F}_t \gets \textsc{ExtractFrontiers}(\mathcal{G}, N_{\min}, N_{\max}, d_{\text{match}}, \{\mathbf{c}_{i}^{t-1}\})$
-    \Comment{Geometric frontier extraction}
 
     \ForAll{frontier $f \in \mathcal{F}_t$}
+        \State \algcomment{Representative frontier position}
         \State $\mathbf{c} \gets \text{centroid}(f)$
-        \Comment{Representative frontier position}
 
+        \State \algcomment{Semantic value lookup}
         \State $(\text{observed}, s) \gets \textsc{GetScoreFromValueMap}(\mathcal{V}, \mathbf{c})$
-        \Comment{Semantic value lookup}
 
         \State Create graph node $n$
         \State $n.\text{id} \gets f.\text{id}$
@@ -225,13 +230,12 @@ nodes by combining geometric frontier extraction with semantic scoring.
         \State $n.\text{score} \gets s$
         \State $n.\text{observed} \gets \text{observed}$
 
+        \State \algcomment{Semantic frontier node}
         \State Add $n$ to graph
-        \Comment{Semantic frontier node}
     \EndFor
 
+    \State \algcomment{For downstream task and visualization}
     \State Publish frontier graph
-    \Comment{For downstream task and visualization}
-
 \EndFunction
 
 \end{algorithmic}
