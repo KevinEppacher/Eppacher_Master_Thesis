@@ -4,7 +4,8 @@
 \label{ch:sota}
 
 This work introduces a hybrid semantic exploration framework that combines open-vocabulary
-semantic perception with autonomous exploration and persistent spatial memory, which combines the fields of geometric exploration, vision-language-guided exploration, and semantic mapping based on the successes encountered by incorporating semantic information from large pretrained foundation models into traditional exploration and mapping pipelines. However, these novel semantic methods still rely on design and data representation patterns derived from classic geometric exploration and mapping methods.
+semantic perception with autonomous exploration and persistent spatial memory. The proposed approach integrates concepts from geometric exploration, vision-language-guided
+exploration, and semantic mapping. It is motivated by recent progress in incorporating semantic information from large pretrained foundation models into classical exploration and mapping pipelines. However, these novel semantic methods still rely on design and data representation patterns derived from classic geometric exploration and mapping methods.
 
 Semantic exploration approaches differ fundamentally in how exploration behavior is generated.
 Some methods learn end-to-end navigation policies using reinforcement learning or imitation learning,
@@ -13,7 +14,7 @@ reward functions~\cite{majumdarZSONZeroShotObjectGoal2023,ramrakhyaPIRLNavPretra
 
 Reinforcement learning and imitation learning approaches have demonstrated promising results in
 semantic object search tasks by training agents to navigate toward target objects based on high-level
-semantic cues~\cite{majumdarZSONZeroShotObjectGoal2023}, primarily within simulated environments. Their main advantage lies in avoiding hand-designed exploration heuristics, as complex behaviors can be learned directly from data through reward optimization~\cite{ghasemiComprehensiveSurveyReinforcement2025}. However, such policies typically require extensive training on large datasets (e.g. Replica~\cite{straubReplicaDatasetDigital2019}, Habitat~\cite{savvaHabitatPlatformEmbodied2019}), exhibit limited generalization to unseen environments or object~\cite{majumdarZSONZeroShotObjectGoal2023,ramrakhyaPIRLNavPretrainingImitation2023} categories, and lack interpretability due to their black-box nature~\cite{ghasemiComprehensiveSurveyReinforcement2025}.
+semantic cues~\cite{majumdarZSONZeroShotObjectGoal2023}, primarily within simulated environments. Their main advantage lies in avoiding hand-designed exploration heuristics, as complex behaviors can be learned directly from data through reward optimization~\cite{ghasemiComprehensiveSurveyReinforcement2025}. However, such policies typically require extensive training on large datasets (e.g. Replica~\cite{straubReplicaDatasetDigital2019}, Habitat~\cite{savvaHabitatPlatformEmbodied2019}), exhibit limited generalization to unseen environments or object categories~\cite{majumdarZSONZeroShotObjectGoal2023,ramrakhyaPIRLNavPretrainingImitation2023}, and lack interpretability due to their black-box nature~\cite{ghasemiComprehensiveSurveyReinforcement2025}.
 
 In contrast, modular approaches leverage semantic representations provided by large-scale
 pretrained \acp{VLM} to guide exploration decisions without task-specific retraining~\cite{alamaRayFrontsOpenSetSemantic2025}.
@@ -28,9 +29,13 @@ allowing robots to identify and localize previously unseen objects~\cite{wangYOL
 foundation upon which hybrid exploration systems are built, enabling flexible object
 search in diverse real-world environments.
 
+Frontier-based exploration selects navigation goals from geometric map structure (frontiers) to maximize coverage and information gain, independent of any task-specific training.
+Reinforcement-learning-based semantic exploration learns a navigation policy from simulated experience (reinforcement or imitation learning) that maps observations and a goal specification to actions, implicitly encoding exploration and target-seeking behavior.
+Foundation-model-based semantic exploration uses pretrained vision-language foundation models as semantic priors to score observations or candidate goals by relevance to a text query, enabling zero-shot generalization within a modular planning pipeline.
+
 \section{Frontier-Based Exploration}
 
-Frontier-based exploration is a classical and commonly used approach for autonomous mapping and navigation in unknown environments~\cite{lluviaActiveMappingRobot2021}. A \textit{frontier} is defined as the boundary between known free space and unknown regions of the environment~\cite{lluviaActiveMappingRobot2021}. Frontier-based exploration relies on the principle that unexplored areas adjacent to known free regions provide the highest potential information gain. To identify such frontiers, the robot must maintain a global representation of the environment, typically an occupancy grid or voxel map, where each cell is classified as \textit{free}, \textit{occupied}, or \textit{unknown}, based on sensor observations from \ac{LiDAR} or RGB-D cameras. The robot then iteratively selects and navigates to frontiers to expand its knowledge of the environment.
+Frontier-based exploration is a standard paradigm for autonomous exploration that selects goal locations on the boundary between explored free space and unknown areas to expand the map~\cite{lluviaActiveMappingRobot2021}. A \textit{frontier} is defined as the boundary between known free space and unknown regions of the environment~\cite{lluviaActiveMappingRobot2021}. Frontier-based exploration relies on the principle that unexplored areas adjacent to known free regions provide the highest potential information gain. To identify such frontiers, the robot must maintain a global representation of the environment, typically an occupancy grid or voxel map, where each cell is classified as \textit{free}, \textit{occupied}, or \textit{unknown}, based on sensor observations from \ac{LiDAR} or RGB-D cameras. The robot then iteratively selects and navigates to frontiers to expand its knowledge of the environment.
 
 \citeauthor{quinApproachesEfficientlyDetecting2021}~\cite{quinApproachesEfficientlyDetecting2021} evaluated three commonly used frontier extraction methods that differ primarily in computational efficiency and scalability.  
 The first approach, known as the \textit{Naïve Active Area (NaïveAA)} method, evaluates every cell in the occupancy grid to determine whether it is free and has at least one unknown neighbor. Although this approach is conceptually simple and accurate for small-scale maps, it becomes computationally expensive for larger environments and often produces small, fragmented frontier clusters.
@@ -60,7 +65,7 @@ This paradigm has been successfully applied to semantic object-goal navigation, 
 are trained to locate objects specified by high-level semantic descriptions
 (e.g., object categories or language embeddings)~\cite{majumdarZSONZeroShotObjectGoal2023,ramrakhyaPIRLNavPretrainingImitation2023,ramakrishnanPONIPotentialFunctions2022}.
 
-A key advantage of \ac{RL}-based semantic exploration lies in its flexibility. Complex navigation behaviors can be learned directly from interaction data without manually designing exploration strategies. However, this flexibility comes at the cost of extensive training requirements, limited interpretability, and reduced robustness to domain shifts, as policies often overfit to the visual statistics and dynamics of the training environments~\cite{ghasemiComprehensiveSurveyReinforcement2025,majumdarZSONZeroShotObjectGoal2023}. As a result, many such approaches are primarily evaluated in simulation and struggle to generalize to previously seen scenes, object appearances, or sensor configurations. Commonly, \ac{RL} algorithms are optimized via policy gradient methods~\cite{thomasPolicyGradientMethods2017}, which directly adjust the policy parameters $\theta$ to maximize the expected cumulative reward $J(\theta)$:
+A key advantage of \ac{RL}-based semantic exploration lies in its flexibility. Complex navigation behaviors can be learned directly from interaction data without manually designing exploration strategies. However, this flexibility comes at the cost of extensive training requirements, limited interpretability, and reduced robustness to domain shifts, as policies often overfit to the visual statistics and dynamics of the training environments~\cite{ghasemiComprehensiveSurveyReinforcement2025,majumdarZSONZeroShotObjectGoal2023}. As a result, many such approaches are primarily evaluated in simulation and struggle to apply to previously unseen scenes, object appearances, or sensor configurations. Commonly, \ac{RL} algorithms are optimized via policy gradient methods~\cite{thomasPolicyGradientMethods2017}, which directly adjust the policy parameters $\theta$ to maximize the expected cumulative reward $J(\theta)$:
 
 \begin{equation}
 \nabla_{\theta} J(\theta) =
@@ -83,39 +88,41 @@ The policy is optimized using a shaped reward function:
 r_t = r_{\text{success}} + r_{\text{angle-success}} - \Delta d_{tg} - \Delta a_{tg} + r_{\text{slack}},
 \end{equation}
 
-where $r_{\text{success}}$ rewards successful target localization, $r_{\text{angle-success}}$ encourages correct orientation, $\Delta d_{tg}$ and $\Delta a_{tg}$ penalize distance and angular deviation, respectively, and $r_{\text{slack}}$ promotes efficient navigation. 
-At inference time, the image-based goal embedding is replaced by the CLIP embedding of a textual object description, enabling zero-shot generalization to unseen object categories. 
-The action space is discrete and consists of \textit{move forward}, \textit{turn left}, \textit{turn right}, and \textit{stop}. The reward function is used exclusively during training to learn the navigation policy during inference, the agent selects actions solely based on the learned policy without
-access to the reward signal.
+where $r_{\text{success}}$ rewards successful target localization, $r_{\text{angle-success}}$ encourages correct orientation, $\Delta d_{tg}$ and $\Delta a_{tg}$ penalize distance and angular deviation, respectively, and $r_{\text{slack}}$ is a negative constant, which penalizes inefficient actions per step~\cite{majumdarZSONZeroShotObjectGoal2023}. At inference time, the image-based goal embedding is replaced by the CLIP embedding of a textual object description, enabling zero-shot generalization to unseen object categories. The action space is discrete and consists of \textit{move forward}, \textit{turn left}, \textit{turn right}, and \textit{stop}. The reward function is used exclusively during training to learn the navigation policy during inference, the agent selects actions solely based on the learned policy without access to the reward signal.
 
 While \ac{ZSON} demonstrates strong zero-shot object generalization, exploration behavior remains implicitly encoded in the learned policy, which makes it difficult to interpret or adapt to new scenarios. As a consequence, the agent tends to revisit visually familiar regions and lacks explicit mechanisms for systematic exploration of unknown space. Furthermore, the end-to-end \ac{RL} formulation reduces interpretability and necessitates retraining when visual conditions or environment layouts deviate from the training distribution. Nevertheless, \ac{ZSON} represents a significant step toward flexible and generalizable semantic exploration by integrating vision-language models with reinforcement learning.
 
 % ---------------------- PIRLNav ----------------------
 
-\citeauthor{ramrakhyaPIRLNavPretrainingImitation2023}~\cite{ramrakhyaPIRLNavPretrainingImitation2023} introduced \ac{PIRLNav}, a two-stage framework that combines behavior cloning (\ac{BC}) with \ac{RL} to improve generalization in semantic navigation tasks. In the first stage, a navigation policy is pretrained via imitation learning on large-scale human demonstrations, learning to reproduce expert actions from observations that include RGB images, pose information, and a categorical goal representation. This pretraining stage provides a strong initialization, which reduces the training time and sample complexity required for subsequent reinforcement learning. Furthermore, with respect to interpretability, the use of \ac{BC} allows for some insight into the learned behavior, as it is directly derived from human demonstrations. The pre-trained ObjectNav humand demonstraded policy is trained using supervised learning to minimize the cross-entropy loss between predicted and expert actions:
+\citeauthor{ramrakhyaPIRLNavPretrainingImitation2023}~\cite{ramrakhyaPIRLNavPretrainingImitation2023} introduced \ac{PIRLNav}, a two-stage framework that combines \ac{BC} with \ac{RL} to improve generalization in semantic navigation tasks. In the first stage, a navigation policy is pretrained via imitation learning on large-scale human demonstrations, learning to reproduce expert actions from observations that include \ac{RGB} images, pose information, and a categorical goal representation. This pretraining stage provides a strong initialization, which reduces the training time and sample complexity required for subsequent reinforcement learning. The behavior cloning objective is formulated as a cross-entropy loss over expert actions (see Equation~\ref{eq:pirl_nav:bc_loss}).
+
+A stochastic navigation policy is denoted by $\pi_\theta(a \mid s)$, parameterized by $\theta$, mapping an observation $s$ to a distribution over actions $a$. Training objectives are expressed as loss functions $\mathcal{L}(\theta)$ minimized with respect to $\theta$. The pretrained ObjectNav policy is trained using supervised learning to minimize the behavior cloning loss in Equation~\ref{eq:pirl_nav:bc_loss},
 
 \begin{equation}
-\mathcal{L}_{\text{BC}} = - \sum_{t=1}^{T} \log \pi(a_t^* \mid s_t),
+\mathcal{L}_{\text{BC}}(\theta) = - \sum_{t=1}^{T} \log \pi_\theta(a_t^* \mid s_t),
+\label{eq:pirl_nav:bc_loss}
 \end{equation}
 
-where \(a_t^*\) denotes the expert action at time \(t\) and \(s_t\) represents the agent's observation. The ObjectNav policy is trained with a CNN+RNN Network, in which a pre-trained vision backbone, \ac{DINO}, extracts visual features from RGB images and feeds into the nav policy network along with pose and goal information.
+where $a_t^*$ denotes the expert action at time step $t$ and $s_t$ denotes the agent observation. The ObjectNav policy is trained with a \ac{CNN}+\ac{RNN} architecture, in which a pretrained vision backbone, \ac{DINO}, extracts visual features from RGB images and feeds them into the navigation policy network along with pose and goal information.
 
-In the second stage, the pretrained policy is fine-tuned using \ac{RL}, where the objective is to maximize the expected discounted reward:
+In the second stage, the pretrained policy is fine-tuned using \ac{RL} by maximizing the expected discounted return (see Equation~\ref{eq:pirl_nav:rl_objective}):
 
 \begin{equation}
-\pi^{*} = \arg\max_{\pi} \mathbb{E}_{\tau \sim \pi} 
-\left[ \sum_{t=1}^{T} \gamma^{t-1} r_t \right].
+\theta^{*} = \arg\max_{\theta} \mathbb{E}_{\tau \sim \pi_\theta}
+\left[ \sum_{t=1}^{T} \gamma^{t-1} r_t \right],
+\label{eq:pirl_nav:rl_objective}
 \end{equation}
 
-where \(\tau\) denotes trajectories sampled from the policy \(\pi\), \(r_t\) is the reward at time \(t\), and \(\gamma\) is the discount factor. Although this hybrid training strategy improves sample efficiency and navigation robustness in simulation, the resulting policy remains a black-box model. 
-It does not maintain an explicit semantic memory and requires retraining to adapt to new visual domains or sensor modalities.
+where $\tau = (s_1,a_1,\dots,s_T,a_T)$ denotes a trajectory generated by executing $\pi_\theta$, $r_t$ is the reward at time step $t$, and $\gamma \in (0,1]$ is the discount factor. Although this hybrid training strategy improves sample efficiency and navigation robustness in simulation, the resulting policy remains a black-box model. It does not maintain an explicit semantic memory and requires retraining to adapt to new visual domains or sensor modalities.
+
 
 % ---------------------- PONI ----------------------
 
-To address the limited interpretability of end-to-end policies, \citeauthor{ramakrishnanPONIPotentialFunctions2022}~\cite{ramakrishnanPONIPotentialFunctions2022} proposed \ac{PONI}, a supervised, map-based semantic exploration framework. Rather than learning low-level actions, \ac{PONI} predicts high-level exploration objectives in the form of potential fields defined over a partial semantic map. Two complementary potentials are estimated: an area potential that encourages exploration of unknown space, and an object potential that estimates proximity to the target category. Exploration decisions are derived by scoring geometric frontiers according to a weighted combination of these potentials:
+To address the limited interpretability of end-to-end policies, \citeauthor{ramakrishnanPONIPotentialFunctions2022}~\cite{ramakrishnanPONIPotentialFunctions2022} proposed \ac{PONI}, a supervised, map-based semantic exploration framework. Rather than learning low-level actions, \ac{PONI} predicts high-level exploration objectives in the form of potential fields defined over a partial semantic map. Two complementary potentials are estimated: an area potential that encourages exploration of unknown space $U_t^a$, and an object potential that estimates proximity to the target category $U_t^o$. Exploration decisions are derived by scoring geometric frontiers according to a weighted combination of these potentials (see Equation~\ref{eq:semutil:frontier_utility}),
 
 \begin{equation}
-U_t(f) = \alpha \, U_t^a(f) + (1 - \alpha) \, U_t^o(f),
+U_t(f) = \alpha \, U_t^a(f) + (1 - \alpha) \, U_t^o(f)
+\label{eq:semutil:frontier_utility}
 \end{equation}
 
 where $\alpha$ explicitly controls the trade-off between exploration and exploitation. 
@@ -149,23 +156,23 @@ which map an image \(I\) and a text prompt \(T\) to a common embedding space
 \end{equation}
 
 where \(\mathbf{e}_I, \mathbf{e}_T \in \mathbb{R}^d\) are high-dimensional feature vectors encoding semantic information. Text inputs are tokenized and processed using transformer-based language encoders, while visual
-inputs are decomposed into patches or regions and encoded by a vision backbone (e.g., \ac{CNN} or transformer-based architectures), depending on the model design~\cite{vaswaniAttentionAllYou2023,liBLIP2BootstrappingLanguageImage2023,liGroundedLanguageImagePretraining2022}. Semantic alignment between image and text embeddings is commonly quantified using cosine similarity, which measures the angular similarity between vectors in the shared embedding space (Equation~\ref{eq:vlm_cosine_similarity}):
+inputs are decomposed into patches or regions and encoded by a vision backbone (e.g., \ac{CNN} or transformer-based architectures), depending on the model design~\cite{vaswaniAttentionAllYou2023,liBLIP2BootstrappingLanguageImage2023,liGroundedLanguageImagePretraining2022}. Semantic alignment between image and text embeddings is commonly quantified using cosine similarity, which measures the angular similarity between vectors in the shared embedding space (see Equation~\ref{eq:vlm_cosine_similarity}),
 
 \begin{equation}
 \label{eq:vlm_cosine_similarity}
 \mathrm{sim}(I, T)
 =
 \frac{\mathbf{e}_I \cdot \mathbf{e}_T}
-{\lVert \mathbf{e}_I \rVert \, \lVert \mathbf{e}_T \rVert}.
+{\lVert \mathbf{e}_I \rVert \, \lVert \mathbf{e}_T \rVert}
 \end{equation}
 
 A higher similarity score indicates stronger semantic correspondence between the visual observation
 and the textual query. This representation enables open-vocabulary reasoning, as arbitrary object descriptions can be
 matched against visual observations without retraining, forming the foundation for zero-shot semantic perception in exploration tasks.
 
-The defining characteristic of foundation-model-based exploration is the explicit separation between geometric navigation and semantic understanding. Geometric structure is typically handled by classical mapping and planning components (e.g., frontier-based exploration), while semantic relevance is inferred from pretrained models such as CLIP, BLIP-2, or grounding-capable detectors~\cite{gadreCoWsPastureBaselines2022,yokoyamaVLFMVisionLanguageFrontier2023,liuGroundingDINOMarrying2024}. This modularity improves interpretability and adaptability, but introduces new challenges related to uncertainty handling, semantic consistency, and long-term memory.
+Foundation-model-based exploration is characterised by explicit separation between geometric navigation and semantic understanding. Geometric structure is typically handled by classical mapping and planning components (e.g., frontier-based exploration), while semantic relevance is inferred from pretrained models such as CLIP~\cite{radfordLearningTransferableVisual2021}, BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023}, or grounding-capable detectors~\cite{gadreCoWsPastureBaselines2022,yokoyamaVLFMVisionLanguageFrontier2023,liuGroundingDINOMarrying2024}. This modularity improves interpretability and adaptability, but introduces new challenges related to uncertainty handling, semantic consistency, and long-term memory.
 
-Table~\ref{tab:sota:foundation_design_patterns} summarizes representative foundation-model-based exploration frameworks in five categories: the source of semantic signals, the mechanism used to fuse semantics with geometric exploration, the handling of detection confidence and uncertainty, the underlying semantic data representation, and the dominant failure causalities observed in practice.
+Table~\ref{tab:sota:foundation_design_patterns} summarizes foundation-model-based exploration frameworks in five categories: (1) the source of semantic signals, (2) the mechanism used to fuse semantics with geometric exploration, (3) the handling of detection confidence and uncertainty, (4) the underlying semantic data representation, and (5) the dominant failure causalities observed in practice.
 
 \begin{table}[H]
     \centering
@@ -173,7 +180,13 @@ Table~\ref{tab:sota:foundation_design_patterns} summarizes representative founda
     \renewcommand{\arraystretch}{1.2}
     \setlength{\tabcolsep}{4pt}
     \begin{tabularx}{\textwidth}{
-    |l|X|X|X|X|X|}
+        |l|
+        >{\raggedright\arraybackslash}X|
+        >{\raggedright\arraybackslash}X|
+        >{\raggedright\arraybackslash}X|
+        >{\raggedright\arraybackslash}X|
+        >{\raggedright\arraybackslash}X|
+    }
     \hline
     \textbf{Method} 
     & \textbf{Semantic signal source} 
@@ -232,9 +245,9 @@ P(F) = P(F \mid d_i^{t}, o^{t}, r^{t})
 
 \(P(F)\) denotes the probability of selecting frontier \(F\), conditioned on detected objects \(d_i^{t}\), current image observations \(o^{t}\), and the robot pose \(r^{t}\) at time \(t\). This formulation is implemented using \ac{PSL}, which fuses visual detections with language-derived priors about object co-occurrences and spatial relationships. The robot then selects the frontier with the highest combined score, balancing geometric and semantic information to improve search efficiency. For navigating toward target objects, a classical \ac{A*} planner is employed to compute collision-free paths based on the occupancy map.
 
-~\citeauthor{zhouESCExplorationSoft2023} employs \ac{GLIP}~\cite{liGroundedLanguageImagePretraining2022} as the detection backbone to compute 2D bounding boxes, class labels, and confidence scores for objects within the robot’s \ac{FOV}. While effective in simulation, the approach introduces notable computational overhead due to repeated \ac{LLM} inference and PSL optimization. As a consequence of relying on single-step detections and static commonsense priors, errors introduced by false positives are not attenuated over time. Once a misleading semantic hypothesis is introduced, the probabilistic reasoning layer tends to reinforce rather than correct it, leading to persistent semantic bias during exploration.
+~\citeauthor{zhouESCExplorationSoft2023}~\cite{zhouESCExplorationSoft2023} employs \ac{GLIP}~\cite{liGroundedLanguageImagePretraining2022} as the detection backbone to compute 2D bounding boxes, class labels, and confidence scores for objects within the robot’s \ac{FOV}. While effective in simulation, the approach introduces notable computational overhead due to repeated \ac{LLM} inference and PSL optimization. As a consequence of relying on single-step detections and static commonsense priors, errors introduced by false positives are not attenuated over time. Once a misleading semantic hypothesis is introduced, the probabilistic reasoning layer tends to reinforce rather than correct it, leading to persistent semantic bias during exploration.
 
-Through ablation studies, \citeauthor{zhouESCExplorationSoft2023} observed that object-object and object-room relational priors can occasionally degrade performance, as commonsense relationships are inherently probabilistic rather than deterministic. Additionally, while \ac{ESC} maintains a local semantic map during navigation, it lacks mechanisms for long-term memory or belief revision. Consequently, once an incorrect detection or prior is introduced, the framework has no learned means of down-weighting or correcting it over time, which can lead to persistent semantic inconsistencies during extended exploration.
+Through ablation studies, \citeauthor{zhouESCExplorationSoft2023}~\cite{zhouESCExplorationSoft2023} observed that object-object and object-room relational priors can occasionally degrade performance, as commonsense relationships are inherently probabilistic rather than deterministic. Additionally, while \ac{ESC} maintains a local semantic map during navigation, it lacks mechanisms for long-term memory or belief revision. Consequently, once an incorrect detection or prior is introduced, the framework has no learned means of down-weighting or correcting it over time, which can lead to persistent semantic inconsistencies during extended exploration.
 
 In contrast to such \ac{LLM} reasoning-based systems, \citeauthor{gadreCoWsPastureBaselines2022}~\cite{gadreCoWsPastureBaselines2022} proposed \ac{CoW}, a lightweight vision-language exploration framework that relies purely on image-text alignment from CLIP~\cite{radfordLearningTransferableVisual2021} without requiring explicit frontier detection, semantic mapping, or object segmentation. The method guides the robot toward directions with the highest cosine similarity (see Equation~\ref{eq:vlm_cosine_similarity}) between the current visual observation and the target object description.
 
@@ -261,7 +274,7 @@ as illustrated in Figure~3 of the original paper (showing the interaction betwee
  
 Importantly, the utility map in \ac{SemUtil} is not persistent, it is recomputed at every timestep based solely on the current observation and semantic point cloud, without maintaining a long-term memory of past detections or map updates. While this design simplifies computation and eliminates the need for training, it also limits the system’s ability to reason over time or correct previous errors. The reliance on a closed-set detector (Mask~R-CNN) restricts open-vocabulary generalization, and any incorrect detection directly corrupts the semantic point cloud, thereby distorting the frontier scoring and leading to suboptimal exploration decisions.  Furthermore, since the framework lacks belief revision or memory-based fusion, false detections persist until they leave the robot’s current field of view, reducing consistency and efficiency in long-term navigation.
 
-Unlike \citeauthor{chenHowNotTrain2023}~\cite{chenHowNotTrain2023}, who construct a utility map from class-based detections and semantic projections that are recomputed each step, thereby risking information loss or semantic inconsistency, \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023} directly leverages pretrained vision-language models to compute semantic value maps from raw RGB observations. Rather than relying on symbolic object classes, \ac{VLFM} computes a continuous image-text similarity score between the robot’s current observation and the target text prompt using BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023}, as formulated through the cosine similarity function in Equation~\ref{eq:vlm_cosine_similarity}~\cite{gadreCoWsPastureBaselines2022}.  
+In contrast to SemUtil~\cite{chenHowNotTrain2023}, \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023} derives semantic values directly from RGB observations using a pretrained VLM (BLIP-2)~\cite{liBLIP2BootstrappingLanguageImage2023}. The target relevance is the cosine similarity to the text prompt (see Equation~\ref{eq:vlm_cosine_similarity})~\cite{gadreCoWsPastureBaselines2022}.
 
 The resulting similarity values are spatially projected onto a top-down occupancy grid according to the robot’s \ac{FOV}, forming a \textit{value map} that quantifies the semantic likelihood of each region leading toward the target object. To account for reduced reliability near the image periphery, a Gaussian weighting function attenuates confidence values based on angular distance from the optical axis (see Fig.~3 in the original paper~\cite{yokoyamaVLFMVisionLanguageFrontier2023}). This value map is continuously updated through a weighted averaging scheme that fuses new and previous similarity scores according to their confidence weights, enabling smooth map updates and spatial consistency across frames. \ac{BLIP-2} is not used for caption generation, but rather for retrieving text-image embeddings to compute similarity scores~\cite{liBLIP2BootstrappingLanguageImage2023,yokoyamaVLFMVisionLanguageFrontier2023}.
 
@@ -274,17 +287,13 @@ Foundation-model-based exploration approaches enable zero-shot semantic navigati
 These recurring limitations motivate the development of exploration frameworks that combine
 open-vocabulary semantic perception with persistent, revisable semantic memory, which is the focus of this work.
 
-\section{Map Reconstruction and Persistent Semantic Mapping}
-This section reviews state-of-the-art methods for persistent semantic mapping both exploration-driven and mapping-centric settings. Existing methods of saving semantic information within different spatial representations are discussed, along with techniques for updating and revising semantic beliefs over time, with the aim of improving efficiency in multi-object exploration tasks.
-
-\subsection*{Persistent Semantic Mapping for Exploration}
+\section{Persistent Semantic Mapping for Exploration}
 Table~\ref{tab:sota:persistent_mapping_exploration} summarizes recent approaches to persistent semantic mapping for exploration tasks. The table highlights how different methods store semantic information, update it over time, and whether they support belief revision, revealing a common lack of mechanisms for correcting erroneous semantic memories.
 
 \begin{table}[H]
     \centering
     \footnotesize
     \renewcommand{\arraystretch}{1.2}
-
     \begin{tabular}{
     l |
     p{3.0cm}
@@ -320,7 +329,7 @@ Table~\ref{tab:sota:persistent_mapping_exploration} summarizes recent approaches
     & \xmark
     & Irreversible feature averaging causes semantic noise and ambiguity \\
 
-    \textbf{PIGEON~\cite{PIGEONVLMDrivenObject}}
+    \textbf{PIGEON~\cite{pengPIGEONVLMDrivenObject2025}}
     & Language-conditioned episodic visual memory (\ac{PoI} snapshots)
     & 2D geometric exploration map + episodic \ac{PoI} memory
     & \cmark
@@ -348,20 +357,20 @@ Table~\ref{tab:sota:persistent_mapping_exploration} summarizes recent approaches
 
 % ---------------------- OneMap, VLMaps ----------------------
 
-A representative approach to building persistent open-vocabulary semantic maps during exploration
+A approach to building persistent open-vocabulary semantic maps during exploration
 is presented by \citeauthor{buschOneMapFind2025}~\cite{buschOneMapFind2025} and
 \citeauthor{huangVisualLanguageMaps2023}~\cite{huangVisualLanguageMaps2023}.
 Both methods construct a 2.5D top-down grid map in which semantic information is stored at the
 cell level in the form of language-aligned visual embeddings, enabling open-vocabulary querying
 via image-text similarity.
 
-In both frameworks, incoming RGB-D observations are processed by a vision-language model to
+In both works, incoming RGB-D observations are processed by a vision-language model to
 extract dense semantic features. In \ac{OneMap}, global \ac{CLIP} image embeddings are projected
 into the map using camera intrinsics and extrinsics, while \ac{VLMaps} employs language-driven
 semantic segmentation (LSeg) to obtain dense per-pixel language embeddings~\cite{buschOneMapFind2025,huangVisualLanguageMaps2023}. These features are associated with corresponding grid cells in the top-down map by back-projecting depth pixels into 3D space and discretizing them onto the 2.5D grid representation.
 
 As the robot explores, newly observed embeddings are fused with existing map entries in an
-accumulative manner. \citeauthor{buschOneMapFind2025} perform uncertainty-aware recursive fusion,
+accumulative manner. \citeauthor{buschOneMapFind2025}~\cite{buschOneMapFind2025} perform uncertainty-aware recursive fusion,
 in which observations with higher confidence exert greater influence on the stored semantic
 representation, whereas \citeauthor{huangVisualLanguageMaps2023} apply multi-view feature averaging
 without explicit uncertainty modeling. In both cases, once semantic features are integrated into the map, they are not selectively down-weighted or removed at later time steps.
@@ -384,20 +393,16 @@ accurate 3D object localization for downstream tasks such as manipulation or gra
 
 % Pigeon
 
-\citeauthor{PIGEONVLMDrivenObject}~\cite{PIGEONVLMDrivenObject} introduced \textit{PIGEON}, a \ac{VLM}-driven exploration framework that replaces
-persistent dense semantic maps with an episodic, object-centric memory abstraction.
-Instead of maintaining a globally consistent semantic map, PIGEON represents the environment
-as a set of semantically meaningful \textit{\acp{PoI}}, corresponding to geometrically salient
-observation locations enriched with visual context.
+\citeauthor{pengPIGEONVLMDrivenObject2025}~\cite{pengPIGEONVLMDrivenObject2025} introduced \textit{PIGEON}, a \ac{VLM}-driven exploration framework that replaces persistent dense semantic maps with an episodic, object-centric memory abstraction. Instead of maintaining a globally consistent semantic map, PIGEON represents the environment as a set of semantically meaningful \textit{\acp{PoI}}, corresponding to geometrically salient observation locations enriched with visual context.
 
 At each \ac{PoI}, the robot stores a small set of \ac{RGB} observations captured from multiple
-viewpoints~\cite{PIGEONVLMDrivenObject}.
+viewpoints~\cite{pengPIGEONVLMDrivenObject2025}.
 Semantic evaluation is deferred to query time, where a vision-language model jointly reasons over the language query and the stored \ac{RGB} observations to assess the semantic relevance of each \ac{PoI}.
 These relevance assessments are used to guide \ac{PoI} selection, while low-level navigation between \acp{PoI} is handled by a classical planner. Reinforcement learning is employed to fine-tune the VLM’s \ac{PoI} selection behavior, rather than to directly select navigation actions.
 
 Formally, each \ac{PoI} $p_i$ is defined by a spatial location $\mathbf{x}_i$ and an associated
 set of \ac{RGB} observations $\mathcal{I}_i = \{I_{i,1}, \dots, I_{i,K}\}$ captured from different
-viewpoints at that location~\cite{PIGEONVLMDrivenObject}.
+viewpoints at that location~\cite{pengPIGEONVLMDrivenObject2025}.
 No semantic labels, object identities, or belief states are stored; semantic interpretation is
 performed on demand and is not consolidated into a persistent semantic world model.
 
@@ -406,7 +411,7 @@ In contrast to dense mapping approaches such as \ac{OneMap}~\cite{buschOneMapFin
 semantic features into a persistent spatial representation.
 As a result, it is less susceptible to semantic drift caused by irreversible belief fusion, but
 does not support belief revision or long-term semantic consistency across multiple object-search
-tasks~\cite{PIGEONVLMDrivenObject}.
+tasks~\cite{pengPIGEONVLMDrivenObject2025}.
 
 Methodologically, PIGEON occupies an intermediate position between dense semantic mapping and
 object-centric persistent representations such as DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025}
@@ -474,10 +479,10 @@ navigates toward them using a classical \ac{A*} planner~\cite{kabirEnhancedRobot
 
 By separating short-term perceptual memory from long-term semantic anchors, DualMap achieves more structured and interpretable language-guided navigation than dense feature-map approaches. However, semantic information in DualMap is primarily used for exploitation of previously observed anchors, while exploration itself remains purely geometry-driven. The framework does not provide a mechanism or hyperparameter to explicitly balance semantic exploration and exploitation, as semantic reasoning is only applied after anchors have been formed~\cite{jiangDualMapOnlineOpenVocabulary2025}. As a result, DualMap favors semantic exploitation over semantic exploration, which can limit its ability to actively search for objects that have not yet been associated with existing anchors.
 
-\subsection*{Semantic Scene Reconstruction}
+\section{Semantic Scene Reconstruction}
 \label{sec:sota:semantic_scene_reconstruction}
 
-In order to incorporate persistent semantic memory into exploration systems, it is essential to build and maintain accurate 3D reconstructions of the environment enriched with semantic information. This section reviews state-of-the-art methods for semantic scene reconstruction, focusing on how different approaches represent spatial and semantic information, their ability to operate in real time, and whether they support object-centric reasoning and which foundation models they leverage. Table~\ref{tab:sota:semantic_scene_reconstruction_overview} summarizes key characteristics of recent semantic scene reconstruction methods.
+In order to incorporate persistent semantic memory into exploration systems, to build and maintain accurate 3D reconstructions of the environment enriched with semantic information. This section reviews state-of-the-art methods for semantic scene reconstruction, focusing on how different approaches represent spatial and semantic information, their ability to operate in real time, and whether they support object-centric reasoning and which foundation models they leverage. Table~\ref{tab:sota:semantic_scene_reconstruction_overview} summarizes key characteristics of recent semantic scene reconstruction methods.
 
 \begin{table}[H]
     \centering
@@ -525,8 +530,8 @@ In order to incorporate persistent semantic memory into exploration systems, it 
     & region-based TSDF
     & SEEM~\cite{zouSegmentEverythingEverywhere2023}
     & \cmark
-    & \cmark
-    & \xmark \\
+    & \cmark$^{\dagger}$
+    & \cmark \\
 
     RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025}
     & Voxel grid + semantic ray field
@@ -540,12 +545,14 @@ In order to incorporate persistent semantic memory into exploration systems, it 
     & CLIP~\cite{radfordLearningTransferableVisual2021}, SAM2~\cite{raviSAM2Segment2024}, DINOv2~\cite{oquabDINOv2LearningRobust2024}
     & \cmark
     & \cmark
-    & \cmark \\
+    & \xmark \\
 
     \bottomrule
 \end{tabular}
-% TODO: New caption
-\caption{Comparison of semantic scene reconstruction methods. The table contrasts spatial representations, semantic abstractions, temporal update strategies, and the degree of online integration with SLAM systems. Zero-shot refers to deployment in unseen scenes.}\label{tab:sota:semantic_scene_reconstruction_overview}
+\vspace{2pt}
+{\footnotesize $^{\dagger}$Real-time refers to geometric reconstruction. Semantic inference runs asynchronously or at a lower rate.}
+\caption{Overview of semantic scene reconstruction methods and their core design choices. The table compares representation, foundation model, zero-shot applicability, real-time capability, and object-centricity.}
+\label{tab:sota:semantic_scene_reconstruction_overview}
 \end{table}
 
 
@@ -715,26 +722,13 @@ upsample coarse relevance maps to pixel-level segmentations.
 For multi-view reconstruction, language-grounded features are projected into 3D using depth and
 camera poses and fused into a persistent point cloud representation, enabling open-vocabulary
 querying via cosine similarity. Unlike prior object-centric mapping approaches such as
-ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023} and Clio~\cite{maggioClioRealtimeTaskDriven2024},
-OTAS does not require explicit object detection or instance segmentation, allowing it to capture amorphous
-or unstructured semantic entities commonly found in outdoor environments, such as vegetation, terrain types and natural landmarks~\cite{schwaigerOTASOpenvocabularyToken2025}. 
+ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023} and Clio~\cite{maggioClioRealtimeTaskDriven2024}, OTAS does not require explicit object detection or instance segmentation, allowing it to capture amorphous or unstructured semantic entities commonly found in outdoor environments, such as vegetation, terrain types and natural landmarks~\cite{schwaigerOTASOpenvocabularyToken2025}. 
 
 \section{Identified Research Gaps in State of the Art}
 
-Table~\ref{tab:sota:summary} provides a comprehensive overview of state-of-the-art methods for
-open-vocabulary semantic exploration and mapping.
-The methods are categorized into four main groups: reinforcement learning-based approaches,
-foundation-model-based exploration, foundation-model-based exploration with persistent semantic
-mapping, and mapping-centric methods.
-The second column indicates the type of exploration strategy employed, while the third column
-highlights whether each method incorporates an explicit exploration-exploitation tradeoff
-mechanism, i.e., whether the balance between exploring new areas and exploiting known information
-can be controlled.
-The fourth and fifth columns denote whether the method supports zero-shot generalization to unseen
-environments and real-time operation, respectively.
-The final column indicates whether the method maintains a persistent semantic memory.
+Table~\ref{tab:sota:summary} provides a overview of recent methods for open-vocabulary semantic exploration and mapping. The methods are categorized into four main groups: (a) reinforcement learning-based approaches, (b) foundation-model-based exploration, (c) foundation-model-based exploration with persistent semantic mapping, and (d) mapping-centric methods. The second column indicates the type of exploration strategy employed, while the third column highlights whether each method incorporates an explicit exploration-exploitation tradeoff mechanism, i.e., whether the balance between exploring new areas and exploiting known information can be controlled. The fourth and fifth columns denote whether the method supports zero-shot generalization to unseen environments and real-time operation, respectively.The final column indicates whether the method maintains a persistent semantic memory.
 
-\begin{table}[H]
+\begin{table}[htbp]
     \centering
     \footnotesize
     \renewcommand{\arraystretch}{1.2}
@@ -750,27 +744,32 @@ The final column indicates whether the method maintains a persistent semantic me
     \toprule
     \textbf{Method}
     & \textbf{Exploration Type}
-    & \textbf{Exploration-Exploitation Tradeoff}
+    & \textbf{Explicit Exploration-Exploitation Tradeoff}
     & \textbf{Zero-Shot}
     & \textbf{Real-Time}
     & \textbf{Persistent Semantic Memory} \\
+
     \midrule
+    \multicolumn{6}{l}{\textbf{(a) Reinforcement learning-based}} \\
+    \addlinespace[2pt]
 
     ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}
     & Reinforcement Learning
     & \xmark
     & \xmark
-    & \xmark (scene specific training)
+    & \xmark~(scene specific training)
     & \xmark \\
 
     PONI~\cite{ramakrishnanPONIPotentialFunctions2022}
     & Reinforcement Learning
     & \cmark
     & \xmark
-    & \xmark (scene specific training)
+    & \xmark~(scene specific training)
     & \xmark \\
 
-    \midrule
+    \addlinespace[1pt]
+    \multicolumn{6}{l}{\textbf{(b) Foundation-model-based exploration}} \\
+    \addlinespace[1pt]
 
     VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}
     & Foundation-model
@@ -779,7 +778,9 @@ The final column indicates whether the method maintains a persistent semantic me
     & \cmark
     & \xmark \\
 
-    \midrule
+    \addlinespace[1pt]
+    \multicolumn{6}{l}{\textbf{(c) Foundation-model + persistent semantic mapping}} \\
+    \addlinespace[1pt]
 
     OneMap~\cite{buschOneMapFind2025}
     & Foundation-model
@@ -797,12 +798,14 @@ The final column indicates whether the method maintains a persistent semantic me
 
     RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025}
     & Foundation-model
-    & \xmark (planner-agnostic)
+    & \xmark~(planner-agnostic)
     & \cmark
     & \cmark
     & \cmark \\
 
-    \midrule
+    \addlinespace[1pt]
+    \multicolumn{6}{l}{\textbf{(d) Mapping-centric methods}} \\
+    \addlinespace[1pt]
 
     ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023}
     & Mapping-centric
@@ -882,7 +885,7 @@ Mapping-centric approaches such as ConceptGraphs~\cite{guConceptGraphsOpenVocabu
 OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}, and
 OTAS~\cite{schwaigerOTASOpenvocabularyToken2025} focus on building rich semantic scene
 representations but do not address exploration behavior.
-These methods lack mechanisms for semantic-driven frontier selection or adaptive control of
+These methods lack mechanisms for semantic-driven frontier selection or tunable control of
 exploration based on uncertainty or memory reliability.
 
 In summary, existing approaches either perform semantic exploration without persistent, revisable

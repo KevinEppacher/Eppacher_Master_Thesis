@@ -2,53 +2,48 @@
 
 \chapter{Methods}
 \label{ch:methods}
-This chapter presents the methodology of the proposed hybrid semantic exploration system, 
-designed to mitigate the key limitations identified in Chapter~\ref{ch:sota}, namely the 
-absence of persistent semantic memory, the reliance on single-source semantic detections, 
-and the lack of an explicit and controllable trade-off between semantic exploration and 
-exploitation in existing approaches.
 
-The proposed system integrates zero-shot semantic perception with frontier-based exploration and persistent 3D semantic mapping into a unified, closed-loop decision-making framework. Semantic evidence acquired during exploration is continuously fused into a long-term spatial memory, while exploration behavior is adaptively modulated based on the reliability of accumulated semantic beliefs.
+The method proposed by this thesis combines zero-shot semantic perception with frontier-based exploration and persistent 3D semantic mapping into a unified, closed-loop decision-making framework. Semantic evidence acquired during exploration is continuously fused into a long-term spatial memory, while exploration behavior is adaptively modulated based on the reliability of accumulated semantic beliefs.
 
 An overview of the system architecture is provided in Section~\ref{sec:methods:system_overview}, followed by detailed descriptions of the core components: semantic frontier exploration (Section~\ref{sec:methods:semantic_frontier}), promptable zero-shot detection (Section~\ref{sec:methods:open_vocabulary_detection}), persistent semantic 3D mapping (Section~\ref{sec:methods:persistent_mapping}), the multi-source fusion strategy governing semantic belief updates (Section~\ref{sec:methods:fusion_strategy}), and the behavior tree used to orchestrate semantic-guided exploration and navigation (Section~\ref{sec:methods:behavior_tree}).
 
 
-\section{System Overview}
+\section{Architecture Overview}
 \label{sec:methods:system_overview}
 
-The proposed system follows a modular hybrid architecture that tightly couples semantic perception,
-geometry-driven exploration, and persistent semantic mapping to enable robust open-vocabulary
-object-guided exploration. Figure~\ref{fig:system_overview} provides a high-level overview of the system components and their data flow. The exploration task is specified by a user-provided natural language prompt, which defines the semantic target and conditions the detection, exploration, and fusion modules throughout system execution.
+The proposed system follows a modular hybrid architecture that couples semantic perception,
+geometry-driven exploration, and persistent semantic mapping to enable open-vocabulary
+object-guided exploration. Figure~\ref{fig:system_overview} provides a high-level overview of the
+components and data flow. The exploration task is specified by a natural language prompt, which
+defines the semantic target and conditions the detection, exploration, and fusion modules.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{Images/03_methods/sage_pipeline.png}
-    \caption{Overview of the SAGE system architecture for open-vocabulary semantic exploration.
-    RGB-D observations and robot poses are processed by three parallel modules: 
-    (a) a persistent semantic mapping backend (OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}) that maintains a semantic 3D map, 
-    (b) a semantic frontier exploration module that scores geometric frontiers based on language-guided relevance, and 
-    (c) a promptable zero-shot detection pipeline for object hypotheses.
-    All semantic hypotheses are represented as graph nodes, filtered by relevance maps, and fused using a multi-source fusion strategy.
-    A behavior tree orchestrates exploration, verification, and navigation actions, while low-level motion planning and execution are handled by the ROS~2 Navigation Stack~\cite{macenskiDesksROSMaintainers2023,makoviychukIsaacGymHigh2021}.}
+    \includegraphics[width=\textwidth]{Images/03_methods/architecture/sage_pipeline.png}
+    \caption{Overview of the \textbf{SAGE} pipeline for open-vocabulary semantic exploration. RGB-D observations $O_t$ and poses $P_t$ are processed by three parallel modules: (a) persistent 3D semantic mapping $M_t^{\text{sem}}$ (OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}), (b) language-guided frontier scoring over candidates $F_t$ using \ac{BLIP-2}~\cite{liBLIP2BootstrappingLanguageImage2023}, and (c) promptable zero-shot detection $D_t^{\text{det}}$. The resulting hypotheses are filtered by relevance maps and fused into graph nodes $G_t^{\text{fused}}$. A behavior tree selects the highest-scoring node $G_t^{\text{best}}$ and triggers goal-conditioned navigation.}
 \label{fig:system_overview}
 \end{figure}
 
-Robot observations at time $t$ are represented as RGB-D measurements $O_t = \{I_t, D_t\}$, where $I_t$ denotes the RGB image and $D_t$ the depth map. The robot pose in the world frame is denoted by $P_t$. To reduce computational load, observations are temporally and spatially downsampled prior to further processing.
+Robot observations at time $t$ are represented as RGB-D measurements $O_t = \{I_t, D_t\}$, where
+$I_t$ denotes the RGB image and $D_t$ the depth map. The robot pose in the world frame is denoted by
+$P_t$. To reduce computational load, observations are temporally and spatially downsampled prior to
+further processing.
 
 The pre-processed observations are then fed into three parallel modules.
-(a) The \textit{Memory Module} takes as input the current observations $O_t$ and pose $P_t$, obtained from the ROS~2 SLAM Toolbox~\cite{macenskiSLAMToolboxSLAM2021}, and updates the persistent semantic 3D map $M_t$.
-(b) The \textit{Exploration Module} uses $O_t$ and $P_t$ to generate semantic frontiers $F_t$ from the current exploration occupancy grid.
+(a) The \textit{Memory Module} takes as input $O_t$ and $P_t$ and updates the persistent semantic 3D map
+$M_t^{\text{sem}}$.
+(b) The \textit{Exploration Module} uses $O_t$ and $P_t$ to generate frontier candidates $F_t=\{f_i\}$ from the current geometric exploration map and assigns each candidate a semantic relevance score $s_i^{\text{exp}}$ based on vision-language similarity computed with \ac{BLIP-2}~\cite{liBLIP2BootstrappingLanguageImage2023}.
 (c) The \textit{Detection Module} processes $O_t$ to produce promptable zero-shot detections $D_t^{\text{det}}$.
 
-Each module outputs a set of graph nodes representing semantic hypotheses.
-Specifically, the memory module produces memory graph nodes $G_t^{\text{mem}}$ derived from the persistent map $M_t$, the exploration module outputs exploration graph nodes $G_t^{\text{exp}}$ corresponding to semantic frontiers $F_t$, and the detection module outputs detection graph nodes $G_t^{\text{det}}$ obtained from $D_t^{\text{det}}$.
-This unified graph abstraction enables heterogeneous semantic hypotheses to be compared, filtered, and ranked using a common interface.
+Each module outputs a set of graph nodes representing semantic hypotheses. A graph node is defined as
+$g_i = (\mathbf{p}_i, s_i)$ with 3D position $\mathbf{p}_i = (x_i, y_i, z_i)$ and an associated semantic score $s_i \in [0,1]$, where the score is sourced from the respective module, i.e., $s_i \in \{s_i^{\text{mem}}, s_i^{\text{exp}}, s_i^{\text{det}}\}$. Specifically, the memory module produces memory graph nodes $G_t^{\text{mem}}$ derived from $M_t^{\text{sem}}$, the exploration module outputs exploration graph nodes $G_t^{\text{exp}}$ corresponding to $F_t$, and the detection module outputs detection graph nodes $G_t^{\text{det}}$ obtained from $D_t^{\text{det}}$. This unified graph abstraction enables heterogeneous hypotheses to be compared, filtered, and ranked using a common representation.
 
-Prior to fusion, graph nodes are filtered using a relevance map to suppress nodes located in already explored areas. The remaining nodes are fused using the multi-source fusion strategy described in Section~\ref{sec:methods:fusion_strategy}, resulting in a unified set of weighted graph nodes $G_t^{\text{fused}}$.
+Prior to fusion, graph nodes are filtered using a relevance map to suppress candidates in already
+covered regions. The remaining nodes are fused using the multi-source fusion strategy described in
+Section~\ref{sec:methods:fusion_strategy}, resulting in a unified set of weighted graph nodes
+$G_t^{\text{fused}}$.
 
-Finally, the behavior tree described in Section~\ref{sec:methods:behavior_tree} selects the next high-level action based on $G_t^{\text{fused}}$, either navigating toward high-value frontiers for continued exploration or approaching detected objects for verification.
-Low-level motion planning, obstacle avoidance, and execution are handled by the ROS~2 Navigation Stack~\cite{macenskiDesksROSMaintainers2023}.
-
+The Behavior Tree described in Section~\ref{sec:methods:behavior_tree} selects the next high-level action based on $G_t^{\text{fused}}$. In particular, it selects a goal hypothesis $G_t^{\text{best}}$ and invokes a goal-conditioned navigation primitive, $\sigma \leftarrow Navigate(\mathbf{p}(G_t^{\text{best}}))$, where $\sigma \in \{\texttt{success},\texttt{failure},\texttt{timeout}\}$ denotes the execution status.
 
 \section{Semantic Frontier Exploration}
 \label{sec:methods:semantic_frontier}
@@ -722,7 +717,7 @@ latency that prevents bounded real-time execution within robotic control loops.
 
 Related to the proposed object search system, VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023} addresses zero-shot object search by integrating multiple perception modules rather than introducing a single unified detection model. Specifically, VLFM combines a closed-vocabulary detector for fast and reliable detections, an open-vocabulary grounding model that operates at a lower frequency to enable zero-shot detection, and a separate segmentation network to extract object centroids used for navigation toward the target. While this modular design facilitates flexible semantic reasoning, it requires multiple sequential inference stages, resulting in substantial computational overhead and limiting its suitability for real-time deployment.
 
-In contrast, YOLO-E~\cite{wangYOLOERealTimeSeeing2025} unifies promptable zero-shot detection and instance segmentation within a single, efficient architecture. Building upon the YOLO framework~\cite{redmonYouOnlyLook2016} and incorporating CLIP-based vision-language alignment, YOLO-E achieves competitive detection accuracy while maintaining real-time inference. On the LVIS benchmark~\cite{guptaLVISDatasetLarge2019}, YOLO-E reports average precision values of 35.2 and 33.7 for text and image prompts, respectively, surpassing GLIPv2 and GroundingDINO, which achieve 29.0 and 27.4 AP@. Moreover, the \texttt{YOLOE-11-L} variant employs only 26\,M parameters for text prompting and 32\,M parameters for image prompting, compared to over 170\,M parameters for GroundingDINO and more than 230\,M parameters for GLIPv2. With reported inference speeds of 130\,Hz on an NVIDIA T4 GPU and 39.2\,Hz on mobile phone hardware, YOLO-E satisfies the bounded-latency requirements of online robotic exploration.
+In contrast, YOLO-E~\cite{wangYOLOERealTimeSeeing2025} unifies promptable zero-shot detection and instance segmentation within a single, efficient architecture. Building upon the YOLO framework~\cite{redmonYouOnlyLook2016} and incorporating CLIP-based vision-language alignment, YOLO-E achieves competitive detection accuracy while maintaining real-time inference. On the LVIS benchmark~\cite{guptaLVISDatasetLarge2019}, YOLO-E reports average precision values of 35.2 and 33.7 for text and image prompts, respectively, surpassing GLIPv2 and GroundingDINO, which achieve 29.0 and 27.4 AP. Moreover, the \texttt{YOLOE-11-L} variant employs only 26\,M parameters for text prompting and 32\,M parameters for image prompting, compared to over 170\,M parameters for GroundingDINO and more than 230\,M parameters for GLIPv2. With reported inference speeds of 130\,Hz on an NVIDIA T4 GPU and 39.2\,Hz on mobile phone hardware, YOLO-E satisfies the bounded-latency requirements of online robotic exploration.
 
 These properties make YOLO-E particularly well suited for semantic exploration scenarios that require flexible object specification, instance-level spatial reasoning, and real-time operation under limited computational resources.
 
@@ -801,7 +796,10 @@ z
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1.0\textwidth]{Images/03_methods/object_detection/3d_pinhole_projection.png}
-    \caption{YOLO-E detection to graph node 3D localization}
+    \caption{
+        Back-projection of a 2D YOLO-E detection into 3D space using the pinhole camera model.
+        Image-space coordinates are transformed from the camera frame to the global map frame, yielding a 3D semantic graph node with an associated confidence score.
+    }
     \label{fig:3d_projection:pinhole_projection}
 \end{figure}
 

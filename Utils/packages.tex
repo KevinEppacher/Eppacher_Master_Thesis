@@ -20,10 +20,17 @@
 \usepackage{booktabs}
 \usepackage{amssymb}   % for \checkmark
 \usepackage{pifont}    % optional, for ✗
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing}
 
 % Use either minted OR listings, not both to avoid lol conflicts
 \usepackage{minted}
 % Alternative: \usepackage{listings}
+
+\usepackage{xurl} % bessere Umbruchstellen in \url
+% \usepackage[hidelinks]{hyperref} % falls noch nicht drin
 
 % Geometry settings
 \geometry{a4paper, margin=1in}
@@ -36,11 +43,22 @@
 % }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Citation Style
-\usepackage[backend=biber, style=ieee, citestyle=numeric-comp, bibstyle=ieee]{biblatex}
+
+\usepackage[
+    backend=biber,
+    style=ieee,
+    citestyle=numeric-comp,
+    bibstyle=ieee,
+    maxcitenames=2,
+    mincitenames=1,
+    maxbibnames=99,
+    minbibnames=99
+]{biblatex}
+
+
 \addbibresource{Literature.bib}
 
 \newcommand{\cmark}{\ding{51}} % ✓
 \newcommand{\xmark}{\ding{55}} % ✗
 \newcommand{\algcomment}[1]{\textcolor{green!35!black}{\textbf{// #1}}}
 % chktex-file 44
-
