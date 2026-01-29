@@ -26,22 +26,23 @@ Allgemeine Punkte
 
 Nummerierte Punkte
 
-1. Hier die drei Kategorien (=die nächsten drei Unterkapitel) jeweils einmal in einem Satz grob definieren
-2. Math. Notation für policy $\pi$ und Loss $\mathcal{L}$ nicht eingeführt
-3. Text in Tabelle left aligned halten, sonst nur schwer lesbar
+<!-- 1. Hier die drei Kategorien (=die nächsten drei Unterkapitel) jeweils einmal in einem Satz grob definieren -->
+<!-- 2. Math. Notation für policy $\pi$ und Loss $\mathcal{L}$ nicht eingeführt -->
+<!-- 3. Text in Tabelle left aligned halten, sonst nur schwer lesbar -->
 4. In der Tab sind zwei Fehler -> Ich hatte das noch im Kopf vom letzten Paper. Bitte bei den restlichen Tabellen selber checken, dass das eh stimmt. TODO!!!
-5. Hier mit 1), 2), ... oder a), b), c), ... durchnummerieren und in Tabelle entsprechend beschriften
-6. Hier aufpassen, dass bei der Prüfung nicht angekreidet wird, ob das nur ein Zusammenstöpseln bestehernder Modelle ist. Bitte die konkreten Modellbeschriftungen durch die jeweilige Methode ersetzen. Bitte auch Abb-Beschriftung mind 3 Zeilen kürzen -> Das ist zu lang im Vergleich zur Abbildung
+<!-- 5. Hier mit 1), 2), ... oder a), b), c), ... durchnummerieren und in Tabelle entsprechend beschriften -->
+<!-- 6. Hier aufpassen, dass bei der Prüfung nicht angekreidet wird, ob das nur ein Zusammenstöpseln bestehernder Modelle ist. Bitte die konkreten Modellbeschriftungen durch die jeweilige Methode ersetzen. Bitte auch Abb-Beschriftung mind 3 Zeilen kürzen -> Das ist zu lang im Vergleich zur Abbildung -->
 7. Kommentare right-aligned, dass die gleichmäßig übereinander sind
+7.1. Algorithmen caption
 8. Hier geht's um die Methode -> Topicnamen und Nodenamen weglassen. Fokus ist hier Algorithmik
 9. Die ganzen Algorithmik-Blöcke konsistent gestalten
-10. Würde ich similarity score oder nur score oder value signal oder sowas nennen. "Reward" ist in der Domäne reserviert für RL
-11. "Robust" ist gefährlich -> Du kannst das nicht quantifizieren
-12. Das ist interessant -> Ein Satz extra Detail und Begründung hinzufügen
-13. Sehr starke Behauptung. Nur inkludieren, wenn es dazu eine Ablation gibt
-14. "layered costmap planning (Move Base Flex Paper als Quelle)."
-15. Horizontal umformatieren -> Sieht sonst etwas ungeschickt aus
-16. Hier sind viele nicht quantifizierbare Bewertungen (z.B. "robust"). Weglassen, bewertet wird vor den Resultaten nicht und wenn dann nur quantifizierbar
+<!-- 10. Würde ich similarity score oder nur score oder value signal oder sowas nennen. "Reward" ist in der Domäne reserviert für RL -->
+<!-- 11. "Robust" ist gefährlich -> Du kannst das nicht quantifizieren -->
+<!-- 12. Das ist interessant -> Ein Satz extra Detail und Begründung hinzufügen -->
+<!-- 13. Sehr starke Behauptung. Nur inkludieren, wenn es dazu eine Ablation gibt -->
+<!-- 14. "layered costmap planning (Move Base Flex Paper als Quelle)." -->
+<!-- 15. Horizontal umformatieren -> Sieht sonst etwas ungeschickt aus -->
+<!-- 16. Hier sind viele nicht quantifizierbare Bewertungen (z.B. "robust"). Weglassen, bewertet wird vor den Resultaten nicht und wenn dann nur quantifizierbar -->
 17. Nicht die beiden Tabellen direkt hintereinander. Verschieben oder in Eine zusammenfassen
 18. Results and Discussion -> Results sind wichtiger und müssen deshalb vorne stehen
 19. IQR wirt bei den Metriken nicht eingeführt -> Du musst dort begründen, warum das inkludiert wird (denk daran, was wir beim letzten Meeting besprochen haben)

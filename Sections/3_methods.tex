@@ -24,16 +24,16 @@ defines the semantic target and conditions the detection, exploration, and fusio
 \label{fig:system_overview}
 \end{figure}
 
-Robot observations at time $t$ are represented as RGB-D measurements $O_t = \{I_t, D_t\}$, where
+Robot observations at time $t$ are represented as RGB-D observations $O_t = \{I_t, D_t\}$, where
 $I_t$ denotes the RGB image and $D_t$ the depth map. The robot pose in the world frame is denoted by
 $P_t$. To reduce computational load, observations are temporally and spatially downsampled prior to
 further processing.
 
 The pre-processed observations are then fed into three parallel modules.
-(a) The \textit{Memory Module} takes as input $O_t$ and $P_t$ and updates the persistent semantic 3D map
+\textbf{(a)} The \textit{Memory Module} takes as input $O_t$ and $P_t$ and updates the persistent semantic 3D map
 $M_t^{\text{sem}}$.
-(b) The \textit{Exploration Module} uses $O_t$ and $P_t$ to generate frontier candidates $F_t=\{f_i\}$ from the current geometric exploration map and assigns each candidate a semantic relevance score $s_i^{\text{exp}}$ based on vision-language similarity computed with \ac{BLIP-2}~\cite{liBLIP2BootstrappingLanguageImage2023}.
-(c) The \textit{Detection Module} processes $O_t$ to produce promptable zero-shot detections $D_t^{\text{det}}$.
+\textbf{(b)} The \textit{Exploration Module} uses $O_t$ and $P_t$ to generate frontier candidates $F_t=\{f_i\}$ from the current geometric exploration map, denoted as \(M_t^{\text{exp}}\), and assigns each candidate a semantic relevance score $s_i^{\text{exp}}$ based on vision-language similarity computed with \ac{BLIP-2}~\cite{liBLIP2BootstrappingLanguageImage2023}.
+\textbf{(c)} The \textit{Detection Module} processes $O_t$ to produce promptable zero-shot detections $D_t^{\text{det}}$.
 
 Each module outputs a set of graph nodes representing semantic hypotheses. A graph node is defined as
 $g_i = (\mathbf{p}_i, s_i)$ with 3D position $\mathbf{p}_i = (x_i, y_i, z_i)$ and an associated semantic score $s_i \in [0,1]$, where the score is sourced from the respective module, i.e., $s_i \in \{s_i^{\text{mem}}, s_i^{\text{exp}}, s_i^{\text{det}}\}$. Specifically, the memory module produces memory graph nodes $G_t^{\text{mem}}$ derived from $M_t^{\text{sem}}$, the exploration module outputs exploration graph nodes $G_t^{\text{exp}}$ corresponding to $F_t$, and the detection module outputs detection graph nodes $G_t^{\text{det}}$ obtained from $D_t^{\text{det}}$. This unified graph abstraction enables heterogeneous hypotheses to be compared, filtered, and ranked using a common representation.
@@ -54,7 +54,7 @@ a user-defined semantic prompt. Instead of exploring unknown space uniformly, th
 
 \subsection*{Exploration Occupancy Maps}
 
-The system maintains three distinct 2D occupancy grids for navigation and exploration:
+\textbf{\ac{SAGE}} maintains three distinct 2D occupancy grids for navigation and exploration:
 (a) a SLAM map used for localization and navigation~\cite{macenskiSLAMToolboxSLAM2021},
 (b) an exploration map used exclusively for frontier detection, and
 (c) an inflated map that suppresses narrow passages and noisy frontier artifacts.
@@ -63,7 +63,7 @@ semantic exploration logic from modifying the navigation map.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{Images/03_methods/semantic_frontier_exploration/sage_maps.png}
+    \includegraphics[width=0.7\textwidth]{Images/03_methods/semantic_frontier_exploration/sage_maps.png}
     \caption{Overview of the map representations used for semantic frontier exploration.
     The SLAM map is used for localization and navigation, while the exploration map encodes
     task-specific explored and unexplored regions for frontier detection~\cite{macenskiSLAMToolboxSLAM2021}.
@@ -89,7 +89,7 @@ Frontiers are defined as the boundary between known free space and unknown regio
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{Images/03_methods/frontier_example.png}
+    \includegraphics[width=0.55\textwidth]{Images/03_methods/frontier_example.png}
     \caption{Example of frontier detection on the exploration occupancy grid.
     Frontiers are identified as free cells adjacent to unknown space and clustered into spatially
     contiguous regions, with centroids serving as candidate exploration targets.}
@@ -113,7 +113,7 @@ Let $\mathcal{G} \in \{-1, 0, 100\}^{W \times H}$ denote the exploration occupan
 
     \ForAll{cells $(x,y)$ with $\mathcal{G}(x,y)=0$} \Comment{Iterate over free cells}
         \If{$\mathcal{G}(x,y)=0$ \textbf{and} any 4-neighbor is unknown}
-            \State Mark $(x,y)$ as frontier \Comment{Free–unknown boundary}
+            \State Mark $(x,y)$ as frontier \Comment{Free-unknown boundary}
         \EndIf
     \EndFor
 
@@ -194,15 +194,7 @@ embeddings of scene observations and a user-defined text prompt.
 Let $\mathcal{V} = \{(x_i, y_i, s_i)\}$ denote the value map, where $(x_i, y_i)$ are grid coordinates
 and $s_i \in \mathbb{R}$ is the associated semantic similarity score.
 
-To score a frontier, its centroid $\mathbf{c} \in \mathbb{R}^2$ is projected into the value map
-coordinate frame.
-The semantic score of the frontier is obtained by querying the maximum similarity score within a
-fixed-radius neighborhood around $\mathbf{c}$, as described in
-Algorithm~\ref{alg:value_map_query}.
-If no valid score exists within this neighborhood, indicating that the region has not yet been
-observed, the frontier is marked as unobserved.
-Using the maximum response emphasizes strong semantic evidence while remaining robust to noise and
-partial observations, consistent with prior semantic frontier scoring approaches~\cite{yokoyamaVLFMVisionLanguageFrontier2023}.
+To score a frontier, its centroid $\mathbf{c} \in \mathbb{R}^2$ is projected into the value map coordinate frame. The semantic score of the frontier is obtained by querying the maximum similarity score within a fixed-radius neighborhood around $\mathbf{c}$, as described in Algorithm~\ref{alg:value_map_query}. If no valid score exists within this neighborhood, indicating that the region has not yet been observed, the frontier is marked as unobserved. Using the maximum response emphasizes strong semantic evidence and reduces sensitivity to low-confidence activations under partial observations, consistent with prior semantic frontier scoring approaches~\cite{yokoyamaVLFMVisionLanguageFrontier2023}.
 
 Algorithm~\ref{alg:semantic_frontier_update} summarizes the construction of semantic frontier graph
 nodes by combining geometric frontier extraction with semantic scoring.
@@ -254,21 +246,24 @@ The value map can be interpreted as an analogy to gradient ascent in deep reinfo
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{Images/03_methods/semantic_frontier_exploration/gardient_ascent.png}
-    \caption{Conceptual visualization of the gradient-ascent analogy for semantic frontier exploration. Semantic relevance is illustrated as a folded reward surface, where frontier and memory graph nodes are elevated according to their semantic scores at position $(x,y)$.
-    Geometric frontiers constrain feasible ascent directions under spatial obstacles.}
+    \includegraphics[width=0.46\textwidth]{Images/03_methods/semantic_frontier_exploration/gardient_ascent_1.png}
+    \hfill
+    \includegraphics[width=0.48\textwidth]{Images/03_methods/semantic_frontier_exploration/gardient_ascent_2.png}
+    \caption{
+    Conceptual visualization of the gradient-ascent analogy for semantic frontier exploration.
+    Semantic relevance is modeled as a folded reward surface over spatial coordinates $(x,y)$, where frontier and memory graph nodes are elevated according to their semantic scores (illustrated for the search of an \texttt{``oven in a kitchen``}).
+    Geometric frontiers and obstacles constrain feasible ascent directions, guiding exploration toward semantically promising and navigable regions.
+    }
     \label{fig:methods:gradient_ascent}
 \end{figure}
 
-The value map is generated using a pre-trained vision-language model, specifically BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023}, which is queried via a ROS~2 service to compute semantic similarity between visual observations and a user-defined text prompt.
-The value map node subscribes to RGB images, robot poses, and a global occupancy grid produced by a
-LiDAR-based SLAM system. This differs from prior semantic frontier approaches such as VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, which rely on depth camera projections and odometry-based local maps. By leveraging LiDAR-based SLAM, the proposed system maintains a globally consistent exploration map with reduced drift, enabling persistent semantic value accumulation over long trajectories. Figure~\ref{fig:methods:value_map_ros2_pipeline} illustrates the overall value map generation pipeline.
+The value map is generated using a pre-trained vision-language model, specifically BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023}, which computes semantic similarity between visual observations and a user-defined text prompt. The value map node subscribes to RGB images, robot poses, and a global occupancy grid produced by a LiDAR-based SLAM system. This differs from prior semantic frontier approaches such as VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, which rely on depth camera projections and odometry-based local maps. By leveraging LiDAR-based SLAM, the proposed system maintains a globally consistent exploration map with reduced drift, enabling persistent semantic value accumulation over long trajectories. Figure~\ref{fig:methods:value_map_pipeline} illustrates the overall value map generation pipeline.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{Images/03_methods/semantic_frontier_exploration/value_map_ros2_pipeline.png}
-    \caption{ROS~2 value map generation pipeline using the BLIP-2 vision-language model for computing image-text cosine similarity.}
-    \label{fig:methods:value_map_ros2_pipeline}
+    \includegraphics[width=\textwidth]{Images/03_methods/semantic_frontier_exploration/value_map_pipeline.png}
+    \caption{Value map generation pipeline using the BLIP-2 vision-language model for computing image-text cosine similarity.}
+    \label{fig:methods:value_map_pipeline}
 \end{figure}
 
 Upon receiving an RGB image and a text prompt, the BLIP-2 service computes an image embedding and a text embedding using its pre-trained visual and textual encoders. The input image is divided into a grid of fixed-size patches, which are flattened, added with positional embeddings, and linearly projected before being processed by a vision transformer to capture spatial and semantic context~\cite{sharirImageWorth16x162021,liBLIP2BootstrappingLanguageImage2023}. Similarly, the text prompt is tokenized into subword units, embedded, and processed by a language transformer to model semantic and syntactic relationships.
@@ -317,7 +312,7 @@ at the current robot pose $\mathbf{p}_t$.
 
 The update procedure, summarized in Algorithm~\ref{alg:value_map_update}, consists of three
 conceptual stages: (a) motion-gated temporal decay, (b) visibility-aware observation selection, and
-(c) confidence-weighted fusion. The following update procedure closely follows the semantic value map formulation proposed in VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, with adaptations for ROS~2 integration.
+(c) confidence-weighted fusion. The following update procedure closely follows the semantic value map formulation proposed in VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}.
 
 \begin{algorithm}[H]
 \caption{2D Value Map Update using Vision-Language Model Similarity Scores}
@@ -435,7 +430,7 @@ Figure~\ref{fig:methods:value_map:example} illustrates a generated value map for
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{Images/03_methods/value_map_example.png}
+    \includegraphics[width=\textwidth]{Images/03_methods/value_map/value_map_example.png}
     \caption{Example value maps generated using BLIP-2 for different text prompts.
     The value maps highlight regions of high semantic relevance to the prompts ``Bed'', ``TV'', and ``A door leading to a bed''.}
     \label{fig:methods:value_map:example}
@@ -452,36 +447,21 @@ The semantic frontier centroids described in Section~\ref{sec:methods:semantic_f
 short-term exploration targets based on immediate observations. However, to enable effective multi-object search over multiple objects, the system requires a persistent memory that retains information about previously observed objects and their spatial locations throughout the exploration task~\cite{jiangDualMapOnlineOpenVocabulary2025,guConceptGraphsOpenVocabulary3D2023,buschOneMapFind2025}. The proposed system incorporates a semantic 3D mapping module that constructs a global, persistent semantic representation from RGB-D observations and produces object-level hypotheses in the form of graph nodes. These memory graph nodes are subsequently integrated into the fusion strategy (see Section~\ref{sec:methods:fusion_strategy}) to inform exploration and detection decisions.
 
 At the time of implementation, OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}
-represented a suitable open-source framework for real-time, open-vocabulary semantic 3D mapping. Its balance between reconstruction fidelity and computational efficiency makes it suitable for onboard deployment on mobile robotic platforms~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}. As discussed in the state-of-the-art analysis
-(Chapter~\ref{sec:sota:semantic_scene_reconstruction}), OpenFusion enables zero-shot semantic
-mapping but does not provide an object-centric abstraction. This work extends OpenFusion with
-object-level semantic clustering and graph node generation, yielding a persistent semantic
-memory tailored to multi-object search and long-horizon exploration tasks.
+represented a suitable open-source framework for real-time, open-vocabulary semantic 3D mapping. Its balance between reconstruction fidelity and computational efficiency makes it suitable for onboard deployment on mobile robotic platforms~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}. As discussed in the state-of-the-art analysis (Chapter~\ref{sec:sota:semantic_scene_reconstruction}), OpenFusion enables zero-shot semantic mapping but does not provide an object-centric abstraction. This work extends OpenFusion with object-level semantic clustering and graph node generation, yielding a persistent semantic memory tailored to multi-object search and long-horizon exploration tasks.
 
-\subsection*{Global Map Construction with OpenFusion}
+\subsection*{Global Map Construction}
 \label{sec:methods:semantic_map_construction}
 
-OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} was originally designed for offline semantic reconstruction from pre-recorded
-RGB-D sequences, such as ScanNet~\cite{daiScanNetRichlyannotated3D2017} and
-Replica~\cite{straubReplicaDatasetDigital2019}. In contrast, this work adapts OpenFusion for
-online operation on a mobile robot by integrating it with a LiDAR-based SLAM system that
-provides globally consistent pose estimates.
-
-A dedicated ROS~2 wrapper node, referred to as \texttt{openfusion\_ros}, interfaces OpenFusion
-with the exploration system (see Figure~\ref{fig:methods:persistent_mapping:pipeline}). 
+OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} was originally designed for offline semantic reconstruction from pre-recorded RGB-D sequences, such as ScanNet~\cite{daiScanNetRichlyannotated3D2017} and Replica~\cite{straubReplicaDatasetDigital2019}. In contrast, this work adapts OpenFusion for online operation on a mobile robot by integrating it with a LiDAR-based SLAM system that provides globally consistent pose estimates (see Figure~\ref{fig:methods:persistent_mapping:pipeline}).
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{Images/03_methods/semantic_mapping/openfusion_ros_pipeline.png}
-    \caption{ROS~2 integration of OpenFusion for persistent semantic 3D mapping.
-    RGB images, depth images, and LiDAR-based SLAM poses are synchronized and filtered before
-    integration into a global TSDF volume.
-    On-demand semantic queries generate semantic and panoptic point clouds, which are further
-    processed to extract object-level hypotheses for the fusion strategy.}
+    \caption{OpenFusion-based pipeline for persistent semantic 3D mapping. RGB images \(I_t\), depth \(D_t\) images, and LiDAR-based SLAM poses \(P_t\) are synchronized and filtered before integration into a global \ac{TSDF} volume. On-demand semantic queries generate semantic and panoptic point clouds, which are further processed to extract object-level hypotheses for the fusion strategy.}
     \label{fig:methods:persistent_mapping:pipeline}
 \end{figure}
 
-The wrapper subscribes to RGB images $I_t$, depth images $D_t$, camera intrinsics $K$, and SLAM-based robot poses $P_t$. To limit computational overhead and avoid redundant observations, RGB-D ($I_t, D_t$) frames are forwarded to OpenFusion only if the robot pose $P_t$ differs sufficiently from previously integrated viewpoints. This pose filtering reduces redundant TSDF updates from near-identical viewpoints, mitigates over-integration artifacts, and ensures efficient use of the fixed voxel budget. Specifically, an input tuple \(\{(I_t, D_t, P_t)\}\) is accepted only if the robot has translated or rotated more than a predefined threshold \(\delta_{\text{move}}\) and represents a novel viewpoint relative to the existing map.
+The wrapper subscribes to RGB images $I_t$, depth images $D_t$, camera intrinsics $K$, and SLAM-based robot poses $P_t$. To limit computational overhead and avoid redundant observations, RGB-D ($I_t, D_t$) frames are forwarded to OpenFusion only if the robot pose $P_t$ differs sufficiently from previously integrated viewpoints. This pose filtering reduces redundant \ac{TSDF} updates from near-identical viewpoints, mitigates over-integration artifacts, and ensures efficient use of the fixed voxel budget. Specifically, an input tuple \(\{(I_t, D_t, P_t)\}\) is accepted only if the robot has translated or rotated more than a predefined threshold \(\delta_{\text{move}}\) and represents a novel viewpoint relative to the existing map.
 
 Upon initialization, OpenFusion is configured using the current camera intrinsics and a fixed
 voxel resolution and voxel budget, which together define the available memory for semantic
@@ -558,9 +538,7 @@ evidence across object surfaces. As a result, only a subset of points typically 
 strong semantic alignment with the query, while the remaining points carry weaker but still
 relevant signals.
 
-Therefore, a naïve aggregation using the arithmetic mean is insufficient for this setting. Within a semantic cluster, the mean is dominated by weakly informative points and systematically underestimates objects that are only partially visible or observed from
-suboptimal viewpoints. To obtain a robust estimate of semantic relevance, a
-percentile-based aggregation is employed instead~\cite{PDFRobustStatistics}. Let $\mathcal{S}_k = \{ s_i \mid (\mathbf{x}_i, s_i) \in C_k \}$ denote the set of similarity scores within cluster $C_k$. The cluster-level semantic confidence is defined as the $75$-th percentile of this set (see Equation~\ref{eq:cluster_percentile}):
+Therefore, a naïve aggregation using the arithmetic mean is insufficient for this setting. Within a semantic cluster, the mean is dominated by weakly informative points and systematically underestimates objects that are only partially visible or observed from suboptimal viewpoints. To obtain a estimate of semantic relevance, a percentile-based aggregation is employed instead~\cite{PDFRobustStatistics}. Let $\mathcal{S}_k = \{ s_i \mid (\mathbf{x}_i, s_i) \in C_k \}$ denote the set of similarity scores within cluster $C_k$. The cluster-level semantic confidence is defined as the $75$-th percentile of this set (see Equation~\ref{eq:cluster_percentile}):
 
 \begin{equation}
 \label{eq:cluster_percentile}
@@ -568,10 +546,10 @@ percentile-based aggregation is employed instead~\cite{PDFRobustStatistics}. Let
 \end{equation}
 
 Selecting the 75th percentile emphasizes clusters for which a substantial fraction of points
-exhibits consistently high semantic similarity, while remaining robust to isolated
-spurious activations. Lower percentiles (e.g., the median) are overly conservative in the
-presence of localized but strong semantic evidence, whereas higher percentiles (e.g., the
-maximum) are sensitive to noise~\cite{PDFRobustStatistics}.
+exhibits consistently high semantic similarity, while reducing sensitivity to isolated spurious
+activations. Lower percentiles (e.g., the median) are overly conservative in the presence of
+localized but strong semantic evidence, whereas higher percentiles (e.g., the maximum) are
+more sensitive to noise~\cite{PDFRobustStatistics}.
 
 To further favor spatially consistent object hypotheses without allowing large clusters to
 dominate purely by size, the percentile score is modulated by a logarithmic cluster size
@@ -604,7 +582,7 @@ aggregated semantic relevance score.
 
 To enable goal-directed object search without prior knowledge of object categories,
 the exploration system integrates a promptable open-vocabulary object detection model.
-Such models leverage large-scale vision--language pre-training to localize objects
+Such models leverage large-scale vision-language pre-training to localize objects
 specified by arbitrary user-defined prompts, enabling zero-shot generalization beyond
 a fixed training vocabulary~\cite{radfordLearningTransferableVisual2021}.
 
@@ -704,7 +682,7 @@ real-time robotic operation.
 \end{table}
 
 For integration into a 3D semantic fusion pipeline, 2D detections must be lifted into
-3D space using depth measurements and camera intrinsics. A common approach consists of projecting instance-segmented pixels into 3D and clustering the resulting point sets to obtain robust object hypotheses~\cite{kuJoint3DProposal2018,meierCARLADroneMonocular2024}. Consequently, the detection model must provide instance-level segmentation masks, confidence scores, and zero-shot generalization.
+3D space using depth measurements and camera intrinsics. A common approach consists of projecting instance-segmented pixels into 3D and clustering the resulting point sets to obtain object hypotheses~\cite{kuJoint3DProposal2018,meierCARLADroneMonocular2024}. Consequently, the detection model must provide instance-level segmentation masks, confidence scores, and zero-shot generalization.
 
 Object detection approaches can be categorized into three
 classes. (a) Closed-vocabulary methods rely on a fixed set of object classes defined during training and cannot generalize to unseen categories, as exemplified by classical detectors such as Mask R-CNN~\cite{heMaskRCNN2018} or YOLOv7~\cite{redmonYouOnlyLook2016}. (b) Open-vocabulary methods extend detection to arbitrary categories specified via text prompts, enabling zero-shot recognition but typically lacking fine-grained instance segmentation~\cite{liuGroundingDINOMarrying2024,liGroundedLanguageImagePretraining2022,mindererScalingOpenVocabularyObject2024}. (c) Promptable zero-shot models further generalize this paradigm by supporting multiple prompt modalities, such as textual descriptions and visual reference images, allowing context-aware and flexible object specification~\cite{wangYOLOERealTimeSeeing2025,zouSegmentEverythingEverywhere2023}.
@@ -724,7 +702,7 @@ These properties make YOLO-E particularly well suited for semantic exploration s
 \subsection*{Open-Vocabulary Object Detection with YOLO-E}
 \label{sec:methods:open_vocabulary_detection}
 
-In this work, YOLO-E~\cite{wangYOLOERealTimeSeeing2025} is integrated as a promptable
+In this work, YOLO-E~\cite{wangYOLOERealTimeSeeing2025} is used as a promptable
 zero-shot object detection module within the exploration system. Incoming \ac{RGB-D} observations are preprocessed by throttling the input frame rate and resizing images to the required network resolution in order to reduce computational load while maintaining sufficient perceptual fidelity. 
 
 Given a user-defined text prompt and the current RGB image, YOLO-E~\cite{wangYOLOERealTimeSeeing2025} performs a single forward pass to produce a set of 2D bounding boxes, confidence scores, and corresponding instance segmentation masks for all objects matching the prompt (see Figure~\ref{fig:methods:object_detection:pipeline}). For visualization purposes, an overlay image containing bounding boxes, class labels, and confidence scores is generated.
@@ -859,10 +837,10 @@ semantic reasoning directly in the global map frame.
 
 Similar to the semantic clustering process described in Section~\ref{sec:methods:persistent_mapping:semantic_clustering}, the augmented 3D points are grouped into object-level clusters based on spatial proximity and shared instance identifiers. Each cluster is then summarized as a detection graph node, which encapsulates the 3D centroid and aggregated confidence score of the detected object hypothesis. However, instead of using the percentile-based aggregation employed for memory nodes, the mean confidence score is computed for detection nodes, reflecting the typically higher reliability of promptable detection outputs~\cite{wangYOLOERealTimeSeeing2025,redmonYouOnlyLook2016} compared to open-vocabulary semantic mapping~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}.
 
-\section{Fusion Strategy}
+\section{Semantic Fusion Strategy}
 \label{sec:methods:fusion_strategy}
 
-Analogous to the gradient ascent formulation introduced in Section~\ref{sec:semantic_frontier:value_map_generation}, the fusion strategy defines the reward function that guides the robot’s exploration and exploitation behavior. Its purpose is to combine heterogeneous sources of semantic information into a unified decision space that prioritizes promising regions for object search while maintaining navigational feasibility.
+Analogous to the gradient ascent formulation introduced in Section~\ref{sec:semantic_frontier:value_map_generation}, the fusion strategy defines the similarity score function that guides the robot’s exploration and exploitation behavior. Its purpose is to combine heterogeneous sources of semantic information into a unified decision space that prioritizes promising regions for object search while maintaining navigational feasibility.
 
 The fusion strategy integrates three complementary types of graph nodes:
 (a) exploration frontier nodes, representing geometrically reachable but
@@ -875,8 +853,7 @@ space with exploitation of semantically relevant hypotheses.
 
 Prior to fusion, graph nodes from all sources are filtered using a relevance map (Section~\ref{sec:methods:fusion_strategy:relevance_filtering}). The relevance map is updated continuously during exploration and suppresses graph nodes located in regions that have already been observed and deemed irrelevant to the current semantic query. This mechanism prevents oscillatory behavior and repeated visitation of low-value areas.
 
-After relevance filtering, the remaining graph nodes are fused in two stages, as illustrated in Figure~\ref{fig:fusion:pipeline}. First, exploration frontier nodes and memory nodes are combined using an exploration-memory weighting scheme (Section~\ref{sec:methods:fusion_strategy:exploration_memory_weighting}), which explicitly trades off short-term exploration incentives against long-term semantic beliefs. Second, detection graph nodes are fused with semantic evidence from the value map and persistent memory via a multi-source detection fusion mechanism (Section~\ref{sec:methods:fusion_strategy:multi_source_detection_fusion}), yielding
-robust object hypotheses with aggregated confidence estimates.
+After relevance filtering, the remaining graph nodes are fused in two stages, as illustrated in Figure~\ref{fig:methods:fusion:pipeline}. First, exploration frontier nodes and memory nodes are combined using an exploration-memory weighting scheme (Section~\ref{sec:methods:fusion_strategy:exploration_memory_weighting}), which explicitly trades off short-term exploration incentives against long-term semantic beliefs. Second, detection graph nodes are fused with semantic evidence from the value map and persistent memory via a multi-source detection fusion mechanism (Section~\ref{sec:methods:fusion_strategy:multi_source_detection_fusion}), yielding object hypotheses with aggregated confidence estimates.
 
 The fusion process produces two sets of graph nodes: an exploration-memory node set, which guides exploratory navigation, and a detection node set, which represents high-confidence object hypotheses.
 Both sets are forwarded to the behavior-tree-based navigation policy (Section~\ref{sec:methods:behavior_tree}), which orchestrates low-level path planning and robot control to navigate toward high-reward regions identified by the fusion strategy.
@@ -885,7 +862,7 @@ Both sets are forwarded to the behavior-tree-based navigation policy (Section~\r
     \centering
     \includegraphics[width=1.0\textwidth]{Images/03_methods/fusion/fusion_pipeline.png}
     \caption{Overview of the fusion pipeline, illustrating how exploration frontiers, persistent memory nodes, and promptable detection hypotheses are filtered, weighted, and fused into a unified graph representation used for navigation decisions.}
-    \label{fig:fusion:pipeline}
+    \label{fig:methods:fusion:pipeline}
 \end{figure}
 
 \subsection*{Exploration-Memory Weighting}
@@ -967,7 +944,7 @@ w_{\mathrm{cost}}(n_i)
 \label{eq:graph_fusion:costmap_penalty}
 \end{equation}
 
-where $\lambda_{\mathrm{cost}}$ determines the influence of the costmap on the final score. A minimum weight of $0.3$ is enforced to prevent complete suppression of nodes in high-cost regions, thereby maintaining robustness in cluttered environments.
+where $\lambda_{\mathrm{cost}}$ determines the influence of the costmap on the final score. A minimum weight of $0.3$ is enforced to avoid complete suppression of nodes in high-cost regions, ensuring that candidate hypotheses remain selectable even when traversability estimates are conservative.
 
 After defining the proximity and cost-based weighting terms, exploration frontier nodes are reweighted according to Equation~\eqref{eq:graph_fusion:exploration_score}:
 
@@ -993,7 +970,7 @@ s_i^{\mathrm{memory}}
 \subsection*{Multi-Source Detection Fusion}
 \label{sec:methods:fusion_strategy:multi_source_detection_fusion}
 
-The aim of multi-source detection fusion is to robustly estimate the confidence of detection graph nodes by combining evidence from three complementary sources: (a) the raw confidence score provided by the promptable detection vision model, (b) the semantic value map generated from the cosine similarity of the \ac{VLM}, and (c) the persistent memory graph encoding accumulated semantic beliefs. A detection hypothesis must be present for fusion to occur: value map and memory cues can only reinforce an existing detection and cannot generate object hypotheses on their own. This prevents false positives caused by dense semantic similarity alone while still allowing consistent contextual and memory-based evidence to increase confidence. In order to effectively combine these heterogeneous sources, a weighted Noisy-OR model is employed. It is well suited for fusing independent probabilistic evidence~\cite{dedieuLearningNoisyORBayesian2023} (see Equation~\eqref{eq:graph_fusion:noisy_or_product}).
+The aim of multi-source detection fusion is to estimate the confidence of detection graph nodes by combining evidence from three complementary sources: (a) the raw confidence score provided by the promptable detection vision model, (b) the semantic value map generated from the cosine similarity of the \ac{VLM}, and (c) the persistent memory graph encoding accumulated semantic beliefs (see Figure~\ref{fig:methods:fusion:pipeline}). A detection hypothesis must be present for fusion to occur: value map and memory cues can only reinforce an existing detection and cannot generate object hypotheses on their own. This design treats the value map and memory terms as supportive priors rather than hypothesis generators, because dense similarity fields and accumulated semantic beliefs lack instance-level segmentation and are therefore not sufficiently specific to propose discrete object hypotheses without inducing a large number of ambiguous candidates~\cite{gadreCoWsPastureBaselines2022,yokoyamaVLFMVisionLanguageFrontier2023}. This prevents false positives caused by dense semantic similarity alone while still allowing consistent contextual and memory-based evidence to increase confidence. In order to effectively combine these heterogeneous sources, a weighted Noisy-OR model is employed. It is well suited for fusing independent probabilistic evidence~\cite{dedieuLearningNoisyORBayesian2023} (see Equation~\eqref{eq:graph_fusion:noisy_or_product}).
 
 % -------------------------------------------------------------
 % Weighted Noisy-OR fusion
@@ -1075,7 +1052,7 @@ e^{-\frac{\lVert \mathbf{x}_i - \mathbf{x}_k \rVert_2^2}{2\sigma_m^2}}
 \label{eq:graph_fusion:memory_score}
 \end{equation}
 
-where $\mathcal{N}_{\mathrm{memory}}$ denotes the set of memory graph nodes, $\mathbf{x}_k$ and $s_k$ are the spatial position and confidence score of memory node $m_k$, and $\sigma_m$ controls the spatial decay of influence. The Gaussian kernel ensures that nearby memory evidence contributes more strongly than distant or outdated observations, while maintaining smoothness and robustness. The memory relevance term acts as a soft spatial prior and does not perform explicit belief updating.
+where $\mathcal{N}_{\mathrm{memory}}$ denotes the set of memory graph nodes, $\mathbf{x}_k$ and $s_k$ are the spatial position and confidence score of memory node $m_k$, and $\sigma_m$ controls the spatial decay of influence. The Gaussian kernel ensures that nearby memory evidence contributes more strongly than distant or outdated observations. The memory relevance term acts as a soft spatial prior and does not perform explicit belief updating.
 
 The final graph node representation after multi-source detection fusion is given in Equation~\eqref{eq:graph_fusion:final_node_representation}:
 
@@ -1096,7 +1073,7 @@ s_i^{\mathrm{fused}}
 
 where $\mathbf{x}_i$ denotes the spatial position of the detection node, $s_i^{\mathrm{det}}$ is the raw detection confidence from the vision model, $s_i^{\mathrm{map}}$ is the aggregated value map score, $s_i^{\mathrm{mem}}$ is the aggregated memory relevance score, and $s_i^{\mathrm{fused}}$ is the final fused confidence score after multi-source detection fusion.
 
-Instead of relying solely on the raw detection confidence from a single vision model~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, or solely relying on thresholding the cosine similarity or memory~\cite{gadreCoWsPastureBaselines2022}, the proposed multi-source detection fusion approach combines complementary evidence from multiple independent sources. This leads to higher confidence in true positive detections while reducing the likelihood of false positives, thereby enhancing the robustness and reliability of the object search system by enabling higher confidence thresholds.
+Instead of relying solely on the raw detection confidence from a single vision model~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, or solely on thresholding cosine similarity or memory evidence~\cite{gadreCoWsPastureBaselines2022}, the proposed multi-source detection fusion approach combines complementary evidence from multiple independent sources. Under the Noisy-Or formulation, aggregating multiple signals increases the probability of selecting a hypothesis when any source provides strong evidence, which is expected to improve sensitivity to true positives and reduce missed detections. At the same time, this aggregation can increase the acceptance rate of ambiguous hypotheses, potentially lowering precision due to additional false positives. Consequently, the fusion acts as a tunable mechanism to trade precision for recall via the source weights and decision thresholds~\cite{dedieuLearningNoisyORBayesian2023}.
 
 \subsection*{Relevance Filtering and Node Suppression}
 \label{sec:methods:fusion_strategy:relevance_filtering}
@@ -1126,7 +1103,7 @@ for exploration, detection, and memory graph nodes, respectively. Graph nodes wh
 relevance value exceeds a predefined threshold are suppressed, indicating that the
 corresponding region has already been sufficiently observed.
 
-To preserve robustness against missed detections, graph nodes whose detection
+To reduce missed detections, graph nodes whose detection
 confidence exceeds a high-confidence threshold (80\% in all experiments) are exempt
 from relevance-based suppression and are directly republished. This mechanism enables
 the robot to revisit locations with strong object evidence while avoiding repeated
@@ -1151,7 +1128,7 @@ over three consecutive timestamps.
 \section{Behavior Tree for Semantic-Guided Exploration}
 \label{sec:methods:behavior_tree}
 
-A \ac{BT}~\cite{colledanchiseImplementationBehaviorTrees2021} is employed to manage the high-level task structure for semantic-guided exploration. The \ac{BT} orchestrates the robot’s actions based on the fused graph nodes generated by the fusion strategy (Section~\ref{sec:methods:fusion_strategy}), integrating initialization, detection, exploration, and termination behaviors into a unified decision-making framework. Low-level motion execution and collision avoidance are delegated to the \ac{ROS2} navigation stack, allowing the \ac{BT} to focus exclusively on task sequencing and semantic reasoning.
+A \ac{BT}~\cite{colledanchiseImplementationBehaviorTrees2021} is employed to manage the high-level task structure for semantic-guided exploration. The \ac{BT} orchestrates the robot’s actions based on the fused graph nodes generated by the fusion strategy (Section~\ref{sec:methods:fusion_strategy}), integrating initialization, detection, exploration, and termination behaviors into a unified decision-making framework. Low-level motion execution and collision avoidance are delegated to layered costmap planning~\cite{putzMoveBaseFlex2018}, allowing the \ac{BT} to focus exclusively on task sequencing and semantic reasoning.
 
 \subsection*{High-Level Task Structure}
 
@@ -1163,7 +1140,7 @@ An overview of this decision logic is illustrated as a flowchart in Figure~\ref{
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.4\textwidth]{Images/03_methods/bt/sage_bt_flowchart.png}
+    \includegraphics[width=\textwidth]{Images/03_methods/bt/sage_bt_flowchart.png}
     \caption{High-level behavior tree flowchart for \ac{BT}-based semantic-guided exploration.
     The robot alternates between detection and exploration, navigating to detected
     objects when confident and otherwise exploring unobserved frontiers until the
@@ -1175,9 +1152,9 @@ An overview of this decision logic is illustrated as a flowchart in Figure~\ref{
 
 The multi-object search behavior implemented by the \ac{BT} is encapsulated within a high-level action server, enabling a user or external agent to initiate a search task with a specified object prompt. Optional parameters include a zero-shot prompt for value map generation, a time limit, and soft and hard confidence thresholds for object verification.
 
-The \ac{BT} interfaces with the \ac{ROS2}~\cite{macenskiDesksROSMaintainers2023} navigation stack to execute motion-related actions. Specifically, the \texttt{GoToGraphNode} behavior uses the \texttt{/navigate\_to\_pose} action interface to issue navigation goals, while the \texttt{ObserveGraphNodes} and \texttt{RealignToObject} behavior nodes utilize the \texttt{/spin} action interface to perform in-place rotations for environmental observation and viewpoint refinement. The navigation stack is responsible for path planning, obstacle avoidance, and low-level control, thereby decoupling motion
+The \ac{BT} interfaces with the navigation stack to execute motion-related actions. Specifically, the \texttt{GoToGraphNode} behavior uses the \texttt{/navigate\_to\_pose} action interface to issue navigation goals, while the \texttt{ObserveGraphNodes} and \texttt{RealignToObject} behavior nodes utilize the \texttt{/spin} action interface to perform in-place rotations for environmental observation and viewpoint refinement. The navigation stack is responsible for path planning, obstacle avoidance, and low-level control, thereby decoupling motion
 execution from high-level decision-making~\cite{macenskiDesksROSMaintainers2023,colledanchiseImplementationBehaviorTrees2021}.
 
-To increase robustness in cluttered environments, an \texttt{ApproachPoseAdjustor} decorator node computes an alternative, costmap-feasible approach pose based on the target graph node location, the robot’s current pose, and the global costmap. If no valid approach pose can be found, the original graph node position is used as the navigation goal.
+In order to for the robot to approach target objects in cluettered environments, an \texttt{ApproachPoseAdjustor} decorator node computes an alternative approach pose based on the target graph node location, the robot’s current pose, and the global costmap. If no valid approach pose can be found, the original graph node position is used as the navigation goal.
     
 \newpage

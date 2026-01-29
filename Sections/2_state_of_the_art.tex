@@ -678,8 +678,7 @@ To reason about regions beyond the depth sensing horizon, RayFronts maintains a 
 map that encodes free, occupied, and unknown space.
 Three-dimensional frontiers are extracted as boundary voxels separating observed and unobserved
 regions.
-Instead of associating a single semantic descriptor with each frontier, RayFronts introduces
-\emph{semantic ray frontiers}, in which multiple rays are attached to each frontier voxel.
+Instead of associating a single semantic descriptor with each frontier, RayFronts introduces semantic ray frontiers, in which multiple rays are attached to each frontier voxel.
 Each ray is parameterized by its origin, direction, and a language-aligned visual embedding,
 capturing semantic evidence observed along that direction in image space.
 
@@ -830,7 +829,7 @@ Table~\ref{tab:sota:summary} provides a overview of recent methods for open-voca
 
     \midrule
 
-    SAGE (this work)
+    \textbf{SAGE} (this work)
     & Foundation-model
     & \cmark
     & \cmark
@@ -893,7 +892,7 @@ semantic memory, or construct persistent semantic maps without explicitly guidin
 No prior work jointly addresses zero-shot semantic exploration, persistent semantic memory, and an
 explicit, adjustable exploration-exploitation tradeoff within a unified framework. Furthermore, existing methods rely predominantly on single-source semantic signals, lacking
 multi-source confidence fusion to robustly suppress false positives during exploration.
-These identified research gaps motivate the development of SAGE, which aims to integrate these
+These identified research gaps motivate the development of \textbf{\ac{SAGE}}, which aims to integrate these
 capabilities into a cohesive system for robust and efficient open-vocabulary semantic exploration.
 
 \newpage

@@ -1,12 +1,12 @@
 % chktex-file 44
 
-\chapter{Implementation}
+\chapter{Implementation Detail}
 \label{ch:implementation}
-This chapter details the practical implementation of the proposed approach, including
-the simulation setup, datasets, software stack, hardware configuration, and the
-evaluation metrics used in the experiments.
+
+In this chapter, the implementation of the used methods is evaluated using simulations. First, the chosen simulation environment is described in Section~\ref{sec:implementation:simulation_environment}. Next, the dataset used for training and evaluation is presented in Section~\ref{sec:dataset}. Section~\ref{sec:implementation:used_software_and_hardware} outlines the software frameworks and hardware components employed in this work. Finally, the evaluation pipeline and metrics used to assess \ac{SAGE} are detailed in Sections~\ref{sec:implementation:evaluation} and~\ref{sec:implementation:metrics}, respectively.
 
 \section{Simulation Environment}
+\label{sec:implementation:simulation_environment}
 
 HabitatSim~\cite{savvaHabitatPlatformEmbodied2019} has been widely adopted in embodied AI research due to its efficient rendering pipeline and support for large-scale datasets such as Matterport3D and HM3D~\cite{changMatterport3DLearningRGBD2017}. However, for this work, \ac{IsaacSim} was selected as the primary simulation platform because it provides high-fidelity photorealistic rendering, accurate physics simulation, and realistic sensor models. These properties are essential for reducing the sim-to-real gap and for ensuring that the proposed semantic exploration and fusion strategies transfer reliably to real robotic systems~\cite{zhouBuildingAICPSNVIDIA2024}.
 
@@ -40,7 +40,8 @@ These scenes are also used by~\citeauthor{yokoyamaVLFMVisionLanguageFrontier2023
 and~\citeauthor{buschOneMapFind2025}, enabling direct and reproducible comparison of
 experimental results.
 
-\section{Used Software}
+\section{Used Software and Hardware}
+\label{sec:implementation:used_software_and_hardware}
 
 The proposed semantic exploration and fusion framework is implemented using \ac{ROS2} (Humble Hawksbill) as the middleware for inter-node communication and system integration. \ac{ROS2} provides a modular, distributed architecture that allows perception, mapping, fusion, and exploration components to operate as independent nodes while remaining tightly synchronized~\cite{macenskiImpactROS22023}.
 
@@ -52,9 +53,7 @@ Semantic similarity scoring between visual observations and user-defined text qu
 
 Persistent 3D semantic mapping and memory generation are handled by OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}, which is wrapped as a dedicated \ac{ROS2} node. OpenFusion incrementally fuses RGB-D observations into a global semantic point cloud representation, serving as the long-term memory component of the proposed system.
 
-\section{Used Hardware}
-
-All experiments are conducted on a dedicated workstation designed to support computationally demanding simulation, perception, and vision-language inference workloads. The hardware configuration is summarized as follows:
+All experiments are conducted on the following configuration:
 \begin{itemize}
     \item \textbf{PC Workstation:}
     \begin{itemize}
@@ -65,17 +64,13 @@ All experiments are conducted on a dedicated workstation designed to support com
     \end{itemize}
 \end{itemize}
 
-The high core count of the CPU enables parallel execution of multiple \ac{ROS2}
-nodes, while the RTX~4090 GPU provides sufficient compute and memory capacity for
-photorealistic simulation in IsaacSim~\cite{zhouBuildingAICPSNVIDIA2024}, real-time open-vocabulary object detection~\cite{wangYOLOERealTimeSeeing2025}, and \ac{VLM}~\cite{liBLIP2BootstrappingLanguageImage2023,yamazakiOpenFusionRealtimeOpenVocabulary2023,zouSegmentEverythingEverywhere2023} inference. This setup ensures that all components of the proposed system can operate in real time without artificial bottlenecks introduced by hardware limitations.
-
 \section{Evaluation Pipeline Overview}
 \label{sec:implementation:evaluation}
 
 To ensure comparability with prior work such as VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023} and OneMap~\cite{buschOneMapFind2025}, a dedicated evaluation pipeline is implemented that reproduces
 the standard object-goal navigation metrics used in embodied \ac{AI} benchmarks~\cite{puigHabitat30CoHabitat2023}. The pipeline operates on recorded navigation trajectories and semantic maps generated during each exploration episode and is illustrated in Figure~\ref{fig:evaluation_pipeline}.
 
-The primary evaluation metrics considered in this work are \ac{SR} and \ac{SPL}~\cite{yokoyamaVLFMVisionLanguageFrontier2023,buschOneMapFind2025,PIGEONVLMDrivenObject}. Computing \ac{SPL} requires knowledge of the geodesic shortest path from the robot’s initial pose to the nearest instance of the target object. Since all experiments are conducted in a custom IsaacSim-based environment with uniformly scaled Matterport3D scenes, the built-in shortest-path planner provided by HabitatSim cannot be directly used.
+The primary evaluation metrics considered in this work are \ac{SR} and \ac{SPL}~\cite{yokoyamaVLFMVisionLanguageFrontier2023,buschOneMapFind2025,pengPIGEONVLMDrivenObject2025}. Computing \ac{SPL} requires knowledge of the geodesic shortest path from the robot’s initial pose to the nearest instance of the target object. Since all experiments are conducted in a custom IsaacSim-based environment with uniformly scaled Matterport3D scenes, the built-in shortest-path planner provided by HabitatSim cannot be directly used.
 
 Instead, the evaluation pipeline is composed of two main stages:  
 (a) semantic environment reconstruction, and  
