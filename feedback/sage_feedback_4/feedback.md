@@ -20,7 +20,7 @@ Allgemeine Punkte
 * Wenn der Name der Autor*innen angeschrieben wird, dann trotzdem nachher ein normales Zitat einfügen (damit Klarheit bei mehreren gleichen Erstautor*innen). Das ist manchmal so, manchmal so in der Arbeit
 * Tabellen/Abbildungen und Text so setzen, dass keine Leerstellen entstehen (z.B. S.26)
 * Abbildungen in Ch3 sind teilweise sehr groß -> Nur so groß wie möglich, sonst meinen Lesende, dass die Läng gestreckt wurde
-* Odometry in den Abb ausschreiben
+<!-- * Odometry in den Abb ausschreiben -->
 * Aufpassen in Literaturverzeichnis -> bereits veröffentlichte Beiträge nicht als Arxiv Preprint zitieren
 
 
@@ -32,9 +32,9 @@ Nummerierte Punkte
 4. In der Tab sind zwei Fehler -> Ich hatte das noch im Kopf vom letzten Paper. Bitte bei den restlichen Tabellen selber checken, dass das eh stimmt. TODO!!!
 <!-- 5. Hier mit 1), 2), ... oder a), b), c), ... durchnummerieren und in Tabelle entsprechend beschriften -->
 <!-- 6. Hier aufpassen, dass bei der Prüfung nicht angekreidet wird, ob das nur ein Zusammenstöpseln bestehernder Modelle ist. Bitte die konkreten Modellbeschriftungen durch die jeweilige Methode ersetzen. Bitte auch Abb-Beschriftung mind 3 Zeilen kürzen -> Das ist zu lang im Vergleich zur Abbildung -->
-7. Kommentare right-aligned, dass die gleichmäßig übereinander sind
-7.1. Algorithmen caption
-8. Hier geht's um die Methode -> Topicnamen und Nodenamen weglassen. Fokus ist hier Algorithmik
+<!-- 7. Kommentare right-aligned, dass die gleichmäßig übereinander sind
+7.1. Algorithmen caption -->
+<!-- 8. Hier geht's um die Methode -> Topicnamen und Nodenamen weglassen. Fokus ist hier Algorithmik -->
 <!-- 9. Die ganzen Algorithmik-Blöcke konsistent gestalten -->
 <!-- 10. Würde ich similarity score oder nur score oder value signal oder sowas nennen. "Reward" ist in der Domäne reserviert für RL -->
 <!-- 11. "Robust" ist gefährlich -> Du kannst das nicht quantifizieren -->
@@ -43,11 +43,9 @@ Nummerierte Punkte
 <!-- 14. "layered costmap planning (Move Base Flex Paper als Quelle)." -->
 <!-- 15. Horizontal umformatieren -> Sieht sonst etwas ungeschickt aus -->
 <!-- 16. Hier sind viele nicht quantifizierbare Bewertungen (z.B. "robust"). Weglassen, bewertet wird vor den Resultaten nicht und wenn dann nur quantifizierbar -->
-17. Nicht die beiden Tabellen direkt hintereinander. Verschieben oder in Eine zusammenfassen
-18. Results and Discussion -> Results sind wichtiger und müssen deshalb vorne stehen
-19. IQR wirt bei den Metriken nicht eingeführt -> Du musst dort begründen, warum das inkludiert wird (denk daran, was wir beim letzten Meeting besprochen haben)
-20. Bestes Ergebnis immer Fett und Zweitbestes Unterstrichen (für jede Metrik einzeln)
-21. Das ist viel zu groß -> Text in Abb ca. so groß wie Fließtext
-22. Würde ich hier weglassen -> Ist egal für die Summary
-
-SAGE pipeline vergleich fragen
+<!-- 17. Nicht die beiden Tabellen direkt hintereinander. Verschieben oder in Eine zusammenfassen -->
+<!-- 18. Results and Discussion -> Results sind wichtiger und müssen deshalb vorne stehen -->
+<!-- 19. IQR wirt bei den Metriken nicht eingeführt -> Du musst dort begründen, warum das inkludiert wird (denk daran, was wir beim letzten Meeting besprochen haben) -->
+<!-- 20. Bestes Ergebnis immer Fett und Zweitbestes Unterstrichen (für jede Metrik einzeln) -->
+<!-- 21. Das ist viel zu groß -> Text in Abb ca. so groß wie Fließtext -->
+<!-- 22. Würde ich hier weglassen -> Ist egal für die Summary -->

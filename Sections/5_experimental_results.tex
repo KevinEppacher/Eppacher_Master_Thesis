@@ -1,6 +1,6 @@
 % chktex-file 44
 
-\chapter{Discussion and Results}
+\chapter{Results and Discussion}
 \label{ch:results}
 
 This chapter answers the research questions defined in Chapter~\ref{ch:introduction} by
@@ -22,11 +22,7 @@ under deployment conditions.
 This experiment evaluates the navigation success and efficiency of the proposed framework on
 HM3Dv2~\cite{ramakrishnanHabitatMatterport3DDataset2021} and compares it to representative state-of-the-art methods. Table~\ref{tab:hm3dv2_comparison} summarizes \ac{SR} and \ac{SPL} for prior work and for \ac{SAGE}. Note that the experimental setup is not identical to all baselines, as the evaluation is performed in Isaac Sim with the pipeline described in Chapter~\ref{ch:implementation}, whereas several prior results are reported under Habitat-based evaluation protocols. Therefore, the comparison should be interpreted as an indicative reference rather than a strictly controlled re-evaluation.
 
-Within this evaluation setting, \ac{SAGE} achieves a mean \ac{SPL} of 63.6\% and a mean \ac{SR} of 77.5\%.
-Compared to the next best reported \ac{SPL} in Table~\ref{tab:hm3dv2_comparison}, this corresponds to an
-increase of 26.2 percentage points in \ac{SPL}, while maintaining competitive success rates. These results
-establish the reference configuration for the subsequent ablations, which analyze how individual
-components and hyperparameters contribute to the observed performance.
+Within this evaluation setting, \ac{SAGE} achieves a mean \ac{SPL} of 63.6\% and a mean \ac{SR} of 77.5\%. Compared to the next best reported \ac{SPL} in Table~\ref{tab:hm3dv2_comparison}, this corresponds to an increase of 26.2 percentage points in \ac{SPL}, while maintaining competitive success rates.
 
 \begin{table}[H]
     \centering
@@ -50,14 +46,14 @@ components and hyperparameters contribute to the observed performance.
         VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}
             & \cmark & \xmark & 30.4 & 52.5 \\
         OneMap~\cite{buschOneMapFind2025}
-            & \xmark & \xmark & 37.4 & 55.8 \\
+            & \xmark & \xmark & \underline{37.4} & 55.8 \\
         PIGEON-ZeroShot~\cite{pengPIGEONVLMDrivenObject2025}
-            & \cmark & \cmark & 36.8 & 79.2 \\
+            & \cmark & \cmark & 36.8 & \textbf{79.2} \\
         \midrule
         \textbf{SAGE (this work)}
             & \xmark & \xmark
-            & $\mathbf{63.6}^{\scriptscriptstyle +16.2}_{\scriptscriptstyle -16.2}$
-            & $77.5^{\scriptscriptstyle +17.4}_{\scriptscriptstyle -17.4}$ \\
+            & \textbf{63.6}
+            & \underline{77.5} \\
         \bottomrule
     \end{tabular}
     \caption{Quantitative comparison of navigation performance on HM3Dv2.}
@@ -66,6 +62,16 @@ components and hyperparameters contribute to the observed performance.
 
 
 These results establish a strong reference point for the subsequent experiments, in which individual components of the framework and key hyperparameters are analyzed in isolation. All following ablation studies therefore build upon the configuration evaluated in this benchmark and aim to explain which design choices contribute most to the observed performance gains.
+
+Figure~\ref{fig:results:rq1:example:bed_path} illustrates the evaluation setup for a representative episode by visualizing the executed trajectory and the corresponding geodesic shortest path used in the \ac{SPL} computation. The associated detection overlay and further qualitative examples for additional prompts are provided in Appendix~\ref{ch:appendix:experimental_results}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ1/00848-ziup5kvtCCR/bed_paths.png}
+    \caption{Example trajectory visualization for Scene \texttt{00848-ziup5kvtCCR} and target class \texttt{bed}. The plot compares the executed path with the geodesic shortest path used to compute \ac{SPL}. Start, end, and target positions are indicated; the corresponding detection overlay is provided in Appendix~\ref{ch:appendix:experimental_results}.}
+    \label{fig:results:rq1:example:bed_path}
+\end{figure}
+
 
 % ###########################################################
 % # Experiment 2
@@ -115,7 +121,7 @@ Failure cases in which the target is not observed (\texttt{Did not see goal}) ar
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ2/failure_mode_breakdown.png}
+    \includegraphics[width=0.7\textwidth]{Images/05_experimental_results/RQ2/failure_mode_breakdown.png}
     \caption{Aggregate failure mode distribution across all exploration-memory weight configurations for Experiment~2.}
     \label{fig:results:rq2:failure_mode_breakdown_across_scenes}
 \end{figure}
@@ -274,40 +280,39 @@ threshold ($\tau = 0.5$), a medium threshold ($\tau = 0.6$), and a high threshol
         Detection + VLM score
             & 0.5 & 0.903 & \textbf{0.928} & \textbf{0.915} & 0.406 & 539 & 58 & 42 & 85 \\
         Detection + Memory
-            & 0.5 & 0.909 & 0.914 & 0.912 & 0.371 & 531 & 53 & 50 & 90 \\
+            & 0.5 & \underline{0.909} & 0.914 & \underline{0.912} & \underline{0.371} & 531 & 53 & 50 & 90 \\
         Multi-source Fusion
-            & 0.5 & 0.906 & 0.917 & 0.912 & 0.385 & 533 & 55 & 48 & 88 \\
+            & 0.5 & 0.906 & \underline{0.917} & \underline{0.912} & 0.385 & 533 & 55 & 48 & 88 \\
         \midrule
         % ===== tau = 0.6 =====
         Single source detection
             & 0.6 & \textbf{0.914} & 0.892 & 0.902 & \textbf{0.343} & 518 & 49 & 63 & 94 \\
         Detection + VLM score
-            & 0.6 & 0.910 & \textbf{0.910} & \textbf{0.910} & 0.364 & 529 & 52 & 52 & 91 \\
+            & 0.6 & \underline{0.910} & \textbf{0.910} & \textbf{0.910} & \underline{0.364} & 529 & 52 & 52 & 91 \\
         Detection + Memory
-            & 0.6 & 0.910 & 0.905 & 0.908 & 0.364 & 526 & 52 & 55 & 91 \\
+            & 0.6 & \underline{0.910} & \underline{0.905} & \underline{0.908} & \underline{0.364} & 526 & 52 & 55 & 91 \\
         Multi-source Fusion
-            & 0.6 & 0.910 & \textbf{0.910} & \textbf{0.910} & 0.364 & 529 & 52 & 52 & 91 \\
+            & 0.6 & \underline{0.910} & \textbf{0.910} & \textbf{0.910} & \underline{0.364} & 529 & 52 & 52 & 91 \\
         \midrule
         % ===== tau = 0.8 =====
         Single source detection
-            & 0.8 & \textbf{0.941} & 0.632 & 0.756 & \textbf{0.161} & 367 & 23 & 214 & 120 \\
+            & 0.8 & \textbf{0.942} & 0.636 & 0.759 & \textbf{0.161} & 375 & 23 & 215 & 120 \\
         Detection + VLM score
-            & 0.8 & 0.912 & 0.876 & 0.894 & 0.343 & 509 & 49 & 72 & 94 \\
+            & 0.8 & 0.912 & \underline{0.876} & \underline{0.894} & 0.343 & 509 & 49 & 72 & 94 \\
         Detection + Memory
-            & 0.8 & 0.913 & 0.799 & 0.852 & 0.308 & 464 & 44 & 117 & 99 \\
+            & 0.8 & \underline{0.913} & 0.799 & 0.852 & \underline{0.308} & 464 & 44 & 117 & 99 \\
         Multi-source Fusion
-            & 0.8 & 0.913 & \textbf{0.888} & \textbf{0.901} & 0.343 & 516 & 49 & 65 & 94 \\
+            & 0.8 & \underline{0.915} & \textbf{0.890} & \textbf{0.902} & 0.343 & 525 & 49 & 65 & 94 \\
         \bottomrule
     \end{tabular}
     \caption{Detection performance metrics across fusion strategies and thresholds.
     Arrows indicate whether higher ($\uparrow$) or lower ($\downarrow$) values are better.
-    For each threshold $\tau$, the best-performing value per metric is highlighted in bold.}
+    For each threshold $\tau$, the best-performing value per metric is highlighted in bold and the second-best value is underlined.}
     \label{tab:results:rq4:detection_performance}
 \end{table}
 
-
-At the low threshold ($\tau = 0.5$), all variants achieve high recall values close to or
-above $0.91$, indicating that most true target observations are accepted. Differences
+At the low threshold ($\tau = 0.5$), all variants achieve high recall (0.909--0.928),
+indicating that most true target observations are accepted. Differences
 between fusion strategies are relatively small in this regime. Single-source detection
 achieves the highest precision and the lowest false-positive rate, while incorporating
 semantic similarity improves recall at the cost of increased false positives. The
@@ -323,12 +328,12 @@ approaches reduce false negatives compared to detection-only, while maintaining
 comparable false-positive rates.
 
 At the high threshold ($\tau = 0.8$), clear differences between fusion strategies emerge.
-Single-source detection attains the highest precision ($0.941$) and the lowest
-false-positive rate, but suffers from a substantial drop in recall ($0.632$), resulting
+Single-source detection attains the highest precision ($0.942$) and the lowest
+false-positive rate, but suffers from a substantial drop in recall ($0.636$), resulting
 in a large number of false negatives. In contrast, all fusion-based variants
 significantly improve recall under this conservative operating point. The proposed
-multi-source fusion achieves the highest recall ($0.888$) and \ac{F1}-score ($0.901$),
-while maintaining precision above $0.91$. This improvement corresponds to a pronounced
+multi-source fusion achieves the highest recall ($0.890$) and \ac{F1}-score ($0.902$),
+while maintaining precision above $0.915$. This improvement corresponds to a pronounced
 reduction in false negatives compared to detection-only, with only a moderate increase
 in false positives.
 
@@ -380,7 +385,7 @@ requirements.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ4/pr_curve.png}
+    \includegraphics[width=0.5\textwidth]{Images/05_experimental_results/RQ4/pr_curve.png}
     \caption{Precision-recall curves for detection-only and multi-source semantic fusion
     obtained by sweeping the decision threshold $\tau$ in Experiment~4. The multi-source
     fusion maintains higher precision over a wider recall range, indicating improved

@@ -372,8 +372,7 @@ semantic segmentation (LSeg) to obtain dense per-pixel language embeddings~\cite
 As the robot explores, newly observed embeddings are fused with existing map entries in an
 accumulative manner. \citeauthor{buschOneMapFind2025}~\cite{buschOneMapFind2025} perform uncertainty-aware recursive fusion,
 in which observations with higher confidence exert greater influence on the stored semantic
-representation, whereas \citeauthor{huangVisualLanguageMaps2023} apply multi-view feature averaging
-without explicit uncertainty modeling. In both cases, once semantic features are integrated into the map, they are not selectively down-weighted or removed at later time steps.
+representation, whereas \citeauthor{huangVisualLanguageMaps2023}~\cite{huangVisualLanguageMaps2023} apply multi-view feature averaging without explicit uncertainty modeling. In both cases, once semantic features are integrated into the map, they are not selectively down-weighted or removed at later time steps.
 
 Open-vocabulary object querying is performed by comparing stored map embeddings against the
 embedding of a text prompt using cosine similarity (see Equation~\ref{eq:vlm_cosine_similarity}).
@@ -625,12 +624,7 @@ However, LERF requires extensive offline, scene-specific \ac{NeRF} training and 
 incremental updates or online exploration, limiting its applicability to real-time or long-term
 robotic mapping scenarios.
 
-\citeauthor{yamazakiOpenFusionRealtimeOpenVocabulary2023}~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023}
-presented \textit{OpenFusion}, a real-time open-vocabulary semantic mapping framework that integrates
-volumetric \ac{TSDF}-based reconstruction with region-level semantic perception from foundation models.
-OpenFusion processes incoming RGB images using \ac{SEEM}~\cite{zouSegmentEverythingEverywhere2023}, a
-promptable \ac{VLM} capable of zero-shot semantic segmentation based on text or image prompts.
-For each frame, \ac{SEEM}~\cite{zouSegmentEverythingEverywhere2023} produces soft region confidence maps along with a semantic embedding vector for each region.
+\citeauthor{yamazakiOpenFusionRealtimeOpenVocabulary2023}~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} presented \textit{OpenFusion}, a real-time open-vocabulary semantic mapping framework that integrates volumetric \ac{TSDF}-based reconstruction with region-level semantic perception from foundation models. OpenFusion processes incoming RGB images using \ac{SEEM}~\cite{zouSegmentEverythingEverywhere2023}, a promptable \ac{VLM} capable of zero-shot semantic segmentation based on text or image prompts. For each frame, \ac{SEEM}~\cite{zouSegmentEverythingEverywhere2023} produces soft region confidence maps along with a semantic embedding vector for each region.
 
 Depth images and camera poses are fused into a volumetric \ac{TSDF} map to reconstruct scene geometry.
 Rather than directly storing semantic embeddings per voxel, OpenFusion associates voxels with

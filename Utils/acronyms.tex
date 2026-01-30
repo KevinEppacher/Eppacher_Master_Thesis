@@ -1,130 +1,119 @@
+% =====================================================
 % acronyms.tex
+% =====================================================
 
-% === General Domains ===
-\acrodef{SAR}[SAR]{Search and Rescue}
-\acrodef{GPU}[GPU]{Graphics Processing Unit}
-\acrodef{CPU}[CPU]{Central Processing Unit}
-\acrodef{VRAM}[VRAM]{Video Random Access Memory}
-\acrodef{API}[API]{Application Programming Interface}
-\acrodef{FPS}[FPS]{Frames Per Second}
+% -----------------------------------------------------
+% General Concepts & Computing
+% -----------------------------------------------------
+\acrodef{AI}{Artificial Intelligence}
+\acrodef{API}{Application Programming Interface}
+\acrodef{CPU}{Central Processing Unit}
+\acrodef{GPU}{Graphics Processing Unit}
+\acrodef{VRAM}{Video Random Access Memory}
+\acrodef{FPS}{Frames Per Second}
 
-% === Models and Architectures ===
-\acrodef{LLM}[LLM]{Large Language Model}
-\acrodef{VLM}[VLM]{Vision-Language Model}
-\acrodef{VLA}[VLA]{Vision-Language Action Model}
-\acrodef{CNN}[CNN]{Convolutional Neural Network}
-\acrodef{RNN}[RNN]{Recurrent Neural Network}
-\acrodef{DRL}[DRL]{Deep Reinforcement Learning}
-\acrodef{RL}[RL]{Reinforcement Learning}
-\acrodef{BC}[BC]{Behavioral Cloning}
-\acrodef{SAM}[SAM]{Segment Anything Model}
-\acrodef{BLIP}[BLIP]{Bootstrapped Language Image Pretraining}
-\acrodef{BLIP-2}[BLIP-2]{Bootstrapped Language Image Pretraining 2}
-\acrodef{CLIP}[CLIP]{Contrastive Language-Image Pretraining}
-\acrodef{BERT}[BERT]{Bidirectional Encoder Representations from Transformers}
-\acrodef{GLIP}[GLIP]{Grounded Language-Image Pretraining}
-\acrodef{GPT}[GPT]{Generative Pretrained Transformer}
-\acrodef{DINO}[DINO]{Self-Distillation with No Labels}
-\acrodef{DeBERTa}[DeBERTa]{Decoding-enhanced BERT with Disentangled Attention}
+% -----------------------------------------------------
+% Robotics, Navigation & Systems
+% -----------------------------------------------------
+\acrodef{SAR}{Search and Rescue}
+\acrodef{SLAM}{Simultaneous Localization and Mapping}
+\acrodef{ASLAM}{Active Simultaneous Localization and Mapping}
+\acrodef{ROS}{Robot Operating System}
+\acrodef{ROS2}{Robot Operating System~2}
+\acrodef{Nav2}{Navigation~2}
+\acrodef{BT}{Behavior Tree}
+\acrodef{POMDP}{Partially Observable Markov Decision Process}
 
+% -----------------------------------------------------
+% Sensors & Geometry
+% -----------------------------------------------------
+\acrodef{LiDAR}{Light Detection and Ranging}
+\acrodef{RGB}{Red Green Blue}
+\acrodef{RGB-D}{Red Green Blue--Depth}
+\acrodef{FOV}{Field of View}
+\acrodef{ICP}{Iterative Closest Point}
+\acrodef{TSDF}{Truncated Signed Distance Field}
 
-% === Semantic Exploration Frameworks ===
-\acrodef{VLFM}[VLFM]{Vision-Language Frontier Maps for Zero-Shot Semantic Navigation}
-\acrodef{VLMaps}[VLMaps]{Visual Language Maps for Robot Navigation}
-\acrodef{OneMap}[OneMap]{One Map to Find Them All}
-\acrodef{ConceptGraphs}[ConceptGraphs]{Open-Vocabulary 3D Scene Graphs for Perception and Planning}
-\acrodef{SemExp}[SemExp]{Object Goal Navigation using Goal-Oriented Semantic Exploration}
-\acrodef{GeFF}[GeFF]{Learning Generalizable Feature Fields for Mobile Manipulation}
-\acrodef{SEEM}[SEEM]{Segment Everything Everywhere All at Once}
-\acrodef{ESC}[ESC]{Exploration with Semantic Cues}
-\acrodef{LGX}[LGX]{Language-Guided Exploration}
-\acrodef{CoW}[CoW]{Clip on Wheels}
-\acrodef{SemUtil}[SemUtil]{Semantic Utility Maps for Object Goal Navigation}
-\acrodef{ZSON}[ZSON]{Zero-Shot Object Navigation}
-\acrodef{PONI}[PONI]{Potential Functions for ObjectGoal Navigation
-with Interaction-free Learning}
-\acrodef{PIRLNav}[PIRLNav]{Pretraining with Imitation and RL Finetuning}
+% -----------------------------------------------------
+% Machine Learning & Vision Models
+% -----------------------------------------------------
+\acrodef{CNN}{Convolutional Neural Network}
+\acrodef{RNN}{Recurrent Neural Network}
+\acrodef{RL}{Reinforcement Learning}
+\acrodef{DRL}{Deep Reinforcement Learning}
+\acrodef{BC}{Behavioral Cloning}
+\acrodef{PPO}{Proximal Policy Optimization}
 
-% === Metrics ===
-\acrodef{SR}[SR]{Success Rate}
-\acrodef{SPL}[SPL]{Success weighted by Path Length}
-\acrodef{MSR}[MSR]{Multi-Object Success Rate}
+\acrodef{LLM}{Large Language Model}
+\acrodef{VLM}{Vision-Language Model}
+\acrodef{VLA}{Vision-Language Action Model}
 
-% === Robotics and Sensing ===
-\acrodef{LiDAR}[LiDAR]{Light Detection and Ranging}
-\acrodef{SLAM}[SLAM]{Simultaneous Localization and Mapping}
-\acrodef{ROS}[ROS]{Robot Operating System}
-\acrodef{ROS 2}[ROS 2]{Robot Operating System 2}
-\acrodef{ASLAM}[ASLAM]{Active Simultaneous Localization and Mapping}
+\acrodef{CLIP}{Contrastive Language--Image Pretraining}
+\acrodef{BLIP}{Bootstrapped Language Image Pretraining}
+\acrodef{BLIP-2}{Bootstrapped Language Image Pretraining~2}
+\acrodef{BERT}{Bidirectional Encoder Representations from Transformers}
+\acrodef{DeBERTa}{Decoding-Enhanced BERT with Disentangled Attention}
+\acrodef{GPT}{Generative Pretrained Transformer}
 
-% === Datasets and Benchmarks ===
-\acrodef{COCO}[COCO]{Common Objects in Context}
-\acrodef{HM3D}[HM3D]{Habitat-Matterport 3D Dataset}
-\acrodef{MP3D}[MP3D]{Matterport3D Dataset}
-\acrodef{ScanNet}[ScanNet]{RGB-D Reconstruction Dataset for Indoor Scenes}
+\acrodef{SAM}{Segment Anything Model}
+\acrodef{DINO}{Self-Distillation with No Labels}
+\acrodef{GroundingDINO}{Grounded Distillation with No Labels}
+\acrodef{SEEM}{Segment Everything Everywhere All at Once}
 
-% === Simulation and Frameworks ===
-\acrodef{IsaacSim}[IsaacSim]{NVIDIA Isaac Simulation Platform}
-\acrodef{HabitatSim}[HabitatSim]{Habitat Simulation Environment}
-\acrodef{OpenFusion}[OpenFusion]{OpenFusion 3D Semantic Mapping Framework}
+% -----------------------------------------------------
+% Semantic Exploration & Mapping Frameworks
+% -----------------------------------------------------
+\acrodef{SAGE}{Semantic-Aware Guided Exploration}
+\acrodef{VLFM}{Vision-Language Frontier Maps}
+\acrodef{VLMaps}{Visual Language Maps}
+\acrodef{OneMap}{One Map to Find Them All}
+\acrodef{ConceptGraphs}{Open-Vocabulary 3D Scene Graphs}
+\acrodef{ESC}{Exploration with Semantic Cues}
+\acrodef{LGX}{Language-Guided Exploration}
+\acrodef{CoW}{CLIP on Wheels}
+\acrodef{SemUtil}{Semantic Utility Maps}
+\acrodef{ZSON}{Zero-Shot Object Navigation}
+\acrodef{PONI}{Potential Functions for Object-Goal Navigation}
+\acrodef{PIRLNav}{Pretraining with Imitation and Reinforcement Learning}
 
-% === Frontier Exploration ===
+% -----------------------------------------------------
+% Datasets & Benchmarks
+% -----------------------------------------------------
+\acrodef{COCO}{Common Objects in Context}
+\acrodef{HM3D}{Habitat--Matterport~3D}
+\acrodef{MP3D}{Matterport3D}
+\acrodef{ScanNet}{RGB-D Reconstruction Dataset for Indoor Scenes}
 
-% === Common stuff ===
-\acrodef{FOV}[FOV]{Field of View}
-\acrodef{BC}[BC]{Behavioral Cloning}
-\acrodef{PPO}[PPO]{Proximal Policy Optimization}
+% -----------------------------------------------------
+% Simulation & Mapping Frameworks
+% -----------------------------------------------------
+\acrodef{IsaacSim}{NVIDIA Isaac Simulation Platform}
+\acrodef{HabitatSim}{Habitat Simulation Environment}
+\acrodef{OpenFusion}{OpenFusion Semantic Mapping Framework}
 
-% === Detectors ===
-\acrodef{DINO}[DINO]{Self-Distillation with No Labels}
-\acrodef{GroundingDINO}[GroundingDINO]{Grounded DIstillation with NO labels}
-\acrodef{SEEM}[SEEM]{Segment Everything Everywhere All at Once}
+% -----------------------------------------------------
+% Evaluation Metrics
+% -----------------------------------------------------
+\acrodef{SR}{Success Rate}
+\acrodef{SPL}{Success weighted by Path Length}
+\acrodef{MSR}{Multi-Object Success Rate}
+\acrodef{AP}{Average Precision}
+\acrodef{IoU}{Intersection over Union}
+\acrodef{F1}{F1 Score}
+\acrodef{FPR}{False Positive Rate}
+\acrodef{IQR}{Interquartile Range}
 
-% Miscallaneous acronyms can be added here as needed.
-\acrodef{PSL}[PSL]{Probabilistic Soft Logic}
-\acrodef{PoI}[PoI]{Point of Interest}
-\acrodef{POMDP}[POMDP]{Partially Observable Markov Decision Process}
-\acrodef{ICP}[ICP]{Iterative Closest Point}
+\acrodef{TP}{True Positive}
+\acrodef{FP}{False Positive}
+\acrodef{TN}{True Negative}
+\acrodef{FN}{False Negative}
 
-% Planners
-\acrodef{A*}[A*]{A-star}
-
-% Sensors
-\acrodef{RGB-D}[RGB-D]{Red Green Blue-Depth}
-\acrodef{RGB}[RGB]{Red Green Blue}
-
-\acrodef{IoU}[IoU]{Intersection over Union}
-
-\acrodef{NeRF}[NeRF]{Neural Radiance Field}
-
-\acrodef{TSDF}[TSDF]{Truncated Signed Distance Field}
-
-\acrodef{BFS}[BFS]{Breadth-First Search}
-
-\acrodef{ITC}[ITC]{Image-Text Contrastive}
-
-\acrodef{FOV}[FOV]{Field of View}
-
-\acrodef{AP}[AP]{Average Precision}
-
-\acrodef{BT}[BT]{Behavior Tree}
-
-% === Robotics and Sensing ==
-\acrodef{ROS2}[ROS 2]{Robot Operating System 2}
-
-\acrodef{Nav2}[Nav2]{Navigation2}
-
-\acrodef{AI}[AI]{Artificial Intelligence}
-
-\acrodef{FPR}[FPR]{False Positive Rate}
-
-\acrodef{IQR}[IQR]{Interquartile Range}
-
-\acrodef{TP}[TP]{True Positive}
-\acrodef{FP}[FP]{False Positive}
-\acrodef{TN}[TN]{True Negative}
-\acrodef{FN}[FN]{False Negative}
-\acrodef{F1}[F1]{F1 Score}
-\acrodef{FPR}[FPR]{False Positive Rate}
-
-\acrodef{SAGE}[SAGE]{Semantic-Aware Guided Exploration}
+% -----------------------------------------------------
+% Algorithms & Miscellaneous
+% -----------------------------------------------------
+\acrodef{A*}{A-star}
+\acrodef{BFS}{Breadth-First Search}
+\acrodef{PSL}{Probabilistic Soft Logic}
+\acrodef{PoI}{Point of Interest}
+\acrodef{NeRF}{Neural Radiance Field}
+\acrodef{ITC}{Image--Text Contrastive}
