@@ -17,11 +17,7 @@ These challenges motivate the development of a unified framework that bridges ge
 
 Traditional geometric exploration techniques are widely used for mapping unknown environments by identifying frontiers in either two or three dimensions and navigating toward the frontier with the highest expected information gain~\cite{bourgaultInformationBasedAdaptive2002,quinApproachesEfficientlyDetecting2021}. Such methods, including those based on occupancy grids~\cite{thrunProbabilisticRobotics2006} or point cloud representations~\cite{liu3DPointCloud2021}, are particularly effective for coverage and mapping tasks and have been successfully extended to multi-robot systems for large-scale exploration~\cite{tellaroliFrontierBasedExplorationMultiRobot2024}. However, these approaches remain primarily geometry-driven and do not incorporate semantic understanding of the environment. Consequently, they are suboptimal for goal-directed exploration tasks, where the objective is to locate specific objects or regions of interest defined by high-level semantic criteria rather than unexplored geometry~\cite{alamaRayFrontsOpenSetSemantic2025}.
 
-To address this limitation, recent research has focused on integrating semantic perception into exploration frameworks~\cite{yokoyamaVLFMVisionLanguageFrontier2023,chenHowNotTrain2023,zhouESCExplorationSoft2023,dorbalaCanEmbodiedAgent2024,gadreCoWsPastureBaselines2022,majumdarZSONZeroShotObjectGoal2023,ramakrishnanPONIPotentialFunctions2022,ramrakhyaPIRLNavPretrainingImitation2023}. Instead of relying solely on LiDAR or depth sensors for geometric mapping, the use of RGB imagery enables semantic reasoning about the scene and the objects contained within it. Table~\ref{tab:introduction:semantic_exploration_approaches} summarizes representative works that
-leverage either pretrained \acp{VLM} or learning-based navigation policies trained via
-Behavioral Cloning (BC) or Reinforcement Learning (RL),
-to guide robots toward regions that are semantically relevant to a given target
-description in natural language.
+To address this limitation, recent research has focused on integrating semantic perception into xploration frameworks~\cite{yokoyamaVLFMVisionLanguageFrontier2023,chenHowNotTrain2023,zhouESCExplorationSoft2023,dorbalaCanEmbodiedAgent2024,gadreCoWsPastureBaselines2022,majumdarZSONZeroShotObjectGoal2023,ramakrishnanPONIPotentialFunctions2022,ramrakhyaPIRLNavPretrainingImitation2023}. Instead of relying solely on LiDAR or depth sensors for geometric mapping, the use of RGB imagery enables semantic reasoning about the scene and the objects contained within it. Table~\ref{tab:introduction:semantic_exploration_approaches} summarizes representative works that leverage either pretrained \acp{VLM} or learning-based navigation policies trained via \ac{BC} or \ac{RL}, to guide robots toward regions that are semantically relevant to a given target description in natural language.
 
 \begin{table}[H]
     \centering
@@ -30,31 +26,31 @@ description in natural language.
 
     \begin{tabular}{
     p{2.0cm}|
-    >{\centering\arraybackslash}p{3.5cm}
+    >{\centering\arraybackslash}p{3.2cm}
     c
-    >{\centering\arraybackslash}p{5.2cm}
+    >{\centering\arraybackslash}p{4.9cm}
     }
     \toprule
     \textbf{Approach}
     & \textbf{Training Required}
-    & \textbf{Real-Time}
+    & \textbf{LLM Reasoning}\textsuperscript{\dag}
     & \textbf{Semantic Reasoning Model} \\
     \midrule
 
     \textbf{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}
     & \xmark~(zero-shot)
-    & \cmark
+    & \xmark
     & BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023} + GroundingDINO~\cite{liuGroundingDINOMarrying2024} + SAM~\cite{kirillovSegmentAnything2023} \\
 
     \textbf{SemUtil}~\cite{chenHowNotTrain2023}
     & \xmark~(training-free)
-    & \cmark
+    & \xmark
     & Mask R-CNN~\cite{heMaskRCNN2018} + CLIP~\cite{radfordLearningTransferableVisual2021} + BERT~\cite{devlinBERTPretrainingDeep2018} \\
 
     \textbf{ESC}~\cite{zhouESCExplorationSoft2023}
     & \xmark~(zero-shot)
     & \cmark
-    & GLIP~\cite{liGroundedLanguageImagePretraining2022} + DeBERTa~\cite{devlinBERTPretrainingDeep2018} / ChatGPT reasoning \\
+    & GLIP~\cite{liGroundedLanguageImagePretraining2022} + DeBERTa~\cite{devlinBERTPretrainingDeep2018} / ChatGPT \\
 
     \textbf{LGX}~\cite{dorbalaCanEmbodiedAgent2024}
     & \xmark~(zero-shot)
@@ -63,11 +59,11 @@ description in natural language.
 
     \textbf{CoW}~\cite{gadreCoWsPastureBaselines2022}
     & \xmark~(zero-shot)
-    & \cmark
+    & \xmark
     & CLIP similarity scoring~\cite{radfordLearningTransferableVisual2021} \\
 
     \textbf{ZSON}~\cite{majumdarZSONZeroShotObjectGoal2023}
-    & \cmark~(Reinforcement Learning pretraining)
+    & \cmark~(\ac{RL} pretraining)
     & \xmark
     & CLIP-based RL policy \\
 
@@ -77,46 +73,33 @@ description in natural language.
     & Learned potential-field network \\
 
     \textbf{PIRLNav}~\cite{ramrakhyaPIRLNavPretrainingImitation2023}
-    & \cmark~(Behavior Cloning + Reinforcement Learning)
+    & \cmark~(Behavior Cloning + \ac{RL})
     & \xmark
     & DINO-based CNN-RNN policy~\cite{jiangCLIPDINOVisual2024} \\
 
     \bottomrule
     \end{tabular}
 
-    \caption{Overview of semantic zero-shot and trained exploration approaches. All of these methods are capable of navigating to a goal described in natural language, however, they differ in zero-shot applicability to new scenes and real-time capability.}
+    \vspace{0.3em}
+    \footnotesize
+    \textsuperscript{\dag}LLM reasoning indicates explicit use of a \ac{LLM} for commonsense inference or decision support during navigation (beyond vision-language similarity scoring).
+    \caption{Overview of semantic zero-shot and trained exploration approaches, highlighting training requirements and whether explicit language-model reasoning is used for navigation decisions.}
     \label{tab:introduction:semantic_exploration_approaches}
 \end{table}
 
+ Table~\ref{tab:introduction:semantic_exploration_approaches} distinguishes between whether a method requires task-specific training prior to deployment and whether it supports online, real-time inference during navigation. Approaches such as ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}, PONI~\cite{ramakrishnanPONIPotentialFunctions2022}, and PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023} employ \ac{DRL} or supervised training to develop navigation policies capable of generalizing to unseen objects. Although these methods achieve promising results in simulation, they require extensive offline training and exhibit limited adaptability to previously unseen environments or object categories not encountered during training. In contrast, zero-shot methods such as \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, SemUtil~\cite{chenHowNotTrain2023}, ESC~\cite{zhouESCExplorationSoft2023}, LGX~\cite{dorbalaCanEmbodiedAgent2024}, and CoW~\cite{gadreCoWsPastureBaselines2022} leverage pretrained \acp{VLM} to perform semantic exploration without additional training. These models enable online decision-making by exploiting semantic cues extracted from RGB imagery, guiding robots toward areas likely to contain the target object or region.
 
-Approaches such as ZSON~\cite{majumdarZSONZeroShotObjectGoal2023}, PONI~\cite{ramakrishnanPONIPotentialFunctions2022}, and PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023} employ deep reinforcement learning (DRL) or supervised training to develop navigation policies capable of generalizing to unseen objects. Although these methods achieve promising results in simulation, they require extensive offline training and exhibit limited adaptability to previously unseen environments or object categories not encountered during training. In contrast, zero-shot methods such as \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, SemUtil~\cite{chenHowNotTrain2023}, ESC~\cite{zhouESCExplorationSoft2023}, LGX~\cite{dorbalaCanEmbodiedAgent2024}, and CoW~\cite{gadreCoWsPastureBaselines2022} leverage pretrained \acp{VLM} to perform semantic exploration without additional training. These models enable real-time decision-making by exploiting semantic cues extracted from RGB imagery, guiding robots toward areas likely to contain the target object or region.
-
-Some approaches, such as ESC~\cite{zhouESCExplorationSoft2023} and LGX~\cite{dorbalaCanEmbodiedAgent2024}, further integrate \acp{LLM} for commonsense reasoning and high-level task interpretation, enabling a more contextual understanding of complex instructions. However, this comes at the cost of increased computational demand and potential inference latency, which limits their applicability on resource-constrained mobile platforms. While \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023} achieves real-time performance, it relies on multiple computationally expensive foundation models (GroundingDINO~\cite{liuGroundingDINOMarrying2024}, \ac{SAM}~\cite{kirillovSegmentAnything2023}, and \ac{BLIP-2}~\cite{liBLIP2BootstrappingLanguageImage2023}) that require high-end GPUs with up to 16~GB of \ac{VRAM}, which is impractical for embedded robotic systems.
+Some approaches, such as ESC~\cite{zhouESCExplorationSoft2023} and LGX~\cite{dorbalaCanEmbodiedAgent2024}, further integrate \acp{LLM} for commonsense reasoning and high-level task interpretation, enabling a more contextual understanding of complex instructions. However, this comes at the cost of increased computational demand and potential inference latency, which limits their applicability on resource-constrained mobile platforms. While \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023} demonstrates online semantic navigation in real-world experiments, it relies on a pipeline composed of multiple foundation models, including GroundingDINO~\cite{liuGroundingDINOMarrying2024}, \ac{SAM}~\cite{kirillovSegmentAnything2023}, and \ac{BLIP-2}~\cite{liBLIP2BootstrappingLanguageImage2023}, which increases system complexity and computational overhead compared to approaches based on a single perception or reasoning model.
 
 Overall, these language-guided exploration methods primarily focus on short-term semantic reasoning and lack persistent memory. They do not maintain long-term storage or recall mechanisms for previously acquired semantic knowledge, leading to redundant exploration and reduced efficiency in multi-object and chained search tasks.
 
 \section{Language-Embedded Semantic Mapping}
-A language-embedded semantic map serves as a persistent spatial memory that jointly encodes
-the geometric structure of the environment and its semantic content. Semantic information
-can be incorporated either by associating discrete object classes~\cite{chaplotObjectGoalNavigation2020}, inferred by a visual
-perception backbone, with their spatial locations, or by embedding high-dimensional visual
-representations into a spatial map~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023,guConceptGraphsOpenVocabulary3D2023,jatavallabhulaConceptFusionOpensetMultimodal2023}, such as a projected voxel grid. In the latter case, the
-visual embeddings capture semantic properties of objects and regions beyond fixed category
-labels~\cite{yokoyamaVLFMVisionLanguageFrontier2023,yamazakiOpenFusionRealtimeOpenVocabulary2023,guConceptGraphsOpenVocabulary3D2023}. This abstraction allows semantic information to be reused across tasks and time horizons, rather than being tied to a single perception or navigation episode~\cite{buschOneMapFind2025}.
 
-Such semantic representations can be queried using natural language prompts, enabling robots
-to reason about the presence, distribution, and spatial relationships of objects or regions of
-interest based on high-level descriptions~\cite{zhouESCExplorationSoft2023,alamaRayFrontsOpenSetSemantic2025}. By leveraging either object class information or continuous visual embeddings, a robot can guide its navigation toward areas with a high
-likelihood of containing a specified target~\cite{huangVisualLanguageMaps2023,buschOneMapFind2025}, thereby improving search efficiency and task success rates. Furthermore, language-embedded semantic maps can be combined with high-level
-reasoning modules, such as Large Language Models (\acp{LLM}), to infer object relationships,
-contextual cues, and action sequences required to accomplish more complex, multi-step goals~\cite{zhouESCExplorationSoft2023,dorbalaCanEmbodiedAgent2024}.
+A language-embedded semantic map serves as a persistent spatial memory that jointly encodes the geometric structure of the environment and its semantic content. Semantic information can be incorporated either by associating discrete object classes~\cite{chaplotObjectGoalNavigation2020}, inferred by a visual perception backbone, with their spatial locations, or by embedding high-dimensional visual representations into a spatial map~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023,guConceptGraphsOpenVocabulary3D2023,jatavallabhulaConceptFusionOpensetMultimodal2023}, such as a semantic voxel grid. In the latter case, the visual embeddings capture semantic properties of objects and regions beyond fixed category labels~\cite{yokoyamaVLFMVisionLanguageFrontier2023,yamazakiOpenFusionRealtimeOpenVocabulary2023,guConceptGraphsOpenVocabulary3D2023} and therefore enables zero-shot generalization. This abstraction allows semantic information to be reused across tasks and time horizons, rather than being tied to a single perception or navigation episode~\cite{buschOneMapFind2025}.
 
-Maintaining such semantic representations persistently over time enables robots to exploit
-past observations, recall previously detected objects, and avoid redundant exploration of
-already known regions. This form of long-term global memory improves navigation efficiency,
-scalability, and robustness in open-vocabulary, real-world environments~\cite{buschOneMapFind2025,pengPIGEONVLMDrivenObject2025}. 
-Table~\ref{tab:introduction:persistent_mapping_approaches} summarizes representative works
-that incorporate persistent or memory-based semantic mapping to enhance exploration
+Such semantic representations can be queried using natural language prompts, enabling robots to reason about the presence, distribution, and spatial relationships of objects or regions of interest based on high-level descriptions~\cite{zhouESCExplorationSoft2023,alamaRayFrontsOpenSetSemantic2025}. By leveraging either object class information or continuous visual embeddings, a robot can guide its navigation toward areas with a high likelihood of containing a specified target~\cite{huangVisualLanguageMaps2023,buschOneMapFind2025}, thereby improving search efficiency and task success rates. Furthermore, language-embedded semantic maps can be combined with high-level reasoning modules, such as Large Language Models (\acp{LLM}), to infer object relationships, contextual cues, and action sequences required to accomplish more complex, multi-step goals~\cite{zhouESCExplorationSoft2023,dorbalaCanEmbodiedAgent2024}.
+
+Maintaining such semantic representations persistently over time enables robots to exploit past observations, recall previously detected objects, and avoid redundant exploration of already known regions. This form of long-term global memory improves navigation efficiency, scalability, and robustness in open-vocabulary, real-world environments~\cite{buschOneMapFind2025,pengPIGEONVLMDrivenObject2025}. Table~\ref{tab:introduction:persistent_mapping_approaches} summarizes representative works that incorporate persistent or memory-based semantic mapping to enhance exploration
 capabilities.
 
 \begin{table}[H]
@@ -125,16 +108,16 @@ capabilities.
     \renewcommand{\arraystretch}{1.1}
 
     \begin{tabular}{
-    >{\centering\arraybackslash}p{3.0cm}|
-    c
-    c
+    >{\centering\arraybackslash}p{3.5cm}|
+     >{\centering\arraybackslash}p{2.0cm}
+    >{\centering\arraybackslash}p{1.5cm}
     >{\centering\arraybackslash}p{3.0cm}
-    >{\centering\arraybackslash}p{3.0cm}
+    >{\centering\arraybackslash}p{2.5cm}
     }
     \toprule
     \textbf{Approach}
     & \textbf{Training Required}
-    & \textbf{Real-Time}
+    & \textbf{Online Mapping}\textsuperscript{\dag}
     & \textbf{Memory Representation}
     & \textbf{Exploration Integration} \\
     \midrule
@@ -159,7 +142,7 @@ capabilities.
 
     \textbf{GeFF}~\cite{qiuLearningGeneralizableFeature2024}
     & \cmark~(ScanNet pretrain)
-    & \cmark
+    & \xmark
     & Implicit 3D feature field
     & \xmark~(passive) \\
 
@@ -184,6 +167,7 @@ capabilities.
     \bottomrule
     \end{tabular}
 
+    \textsuperscript{\dag}Online mapping indicates that the semantic memory representation is constructed and updated during navigation from onboard sensor observations, without requiring an offline pre-mapping phase.
     \caption{This table provides an overview of representative persistent or memory-based semantic
     mapping approaches, comparing their training requirements, real-time capability, underlying
     memory representations, and the extent to which semantic memory is integrated into exploration
@@ -192,13 +176,13 @@ capabilities.
 \end{table}
 
 
-methods such as SemExp~\cite{chaplotObjectGoalNavigation2020}, Pigeon~\cite{pengPIGEONVLMDrivenObject2025}, and GeFF~\cite{qiuLearningGeneralizableFeature2024} rely on offline training to construct persistent semantic representations. In the case of policy-learning approaches, this dependence on extensive training limits adaptability to previously seen environments and unseen object categories. Other approaches, such as \ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023} and \ac{VLMaps}~\cite{huangVisualLanguageMaps2023}, construct persistent open-vocabulary maps using pretrained foundation models but often require pre-mapping and lack real-time performance, which restricts their use in dynamic or large-scale settings.
+methods such as SemExp~\cite{chaplotObjectGoalNavigation2020}, Pigeon~\cite{pengPIGEONVLMDrivenObject2025}, and GeFF~\cite{qiuLearningGeneralizableFeature2024} rely on offline training to construct persistent semantic representations. In the case of policy-learning approaches, this dependence on extensive training limits adaptability to previously seen environments and unseen object categories. Other approaches, such as ConceptGraphs~\cite{guConceptGraphsOpenVocabulary3D2023} and VLMaps~\cite{huangVisualLanguageMaps2023}, construct persistent open-vocabulary maps using pretrained foundation models but often require pre-mapping and lack real-time performance, which restricts their use in dynamic or large-scale settings.
 
-While \ac{OneMap}~\cite{buschOneMapFind2025} demonstrates real-time onboard operation on embedded platforms such as the Jetson Orin AGX, its overall map update rate of approximately 2 Hz may limit applicability to high-speed navigation scenarios. Moreover, the quality of the probabilistic semantic belief map remains sensitive to depth sensing noise, as feature localization uncertainty increases with distance, directly affecting the spatial accuracy of semantic information. Although \ac{OneMap} incorporates a consensus-filtering mechanism combining CLIP-based similarity maps with open-vocabulary object detectors to mitigate false positives, its semantic reasoning ultimately relies on vision-language similarity, which remains inherently ambiguous under open-vocabulary conditions.
+While OneMap~\cite{buschOneMapFind2025} demonstrates real-time onboard operation on embedded platforms such as the Jetson Orin AGX, its overall map update rate of approximately 2 Hz may limit applicability to high-speed navigation scenarios. Moreover, the quality of the probabilistic semantic belief map remains sensitive to depth sensing noise, as feature localization uncertainty increases with distance, directly affecting the spatial accuracy of semantic information. Although OneMap incorporates a consensus-filtering mechanism combining CLIP-based similarity maps with open-vocabulary object detectors to mitigate \ac{FP}, its semantic reasoning ultimately relies on vision-language similarity, which remains inherently ambiguous under open-vocabulary conditions.
 
-\ac{GeFF}~\cite{qiuLearningGeneralizableFeature2024} provides a compact implicit 3D representation by distilling CLIP-aligned features into a neural field, enabling both geometric and semantic understanding. However, it requires pretraining on large-scale datasets such as ScanNet, limiting its direct generalization to arbitrary environments. RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025} introduces a hybrid 3D representation that combines voxel-based semantics with ray-based frontier expansion, offering real-time operation and high efficiency for open-set semantic search. Nevertheless, its computational complexity grows with environment size, and its planner-agnostic design prevents it from actively guiding exploration toward semantically relevant regions.
+GeFF~\cite{qiuLearningGeneralizableFeature2024} provides a compact implicit 3D representation by distilling CLIP-aligned features into a neural field, enabling both geometric and semantic understanding. However, it requires pretraining on large-scale datasets such as ScanNet, limiting its direct generalization to arbitrary environments. RayFronts~\cite{alamaRayFrontsOpenSetSemantic2025} proposes a hybrid 3D semantic representation that combines voxel-based embeddings with ray-based frontier expansion. The method is primarily a planner-agnostic mapping component that maintains and expands semantic structure online; it does not prescribe a specific exploration objective or frontier selection strategy for object search. As a result, RayFronts can be integrated with different planners, but it does not by itself actively prioritize semantically relevant frontiers during exploration.
 
-Table~\ref{tab:introduction:identified_gaps} summarizes the key limitations observed across existing semantic exploration frameworks. These gaps illustrate the need for a unified approach that combines zero-shot semantic understanding, persistent spatial memory, and real-time exploration to achieve robust, scalable autonomy in complex environments.
+Table~\ref{tab:introduction:identified_gaps} summarizes the key limitations observed across existing semantic exploration frameworks. These gaps motivate a unified approach that combines zero-shot semantic understanding, persistent spatial memory, and online mapping to enable scalable autonomy in complex environments.
 
 \begin{table}[H]
     \centering
@@ -233,11 +217,11 @@ Table~\ref{tab:introduction:identified_gaps} summarizes the key limitations obse
     & Detect novel objects but fail to explore unseen regions strategically. \\
 
     \textbf{Premapping needed}
-    & \ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}, \ac{GeFF}~\cite{qiuLearningGeneralizableFeature2024}
+    & \ac{ConceptGraphs}~\cite{guConceptGraphsOpenVocabulary3D2023}, GeFF~\cite{qiuLearningGeneralizableFeature2024}
     & Depend on pre-recorded data; not suited for online autonomy. \\
 
     \textbf{Limited robustness}
-    & PONI~\cite{ramakrishnanPONIPotentialFunctions2022}, \ac{SemExp}~\cite{chaplotObjectGoalNavigation2020}, PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023}
+    & PONI~\cite{ramakrishnanPONIPotentialFunctions2022}, SemExp~\cite{chaplotObjectGoalNavigation2020}, PIRLNav~\cite{ramrakhyaPIRLNavPretrainingImitation2023}
     & Closed-set categories; fragile under real-world variation. \\
 
     \textbf{Low real-world applicability}
@@ -253,86 +237,47 @@ Table~\ref{tab:introduction:identified_gaps} summarizes the key limitations obse
     \label{tab:introduction:identified_gaps}
 \end{table}
 
-These observations reveal several fundamental challenges that are not yet adequately
-addressed by existing semantic exploration frameworks.
+These observations reveal several fundamental challenges that are not yet adequately addressed by existing semantic exploration frameworks.
 
-First, many approaches lack the ability to perform zero-shot exploration while maintaining
-a persistent and incrementally updated semantic representation of the environment
-\cite{yokoyamaVLFMVisionLanguageFrontier2023,chenHowNotTrain2023,zhouESCExplorationSoft2023,
-gadreCoWsPastureBaselines2022,ramrakhyaPIRLNavPretrainingImitation2023,
-majumdarZSONZeroShotObjectGoal2023,ramakrishnanPONIPotentialFunctions2022}.
-As a result, semantic information is often either discarded after individual navigation
-episodes or requires pre-mapped environments, limiting applicability in unknown or
-changing scenes.
+First, many approaches lack the ability to perform zero-shot exploration while maintaining a persistent and incrementally updated semantic representation of the environment~\cite{yokoyamaVLFMVisionLanguageFrontier2023,chenHowNotTrain2023,zhouESCExplorationSoft2023, gadreCoWsPastureBaselines2022,ramrakhyaPIRLNavPretrainingImitation2023, majumdarZSONZeroShotObjectGoal2023,ramakrishnanPONIPotentialFunctions2022}.
+As a result, semantic information is often either discarded after individual navigation episodes or requires pre-mapped environments, limiting applicability in unknown or changing scenes.
 
-Second, a strong reliance on computationally expensive deep reinforcement learning or
-supervised training pipelines remains common. This dependence restricts adaptability to
-new environments and object categories and poses significant challenges for deployment on
-resource-constrained robotic platforms
-\cite{majumdarZSONZeroShotObjectGoal2023,
-gadreCoWsPastureBaselines2022,
-ramakrishnanPONIPotentialFunctions2022}.
+Second, a strong reliance on computationally expensive \ac{DRL} or \ac{SL} pipelines remains common. This dependence restricts adaptability to new environments and object categories and poses significant challenges for deployment on resource-constrained robotic platforms~\cite{majumdarZSONZeroShotObjectGoal2023, gadreCoWsPastureBaselines2022,ramakrishnanPONIPotentialFunctions2022}.
 
-Third, existing methods struggle to robustly handle the reliability of semantic information
-during exploration. Semantic maps constructed from open-vocabulary perception are inherently
-noisy and uncertain
-\cite{radfordLearningTransferableVisual2021,zareianOpenVocabularyObjectDetection2021},
-and indiscriminate reliance on semantic memory can lead to inefficient navigation
-\cite{huangVisualLanguageMaps2023}, as robots may pursue low-confidence or spurious cues
-instead of exploring informative regions. In such cases, poorly calibrated use of semantic
-memory may negate the potential benefits of semantic guidance
-\cite{ramakrishnanPONIPotentialFunctions2022}.
+Third, existing methods struggle to robustly handle the reliability of semantic information during exploration. Semantic maps constructed from open-vocabulary perception are inherently noisy and uncertain~\cite{radfordLearningTransferableVisual2021,zareianOpenVocabularyObjectDetection2021}, and indiscriminate reliance on semantic memory can lead to inefficient navigation~\cite{huangVisualLanguageMaps2023}, as robots may pursue low-confidence or spurious cues instead of exploring informative regions. In such cases, poorly calibrated use of semantic memory may negate the potential benefits of semantic guidance~\cite{ramakrishnanPONIPotentialFunctions2022}.
 
-Conversely, approaches that rely exclusively on semantic-driven exploration may overlook
-structurally plausible regions suggested by prior observations, resulting in reduced task
-success. This challenge is further amplified in dynamic environments, where previously
-stored semantic information may become outdated or misleading over time.
+Conversely, approaches that rely exclusively on semantic-driven exploration may overlook structurally plausible regions suggested by prior observations, resulting in reduced task success. This challenge is further amplified in dynamic environments, where previously stored semantic information may become outdated or misleading over time.
 
-Fourth, real-world deployment introduces additional challenges related to computational
-efficiency, robustness to sensor noise, and environmental variability. Many current systems
-struggle to sustain reliable real-time performance under embedded hardware constraints,
-leading to increased latency or unstable inference behavior
-\cite{guConceptGraphsOpenVocabulary3D2023,yokoyamaVLFMVisionLanguageFrontier2023}.
+Fourth, real-world deployment introduces additional challenges related to computational efficiency, sensitivity to sensor noise, and domain shift across environments. In practice, perception and mapping pipelines can exhibit degraded localization of semantic cues, increased \ac{FP}, and unstable inference latency under embedded hardware constraints, which complicates closed-loop navigation~\cite{guConceptGraphsOpenVocabulary3D2023,yokoyamaVLFMVisionLanguageFrontier2023}.
 
-Finally, several existing approaches rely on single-source detection or similarity pipelines,
-which are prone to false positives and semantic ambiguities under open-vocabulary conditions.
-The lack of multi-source semantic validation and memory-aware reasoning limits robustness
-and consistency during long-term autonomous operation
-\cite{buschOneMapFind2025,gadreCoWsPastureBaselines2022,
-dorbalaCanEmbodiedAgent2024,yokoyamaVLFMVisionLanguageFrontier2023}.
+Finally, several existing approaches rely on single-source detection or similarity pipelines, which are prone to false positives and semantic ambiguities under open-vocabulary conditions. The lack of multi-source semantic validation and memory-aware reasoning limits robustness and consistency during long-term autonomous operation~\cite{buschOneMapFind2025,gadreCoWsPastureBaselines2022, dorbalaCanEmbodiedAgent2024,yokoyamaVLFMVisionLanguageFrontier2023}.
 
 
 \section{Scientific Contribution}
 
-This work contributes to the state of the art by introducing a hybrid semantic exploration framework that integrates zero-shot semantic frontier scoring with persistent 3D scene representation, enabling autonomous robotic search guided by open-vocabulary text queries. The proposed method combines real-time semantic reasoning during exploration with a long-term spatial memory, allowing the robot to dynamically balance between discovering new information and exploiting previously acquired knowledge.
+This work contributes to the state-of-the-art by introducing a hybrid semantic exploration framework that integrates zero-shot semantic frontier scoring with persistent 3D scene representation, enabling autonomous robotic search guided by open-vocabulary text queries. The proposed method combines real-time semantic reasoning during exploration with a long-term spatial memory, allowing the robot to dynamically balance between discovering new information and exploiting previously acquired knowledge.
 
 Unlike previous approaches that focus exclusively on either geometric frontiers or static semantic maps, the proposed framework continuously fuses information from multiple semantic sources to maintain a unified, confidence-based semantic world representation. Tunable weighting enables the robot to adjust its behavior between exploration and exploitation according to the reliability of recent observations and the stability of stored semantic memory.
 
-The proposed method is evaluated with respect to how the quality and granularity of the underlying semantic information influence task success, navigation efficiency, and robustness. By systematically varying the trust between exploration and memory components, this thesis provides new insights into how semantic reasoning and persistent mapping can be effectively combined for open-vocabulary, multi-object search in dynamic environments.
+The proposed method is evaluated with respect to how the quality and granularity of the underlying semantic information influence task success, navigation efficiency, and detection consistency. By systematically varying the fusion weighting between exploration and memory components, this thesis provides new insights into how semantic reasoning and persistent mapping can be effectively combined for open-vocabulary, multi-object search in dynamic environments.
 
 To evaluate the contribution of the proposed method, the following research questions are formulated:
 
 \begin{enumerate}
     \item \textbf{How does integrating zero-shot semantic exploration and persistent 3D semantic mapping affect multi-object search performance and navigation efficiency compared to existing methods?} \\
-    Performance is quantified with respect to task success and path efficiency, measured through \ac{SR}, \ac{SPL}, and \ac{MSR} relative to representative state-of-the-art systems such as \ac{OneMap}~\cite{buschOneMapFind2025}, \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, and Pigeon~\cite{pengPIGEONVLMDrivenObject2025}.
+    Performance is quantified with respect to task success and path efficiency, measured through \ac{SR} and \ac{SPL} relative to representative state-of-the-art systems such as \ac{OneMap}~\cite{buschOneMapFind2025}, \ac{VLFM}~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, and Pigeon~\cite{pengPIGEONVLMDrivenObject2025}.
     
     \item \textbf{How does the interaction between live exploration and accumulated semantic memory influence overall system performance?} \\
-    The weighting factor between exploration and memory is varied during graph node fusion to assess impacts on \ac{SR} and \ac{SPL}, identifying optimal trade-offs between reactivity and exploitation.
+    A fusion weighting between live semantic evidence and accumulated semantic memory is varied to assess its impact on \ac{SR} and \ac{SPL}, revealing trade-offs between reactive exploration and memory-driven exploitation.
     
-    \item \textbf{How robust is semantic navigation to variations in semantic memory granularity, and can exploration reduce the negative effects of coarse semantic representations?} \\
-    Navigation performance is evaluated across different levels of semantic retrieval granularity and compared balanced exploration against pure exploitation to assess robustness using \ac{SR} and \ac{SPL}.
+    \item \textbf{How sensitive is semantic navigation to variations in semantic memory granularity, and can exploration mitigate the negative effects of coarse semantic representations?} \\
+    Navigation performance is evaluated across different levels of semantic retrieval granularity and compared under balanced exploration and pure exploitation using \ac{SR} and \ac{SPL}.
     
-    \item \textbf{How does multi-source fusion of detection confidence, semantic similarity, and
-    memory confidence impact detection robustness and false-positive suppression during exploration?} \\
-    This question is evaluated by analyzing Precision, Recall, F1-Score, the Confusion Matrix,
-    and Success Rate (\ac{SR}) under different fusion weight configurations across \ac{COCO},
-    open-vocabulary, and zero-shot object classes.
+    \item \textbf{How does multi-source fusion of detection confidence, semantic similarity, and accumulated memory evidence affect detection accuracy, error characteristics, and threshold sensitivity during exploration?} \\
+    This question is evaluated by analyzing precision, recall, F1-score, false-positive rate, confusion matrices, and precision-recall curves across multiple detection variants and decision thresholds, covering single-source, pairwise, and multi-source fusion strategies for open-vocabulary and zero-shot object categories.
 
-    \item \textbf{What is the computational footprint and real-world robustness of the hybrid
-    framework?} \\
-    This aspect is assessed using \ac{FPS}, \ac{GPU} and \ac{CPU} utilization,
-    inference latency, and detection stability under sensor noise during physical deployment
-    on a mobile robot.
+    \item \textbf{What is the computational footprint and execution profile of the proposed hybrid framework during real-world deployment?} \\
+    This question is evaluated by measuring \ac{GPU} memory consumption, overall system throughput, and the execution rates of individual processing loops, including perception, exploration, and semantic memory fusion, during deployment on a mobile robot.
 
 \end{enumerate}
 

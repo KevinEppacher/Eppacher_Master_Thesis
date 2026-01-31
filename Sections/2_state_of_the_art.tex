@@ -56,7 +56,7 @@ In contrast to geometric exploration, which aims to maximize map coverage using 
 
 Semantic exploration approaches differ fundamentally in how exploration behavior is generated and optimized. \ac{RL} and imitation learning methods have demonstrated promising results by training agents to navigate toward target objects based on high-level semantic cues~\cite{majumdarZSONZeroShotObjectGoal2023,ramrakhyaPIRLNavPretrainingImitation2023,ramakrishnanPONIPotentialFunctions2022}. In these approaches, an agent learns a policy that maps high-dimensional sensory observations to low-level control actions by optimizing a task-specific reward function, rather than relying on explicitly designed exploration heuristics~\cite{ghasemiComprehensiveSurveyReinforcement2025}.
 
-In the context of semantic exploration, \ac{RL}-based methods are typically formulated as Markov Decision Processes or, more commonly in embodied navigation, as partially observable Markov Decision Processes (\acp{POMDP})~\cite{thrunProbabilisticRobotics2006}. At an abstract level, a \ac{POMDP} can be defined as a tuple $(\mathcal{S}, \mathcal{A}, P, R, \gamma)$, where $\mathcal{S}$ denotes the latent environment states, $\mathcal{A}$ the set of possible actions (e.g., move forward, turn left/right), $P: \mathcal{S} \times \mathcal{A} \times \mathcal{S} \rightarrow [0,1]$ the state transition probability function, $R: \mathcal{S} \times \mathcal{A} \rightarrow \mathbb{R}$ the reward function, and $\gamma \in [0,1)$ the discount factor. The agent does not observe the full state directly but instead receives high-dimensional, partial observations (e.g., RGB images, depth measurements, or semantic representations), from which it must infer an internal belief about the environment~\cite{ghasemiComprehensiveSurveyReinforcement2025}.
+In the context of semantic exploration, \ac{RL}-based methods are typically formulated as Markov Decision Processes or, more commonly in embodied navigation, as partially \acp{POMDP}~\cite{thrunProbabilisticRobotics2006}. At an abstract level, a \ac{POMDP} can be defined as a tuple $(\mathcal{S}, \mathcal{A}, P, R, \gamma)$, where $\mathcal{S}$ denotes the latent environment states, $\mathcal{A}$ the set of possible actions (e.g., move forward, turn left/right), $P: \mathcal{S} \times \mathcal{A} \times \mathcal{S} \rightarrow [0,1]$ the state transition probability function, $R: \mathcal{S} \times \mathcal{A} \rightarrow \mathbb{R}$ the reward function, and $\gamma \in [0,1)$ the discount factor. The agent does not observe the full state directly but instead receives high-dimensional, partial observations (e.g., RGB images, depth measurements, or semantic representations), from which it must infer an internal belief about the environment~\cite{ghasemiComprehensiveSurveyReinforcement2025}.
 
 The reward function encodes task objectives such as reaching a target object, minimizing
 path length, or maintaining correct orientation, thereby implicitly shaping the agent’s
@@ -82,10 +82,11 @@ where $\tau$ denotes trajectories sampled from the policy $\pi_{\theta}$, $a_t$ 
 
 \citeauthor{majumdarZSONZeroShotObjectGoal2023}~\cite{majumdarZSONZeroShotObjectGoal2023} proposed \ac{ZSON}, a zero-shot object navigation framework that leverages the shared embedding space of CLIP~\cite{radfordLearningTransferableVisual2021} to guide navigation policies trained via \ac{RL}. 
 During training, the agent observes RGB images and previous actions, while the navigation goal is specified by the CLIP embedding of an image containing the target object. 
-The policy is optimized using a shaped reward function:
+The policy is optimized using a shaped reward function in Equation~\ref{eq:zson:reward_function},
 
 \begin{equation}
-r_t = r_{\text{success}} + r_{\text{angle-success}} - \Delta d_{tg} - \Delta a_{tg} + r_{\text{slack}},
+r_t = r_{\text{success}} + r_{\text{angle-success}} - \Delta d_{tg} - \Delta a_{tg} + r_{\text{slack}}
+\label{eq:zson:reward_function}
 \end{equation}
 
 where $r_{\text{success}}$ rewards successful target localization, $r_{\text{angle-success}}$ encourages correct orientation, $\Delta d_{tg}$ and $\Delta a_{tg}$ penalize distance and angular deviation, respectively, and $r_{\text{slack}}$ is a negative constant, which penalizes inefficient actions per step~\cite{majumdarZSONZeroShotObjectGoal2023}. At inference time, the image-based goal embedding is replaced by the CLIP embedding of a textual object description, enabling zero-shot generalization to unseen object categories. The action space is discrete and consists of \textit{move forward}, \textit{turn left}, \textit{turn right}, and \textit{stop}. The reward function is used exclusively during training to learn the navigation policy during inference, the agent selects actions solely based on the learned policy without access to the reward signal.
@@ -99,17 +100,17 @@ While \ac{ZSON} demonstrates strong zero-shot object generalization, exploration
 A stochastic navigation policy is denoted by $\pi_\theta(a \mid s)$, parameterized by $\theta$, mapping an observation $s$ to a distribution over actions $a$. Training objectives are expressed as loss functions $\mathcal{L}(\theta)$ minimized with respect to $\theta$. The pretrained ObjectNav policy is trained using supervised learning to minimize the behavior cloning loss in Equation~\ref{eq:pirl_nav:bc_loss},
 
 \begin{equation}
-\mathcal{L}_{\text{BC}}(\theta) = - \sum_{t=1}^{T} \log \pi_\theta(a_t^* \mid s_t),
+\mathcal{L}_{\text{BC}}(\theta) = - \sum_{t=1}^{T} \log \pi_\theta(a_t^* \mid s_t)
 \label{eq:pirl_nav:bc_loss}
 \end{equation}
 
 where $a_t^*$ denotes the expert action at time step $t$ and $s_t$ denotes the agent observation. The ObjectNav policy is trained with a \ac{CNN}+\ac{RNN} architecture, in which a pretrained vision backbone, \ac{DINO}, extracts visual features from RGB images and feeds them into the navigation policy network along with pose and goal information.
 
-In the second stage, the pretrained policy is fine-tuned using \ac{RL} by maximizing the expected discounted return (see Equation~\ref{eq:pirl_nav:rl_objective}):
+In the second stage, the pretrained policy is fine-tuned using \ac{RL} by maximizing the expected discounted return described in Equation~\ref{eq:pirl_nav:rl_objective},
 
 \begin{equation}
 \theta^{*} = \arg\max_{\theta} \mathbb{E}_{\tau \sim \pi_\theta}
-\left[ \sum_{t=1}^{T} \gamma^{t-1} r_t \right],
+\left[ \sum_{t=1}^{T} \gamma^{t-1} r_t \right]
 \label{eq:pirl_nav:rl_objective}
 \end{equation}
 
@@ -149,14 +150,15 @@ and
 f_T(\cdot),
 \)
 which map an image \(I\) and a text prompt \(T\) to a common embedding space
-\(\mathbb{R}^d\):
+\(\mathbb{R}^d\) (see Equation~\ref{eq:embedding:vectors}),
 
 \begin{equation}
-\mathbf{e}_I = f_I(I), \qquad \mathbf{e}_T = f_T(T),
+\mathbf{e}_I = f_I(I), \qquad \mathbf{e}_T = f_T(T)
+\label{eq:embedding:vectors}
 \end{equation}
 
 where \(\mathbf{e}_I, \mathbf{e}_T \in \mathbb{R}^d\) are high-dimensional feature vectors encoding semantic information. Text inputs are tokenized and processed using transformer-based language encoders, while visual
-inputs are decomposed into patches or regions and encoded by a vision backbone (e.g., \ac{CNN} or transformer-based architectures), depending on the model design~\cite{vaswaniAttentionAllYou2023,liBLIP2BootstrappingLanguageImage2023,liGroundedLanguageImagePretraining2022}. Semantic alignment between image and text embeddings is commonly quantified using cosine similarity, which measures the angular similarity between vectors in the shared embedding space (see Equation~\ref{eq:vlm_cosine_similarity}),
+inputs are decomposed into patches or regions and encoded by a vision backbone (e.g., \ac{CNN} or transformer-based architectures), depending on the model design~\cite{vaswaniAttentionAllYou2023,liBLIP2BootstrappingLanguageImage2023,liGroundedLanguageImagePretraining2022}. Semantic alignment between image and text embeddings is commonly quantified using cosine similarity, which measures the angular similarity between vectors in the shared embedding space (see Equation~\ref{eq:vlm_cosine_similarity}).
 
 \begin{equation}
 \label{eq:vlm_cosine_similarity}
@@ -236,7 +238,7 @@ Table~\ref{tab:sota:foundation_design_patterns} summarizes foundation-model-base
     \label{tab:sota:foundation_design_patterns}
 \end{table}
 
-A representative example of this paradigm is the \ac{ESC} framework proposed by \citeauthor{zhouESCExplorationSoft2023}~\cite{zhouESCExplorationSoft2023}, which augments traditional frontier-based exploration with semantic cues derived from pretrained \acp{VLM}. Specifically, \ac{ESC} combines a grounded object detector, \ac{GLIP}~\cite{liGroundedLanguageImagePretraining2022}, with a \ac{LLM} (either ChatGPT or DeBERTa) to generate semantic priors that guide exploration decisions. Frontiers are scored based on both geometric utility and semantic relevance to the target object (see Equation~\ref{eq:esc}).
+A representative example of this paradigm is the \ac{ESC} framework proposed by \citeauthor{zhouESCExplorationSoft2023}~\cite{zhouESCExplorationSoft2023}, which augments traditional frontier-based exploration with semantic cues derived from pretrained \acp{VLM}. Specifically, \ac{ESC} combines a grounded object detector, GLIP~\cite{liGroundedLanguageImagePretraining2022}, with a \ac{LLM} (either ChatGPT or DeBERTa) to generate semantic priors that guide exploration decisions. Frontiers are scored based on both geometric utility and semantic relevance to the target object (see Equation~\ref{eq:esc}).
 
 \begin{equation}
 \label{eq:esc}
@@ -245,7 +247,7 @@ P(F) = P(F \mid d_i^{t}, o^{t}, r^{t})
 
 \(P(F)\) denotes the probability of selecting frontier \(F\), conditioned on detected objects \(d_i^{t}\), current image observations \(o^{t}\), and the robot pose \(r^{t}\) at time \(t\). This formulation is implemented using \ac{PSL}, which fuses visual detections with language-derived priors about object co-occurrences and spatial relationships. The robot then selects the frontier with the highest combined score, balancing geometric and semantic information to improve search efficiency. For navigating toward target objects, a classical \ac{A*} planner is employed to compute collision-free paths based on the occupancy map.
 
-~\citeauthor{zhouESCExplorationSoft2023}~\cite{zhouESCExplorationSoft2023} employs \ac{GLIP}~\cite{liGroundedLanguageImagePretraining2022} as the detection backbone to compute 2D bounding boxes, class labels, and confidence scores for objects within the robot’s \ac{FOV}. While effective in simulation, the approach introduces notable computational overhead due to repeated \ac{LLM} inference and PSL optimization. As a consequence of relying on single-step detections and static commonsense priors, errors introduced by false positives are not attenuated over time. Once a misleading semantic hypothesis is introduced, the probabilistic reasoning layer tends to reinforce rather than correct it, leading to persistent semantic bias during exploration.
+~\citeauthor{zhouESCExplorationSoft2023}~\cite{zhouESCExplorationSoft2023} employs GLIP~\cite{liGroundedLanguageImagePretraining2022} as the detection backbone to compute 2D bounding boxes, class labels, and confidence scores for objects within the robot’s \ac{FOV}. While effective in simulation, the approach introduces notable computational overhead due to repeated \ac{LLM} inference and PSL optimization. As a consequence of relying on single-step detections and static commonsense priors, errors introduced by false positives are not attenuated over time. Once a misleading semantic hypothesis is introduced, the probabilistic reasoning layer tends to reinforce rather than correct it, leading to persistent semantic bias during exploration.
 
 Through ablation studies, \citeauthor{zhouESCExplorationSoft2023}~\cite{zhouESCExplorationSoft2023} observed that object-object and object-room relational priors can occasionally degrade performance, as commonsense relationships are inherently probabilistic rather than deterministic. Additionally, while \ac{ESC} maintains a local semantic map during navigation, it lacks mechanisms for long-term memory or belief revision. Consequently, once an incorrect detection or prior is introduced, the framework has no learned means of down-weighting or correcting it over time, which can lead to persistent semantic inconsistencies during extended exploration.
 
@@ -296,51 +298,45 @@ Table~\ref{tab:sota:persistent_mapping_exploration} summarizes recent approaches
     \renewcommand{\arraystretch}{1.2}
     \begin{tabular}{
     l |
-    p{3.0cm}
-    p{1.5cm}
-    >{\centering\arraybackslash}p{1.2cm}
-    p{2.0cm}
-    >{\centering\arraybackslash}p{1.2cm}
-    p{2.0cm}
+    p{3.2cm}
+    p{1.8cm}
+    p{2.4cm}
+    >{\centering\arraybackslash}p{1.4cm}
+    p{2.4cm}
     }
     \toprule
     \textbf{Method}
     & \textbf{Semantic Memory Type}
     & \textbf{Spatial Representation}
-    & \textbf{Open-Vocab}
     & \textbf{Update Mechanism}
     & \textbf{Belief Revision}
     & \textbf{Primary Limitation} \\
     \midrule
 
     \textbf{OneMap~\cite{buschOneMapFind2025}}
-    & Open-Vocabulary Belief Map (\ac{CLIP} features)
-    & 2.5D top-down grid map
-    & \cmark
+    & Open-vocabulary belief map (CLIP features)
+    & 2.5D top-down grid
     & Uncertainty-weighted accumulative fusion
     & \xmark
     & Irreversible belief fusion leads to semantic drift \\
 
     \textbf{VLMaps~\cite{huangVisualLanguageMaps2023}}
-    & Dense per-cell language embeddings (\ac{CLIP}-based~\cite{radfordLearningTransferableVisual2021})
-    & 2.5D top-down grid map
-    & \cmark
-    & Multi-view feature averaging (accumulative fusion)
+    & Dense per-cell language embeddings (CLIP-based)
+    & 2.5D top-down grid
+    & Multi-view feature averaging
     & \xmark
-    & Irreversible feature averaging causes semantic noise and ambiguity \\
+    & Irreversible feature averaging causes semantic noise \\
 
     \textbf{PIGEON~\cite{pengPIGEONVLMDrivenObject2025}}
-    & Language-conditioned episodic visual memory (\ac{PoI} snapshots)
-    & 2D geometric exploration map + episodic \ac{PoI} memory
-    & \cmark
-    & Episodic accumulation of visual evidence (per episode)
+    & Language-conditioned episodic visual memory (PoI snapshots)
+    & 2D exploration map + episodic memory
+    & Episodic accumulation (per episode)
     & \xmark
-    & No persistent semantic belief state or belief revision mechanism \\
+    & No persistent semantic belief state \\
 
     \textbf{DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025}}
     & Dual semantic maps (short-term + long-term)
     & 2D grid maps
-    & \cmark
     & Dual-stream accumulative fusion
     & \xmark
     & Long-term map cannot correct early semantic errors \\
@@ -348,21 +344,15 @@ Table~\ref{tab:sota:persistent_mapping_exploration} summarizes recent approaches
     \bottomrule
     \end{tabular}
 
-    \caption{Comparison of semantic memory representations for exploration.
-    The table highlights how different methods store semantic information, update it over time,
-    and whether they support belief revision.}
+    \caption{Comparison of persistent semantic memory representations for exploration.
+    All listed approaches support open-vocabulary querying; the table focuses on how semantic
+    information is represented, updated over time, and whether belief revision is supported.}
     \label{tab:sota:persistent_mapping_exploration}
 \end{table}
 
 
 % ---------------------- OneMap, VLMaps ----------------------
-
-A approach to building persistent open-vocabulary semantic maps during exploration
-is presented by \citeauthor{buschOneMapFind2025}~\cite{buschOneMapFind2025} and
-\citeauthor{huangVisualLanguageMaps2023}~\cite{huangVisualLanguageMaps2023}.
-Both methods construct a 2.5D top-down grid map in which semantic information is stored at the
-cell level in the form of language-aligned visual embeddings, enabling open-vocabulary querying
-via image-text similarity.
+Although all methods considered here operate in an open-vocabulary setting, they differ substantially in how semantic evidence is accumulated, consolidated, and corrected over time.A approach to building persistent open-vocabulary semantic maps during exploration is presented by \citeauthor{buschOneMapFind2025}~\cite{buschOneMapFind2025} and \citeauthor{huangVisualLanguageMaps2023}~\cite{huangVisualLanguageMaps2023}. Both methods construct a 2.5D top-down grid map in which semantic information is stored at the cell level in the form of language-aligned visual embeddings, enabling open-vocabulary querying via image-text similarity.
 
 In both works, incoming RGB-D observations are processed by a vision-language model to
 extract dense semantic features. In \ac{OneMap}, global \ac{CLIP} image embeddings are projected

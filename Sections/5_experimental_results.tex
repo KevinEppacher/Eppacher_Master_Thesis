@@ -415,7 +415,7 @@ are critical for reliable downstream navigation decisions.
 \section{Experiment 5: System Efficiency and Real-World Validation}
 \label{sec:experiments:results:5}
 
-This experiment addresses RQ5 by evaluating the computational efficiency and real-time feasibility of the proposed system in a real-world deployment setting. Figures~\ref{fig:results:rq5:gpu_vram} and~\ref{fig:results:rq5:openfusion_max_voxel} (see Appendix~\ref{ch:appendix:results:details}) summarize the \ac{GPU} memory consumption of the overall system and an example of a semantic Map for the given total voxel allocation, respectively.
+This experiment addresses RQ5 by evaluating the computational efficiency and real-time feasibility of the proposed system in a real-world deployment setting. Figures~\ref{fig:results:rq5:gpu_vram} and~\ref{fig:appendix:rq5:openfusion_max_voxel} (see Appendix~\ref{ch:appendix:experimental_results}) summarize the \ac{GPU} memory consumption of the overall system and an example of a semantic Map for the given total voxel allocation, respectively.
 
 The \textbf{SAGE} framework consists of three primary \ac{GPU}-intensive components:
 (a) the open-vocabulary detector YOLO-E~\cite{wangYOLOERealTimeSeeing2025},
@@ -423,7 +423,7 @@ The \textbf{SAGE} framework consists of three primary \ac{GPU}-intensive compone
 (c) the OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} semantic memory module for persistent 3D fusion.
 YOLO-E and BLIP-2 exhibit fixed \ac{GPU} memory footprints of approximately 1200\,MB and 2280\,MB of \ac{VRAM}, respectively, and do not vary during runtime. In contrast to VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, which utilizes four different \ac{VLM} and detectors, which cumulatively require over 16\,GB of \ac{GPU} memory,~\textbf{SAGE} only uses 3480\,MB for the same functionality, making it more suitable for consumer-grade hardware.
 
-In contrast, the \ac{GPU} memory consumption of OpenFusion depends on the number of allocated voxels in the volumetric map. In the evaluated configuration, a total of 191{,}941 voxels are allocated, resulting in a \ac{GPU} memory usage of approximately 6122\,MB for the semantic memory. This configuration is sufficient to represent an apartment-scale environment, as illustrated in Figure~\ref{fig:results:rq5:openfusion_max_voxel}. Overall, the complete \textbf{SAGE} system requires approximately 9.6\,GB of \ac{GPU} \ac{VRAM}, making it compatible with contemporary consumer-grade GPUs.
+In contrast, the \ac{GPU} memory consumption of OpenFusion depends on the number of allocated voxels in the volumetric map. In the evaluated configuration, a total of 191{,}941 voxels are allocated, resulting in a \ac{GPU} memory usage of approximately 6122\,MB for the semantic memory. This configuration is sufficient to represent an apartment-scale environment, as illustrated in Figure~\ref{fig:appendix:rq5:openfusion_max_voxel}. Overall, the complete \textbf{SAGE} system requires approximately 9.6\,GB of \ac{GPU} \ac{VRAM}, making it compatible with contemporary consumer-grade GPUs.
 
 \begin{figure}[h!]
     \centering
