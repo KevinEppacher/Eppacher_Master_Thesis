@@ -5,12 +5,12 @@
 
 This chapter answers the research questions defined in Chapter~\ref{ch:introduction} by
 evaluating the proposed multi-object, open-vocabulary exploration framework in a sequence of
-experiments. Experiment~1 addresses \textbf{RQ1} through a benchmark-style comparison on HM3Dv2.
+experiments. Experiment~1 addresses (RQ1) through a benchmark-style comparison on HM3Dv2.
 Experiments~2--4 provide ablations that isolate key design choices of the system:
-(i) the exploration-memory weighting (\textbf{RQ2}),
-(ii) the semantic memory granularity via OpenFusion retrieval depth (\textbf{RQ3}),
-and (iii) multi-source semantic fusion for detection robustness (\textbf{RQ4}).
-Finally, Experiment~5 evaluates computational footprint and real-world feasibility (\textbf{RQ5})
+(i) the exploration-memory weighting (RQ2),
+(ii) the semantic memory granularity via OpenFusion retrieval depth (RQ3),
+and (iii) multi-source semantic fusion for detection robustness (RQ4).
+Finally, Experiment~5 evaluates computational footprint and real-world feasibility (RQ5)
 under deployment conditions.
 
 % ###########################################################
@@ -24,7 +24,7 @@ HM3Dv2~\cite{ramakrishnanHabitatMatterport3DDataset2021} and compares it to repr
 
 Within this evaluation setting, \ac{SAGE} achieves a mean \ac{SPL} of 63.6\% and a mean \ac{SR} of 77.5\%. Compared to the next best reported \ac{SPL} in Table~\ref{tab:hm3dv2_comparison}, this corresponds to an increase of 26.2 percentage points in \ac{SPL}, while maintaining competitive success rates.
 
-\begin{table}[H]
+\begin{table}[t]
     \centering
     \renewcommand{\arraystretch}{1.25}
     \begin{tabular}{lcccc}
@@ -65,7 +65,7 @@ These results establish a strong reference point for the subsequent experiments,
 
 Figure~\ref{fig:results:rq1:example:bed_path} illustrates the evaluation setup for a representative episode by visualizing the executed trajectory and the corresponding geodesic shortest path used in the \ac{SPL} computation. The associated detection overlay and further qualitative examples for additional prompts are provided in Appendix~\ref{ch:appendix:experimental_results}.
 
-\begin{figure}[h!]
+\begin{figure}[t]
     \centering
     \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ1/00848-ziup5kvtCCR/bed_paths.png}
     \caption{Example trajectory visualization for Scene \texttt{00848-ziup5kvtCCR} and target class \texttt{bed}. The plot compares the executed path with the geodesic shortest path used to compute \ac{SPL}. Start, end, and target positions are indicated; the corresponding detection overlay is provided in Appendix~\ref{ch:appendix:experimental_results}.}
@@ -79,7 +79,7 @@ Figure~\ref{fig:results:rq1:example:bed_path} illustrates the evaluation setup f
 \section{Experiment 2: Impact of Exploration-Memory Weighting}
 \label{sec:experiments:results:2}
 
-Experiment~2 addresses \textbf{RQ2} by analyzing how the weighting between live exploration signals
+Experiment~2 addresses RQ2 by analyzing how the weighting between live exploration signals
 and accumulated semantic memory affects navigation performance and failure characteristics.
 Let $\lambda_{\mathrm{exploration}} \in [0,1]$ denote the fusion weight that increases reliance on
 reactive exploration cues (frontier-based semantic scoring). Figures~\ref{fig:results:rq2:sr} and~\ref{fig:results:rq2:spl}
@@ -159,7 +159,7 @@ Overall, these results indicate that the interaction between exploration and mem
 \section{Experiment 3: Sensitivity to Semantic Map Granularity}
 \label{sec:experiments:results:3}
 
-Experiment~3 addresses \textbf{RQ3} by evaluating robustness to the granularity of semantic retrieval used to construct the OpenFusion-based semantic memory. The system uses OpenFusion to fuse \ac{VLM} embeddings into a volumetric representation. Granularity is controlled via the retrieval depth parameter \textit{top-k}, which retrieves the $k$ most similar semantic entries from the \ac{SEEM} embedding dictionary inside OpenFusion prior to fusion. Smaller \textit{top-k} values yield sharper but potentially incomplete semantic hypotheses, whereas larger \textit{top-k} values increase map density at the cost of higher noise and semantic ambiguity.
+Experiment~3 addresses RQ3 by evaluating robustness to the granularity of semantic retrieval used to construct the OpenFusion-based semantic memory. The system uses OpenFusion to fuse \ac{VLM} embeddings into a volumetric representation. Granularity is controlled via the retrieval depth parameter \textit{top-k}, which retrieves the $k$ most similar semantic entries from the \ac{SEEM} embedding dictionary inside OpenFusion prior to fusion. Smaller \textit{top-k} values yield sharper but potentially incomplete semantic hypotheses, whereas larger \textit{top-k} values increase map density at the cost of higher noise and semantic ambiguity.
 
 To compensate for noise under larger \textit{top-k}, $\lambda_{\mathrm{exploration}}$ is increased across
 configurations, shifting trust from memory-based cues toward frontier-driven exploration. The
@@ -244,10 +244,6 @@ frontier scoring, thereby improving path feasibility and overall navigation robu
 \end{figure}
 
 The best-performing configurations in Experiment~3 are consistent with the results of Experiment~2. In both experiments, the highest \ac{SR} and \ac{SPL} are achieved for top-$k$ values in the range of 10 to 15. This alignment is expected, as Experiment~2 was conducted using a top-$k$ value of 10, which was selected empirically during preliminary testing and used as a reasonable initial configuration for subsequent experiments.
-
-% Overall, these results demonstrate that the proposed framework is robust to substantial variations in semantic map granularity. While semantic memory density influences noise levels, balanced integration of exploration and memory prevents degradation in
-% navigation performance. Excessive reliance on memory alone leads to higher failure rates due to uncorrected false positives and incomplete environment coverage. In contrast, maintaining exploratory feedback enables the system to compensate for noisy
-% semantic cues, confirming the importance of hybrid exploration-memory strategies for long-horizon semantic navigation.
 
 Overall, the results show that coarse semantic retrieval can degrade performance when the policy
 over-trusts the memory, but that balanced exploration can mitigate these effects by re-acquiring
@@ -419,20 +415,20 @@ are critical for reliable downstream navigation decisions.
 \section{Experiment 5: System Efficiency and Real-World Validation}
 \label{sec:experiments:results:5}
 
-This experiment addresses \textbf{RQ5} by evaluating the computational efficiency and real-time feasibility of the proposed system in a real-world deployment setting. Figures~\ref{fig:results:rq5:gpu_vram} and~\ref{fig:results:rq5:openfusion_max_voxel} (see Appendix~\ref{ch:appendix:results:details}) summarize the GPU memory consumption of the overall system and an example of a semantic Map for the given total voxel allocation, respectively.
+This experiment addresses RQ5 by evaluating the computational efficiency and real-time feasibility of the proposed system in a real-world deployment setting. Figures~\ref{fig:results:rq5:gpu_vram} and~\ref{fig:results:rq5:openfusion_max_voxel} (see Appendix~\ref{ch:appendix:results:details}) summarize the \ac{GPU} memory consumption of the overall system and an example of a semantic Map for the given total voxel allocation, respectively.
 
-The \textbf{SAGE} framework consists of three primary GPU-intensive components:
+The \textbf{SAGE} framework consists of three primary \ac{GPU}-intensive components:
 (a) the open-vocabulary detector YOLO-E~\cite{wangYOLOERealTimeSeeing2025},
 (b) the \ac{VLM} BLIP-2~\cite{liBLIP2BootstrappingLanguageImage2023} for semantic similarity scoring, and
 (c) the OpenFusion~\cite{yamazakiOpenFusionRealtimeOpenVocabulary2023} semantic memory module for persistent 3D fusion.
-YOLO-E and BLIP-2 exhibit fixed GPU memory footprints of approximately 1200\,MB and 2280\,MB of \ac{VRAM}, respectively, and do not vary during runtime. In contrast to VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, which utilizes four different \ac{VLM} and detectors, which cumulatively require over 16\,GB of GPU memory,~\textbf{SAGE} only uses 3480\,MB for the same functionality, making it more suitable for consumer-grade hardware.
+YOLO-E and BLIP-2 exhibit fixed \ac{GPU} memory footprints of approximately 1200\,MB and 2280\,MB of \ac{VRAM}, respectively, and do not vary during runtime. In contrast to VLFM~\cite{yokoyamaVLFMVisionLanguageFrontier2023}, which utilizes four different \ac{VLM} and detectors, which cumulatively require over 16\,GB of \ac{GPU} memory,~\textbf{SAGE} only uses 3480\,MB for the same functionality, making it more suitable for consumer-grade hardware.
 
-In contrast, the GPU memory consumption of OpenFusion depends on the number of allocated voxels in the volumetric map. In the evaluated configuration, a total of 191{,}941 voxels are allocated, resulting in a GPU memory usage of approximately 6122\,MB for the semantic memory. This configuration is sufficient to represent an apartment-scale environment, as illustrated in Figure~\ref{fig:results:rq5:openfusion_max_voxel}. Overall, the complete \textbf{SAGE} system requires approximately 9.6\,GB of GPU \ac{VRAM}, making it compatible with contemporary consumer-grade GPUs.
+In contrast, the \ac{GPU} memory consumption of OpenFusion depends on the number of allocated voxels in the volumetric map. In the evaluated configuration, a total of 191{,}941 voxels are allocated, resulting in a \ac{GPU} memory usage of approximately 6122\,MB for the semantic memory. This configuration is sufficient to represent an apartment-scale environment, as illustrated in Figure~\ref{fig:results:rq5:openfusion_max_voxel}. Overall, the complete \textbf{SAGE} system requires approximately 9.6\,GB of \ac{GPU} \ac{VRAM}, making it compatible with contemporary consumer-grade GPUs.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ5/gpu_vram.png}
-    \caption{GPU memory consumption of the \textbf{SAGE} system during runtime, decomposed by major components.}
+    \caption{\ac{GPU} memory consumption of the \textbf{SAGE} system during runtime, decomposed by major components.}
     \label{fig:results:rq5:gpu_vram}
 \end{figure}
 
@@ -451,80 +447,5 @@ Due to the comparatively high latency of OpenFusion, the semantic memory is quer
     \caption{Observed execution frequencies of the main processing loops during real-world deployment.}
     \label{fig:results:rq5:fps}
 \end{figure}
-
-% \begin{table}[H]
-% \centering
-% \footnotesize
-% \renewcommand{\arraystretch}{1.15}
-
-% \begin{tabular}{
-%     l 
-%     l 
-%     c 
-%     c 
-%     c
-% }
-% \hline
-% \textbf{Component} & \textbf{ROS Topic} & \textbf{Mean [Hz]} & \textbf{Min--Max [Hz]} & \textbf{Std. Dev.} \\
-% \hline
-
-% \multicolumn{5}{l}{\textit{Reactive Perception}} \\[2pt]
-% YOLO-E Detector 
-% & \texttt{/yoloe/overlay} 
-% & 6.2 
-% & 2.9 -- 13.0 
-% & 0.06 \\
-
-% \multicolumn{5}{l}{\textit{Semantic Scoring}} \\[2pt]
-% Value Map Similarity 
-% & \texttt{/value\_map/cosine\_similarity} 
-% & 10.0 
-% & 9.7 -- 10.3 
-% & 0.0015 \\
-
-% \multicolumn{5}{l}{\textit{Graph-Based Reasoning}} \\[2pt]
-% Exploration Graph 
-% & \texttt{/exploration\_graph\_nodes/graph\_nodes} 
-% & 6.3 
-% & 4.9 -- 7.4 
-% & 0.02 \\
-
-% Exploitation Graph 
-% & \texttt{/exploitation\_graph\_nodes/graph\_nodes} 
-% & 10.0 
-% & 9.6 -- 10.6 
-% & 0.002 \\
-
-% Fused Exploration Graph 
-% & \texttt{/fused/exploration\_graph\_nodes/graph\_nodes} 
-% & 1.6 
-% & 1.3 -- 2.0 
-% & 0.04 \\
-
-% Fused Detection Graph 
-% & \texttt{/fused/detection\_graph\_nodes/graph\_nodes} 
-% & 1.7 
-% & 1.5 -- 2.0 
-% & 0.05 \\
-
-% \multicolumn{5}{l}{\textit{Persistent 3D Semantic Mapping}} \\[2pt]
-% OpenFusion Query Cloud 
-% & \texttt{/openfusion\_ros/query\_pointcloud\_xyzi} 
-% & 0.32 
-% & 0.19 -- 0.36 
-% & 1.09 \\
-
-% \hline
-% \end{tabular}
-
-% \caption{Observed topic publication frequencies during real-world deployment. 
-% The system follows a deliberate multi-rate design: reactive perception and exploitation 
-% operate at high frequency, while persistent semantic fusion is performed sparsely to 
-% limit computational overhead.}
-% \label{tab:rq5_topic_frequencies}
-% \end{table}
-
-% 3346 MB -> 206915 Voxels
-% 5368 MB -> 285685 Voxels
 
 \newpage

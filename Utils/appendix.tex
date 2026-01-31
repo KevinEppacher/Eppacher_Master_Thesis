@@ -1,21 +1,54 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Appendix
 \clearpage
 \appendix
-\chapter{Methodology details}
-\label{ch:appendix:methodology_details}
-\section{Behavior Tree Structure}
+
+\chapter{Behavior Tree Details}
+\label{ch:appendix:bt_details}
+
+The behavior tree (exported from Groot2) orchestrates the alternation between (i) perception-driven
+object confirmation and (ii) frontier-based exploration, while maintaining a persistent semantic map
+across sequential queries.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.8\textwidth]{Images/03_methods/bt/sage_behaviortree.png}
-    \caption{Behavior Tree structure of the proposed hybrid semantic exploration system. The BT alternates between detection and exploration branches based on object detection status, guiding the robot's navigation and observation strategies.}
+    \includegraphics[width=0.85\textwidth]{Images/03_methods/bt/sage_behaviortree.png}
+    \caption{High-level behavior tree of \ac{SAGE}. Control flow nodes (selectors/sequences) gate between an object-confirmation branch and an exploration branch. Leaf nodes correspond to atomic actions or condition checks.}
     \label{fig:appendix:bt:tree}
 \end{figure}
 
+Table~\ref{tab:appendix:bt:semantics} summarizes the role and outcome semantics of the main
+subtrees and leaf nodes. This reference complements the method description in Chapter~\ref{ch:methods}
+by making the execution logic explicit at the decision-making level.
+
+\begin{table}[h!]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabular}{p{3.4cm} p{8.0cm}}
+        \toprule
+        \textbf{BT Element} & \textbf{Purpose and outcome semantics} \\
+        \midrule
+
+        Object confirmation branch &
+        Uses the detection graph nodes \(G_{t}^{\mathrm{det}}\) to decide whether the queried target is present. The branch returns \emph{Success} if at least one graph node exceeds the configured confirmation threshold; otherwise, it returns \emph{Failure}, which triggers exploration. Internally, confirmation is executed in three stages: (a) permissive candidate acquisition with a low detection threshold, (b) navigation and viewpoint alignment toward the highest-scoring detection candidate, and (c) final verification under a high detection threshold. \\
+
+        Exploration branch &
+        Selects a frontier candidate according to the fused frontier utility and navigates to the corresponding viewpoint. The branch returns \emph{Success} once a new viewpoint is reached; it returns \emph{Failure} if navigation fails or if no valid frontier remains. \\
+
+        Re-orientation / observation &
+        Performs an observation routine (e.g., in-place rotation or local viewpoint refinement) to update semantic evidence for graph nodes, including value-map scoring based on cosine similarity. The routine returns \emph{Success} after completing the observation cycle. \\
+
+        Termination condition &
+        Terminates an episode if the target is confirmed or if the episode budget is exhausted (e.g., time, steps, or available frontiers). \\
+        \bottomrule
+    \end{tabular}
+    \caption{Summary of the main behavior tree elements used to orchestrate \ac{SAGE}. The exact set of leaf nodes depends on the task configuration, but the success/failure semantics follow the roles stated above.}
+    \label{tab:appendix:bt:semantics}
+\end{table}
+
+
 \chapter{Additional Experimental Results}
 \label{ch:appendix:experimental_results}
-
-% ---------------------------------------------------
 
 \begin{figure}[h!]
     \centering
@@ -33,7 +66,7 @@
         \label{fig:appendix:rq1:00848:bed_paths}
     \end{minipage}
 
-    \caption{RQ1 example (scene ziup5kvtCCR): object detection overlay and executed navigation trajectory for the target object \emph{bed}.}
+    \caption{RQ1 example (scene \texttt{00848-ziup5kvtCCR}): object detection overlay and executed navigation trajectory for the target object \emph{bed}.}
     \label{fig:appendix:rq1:00848:bed_combined}
 \end{figure}
 
@@ -55,7 +88,7 @@
         \label{fig:appendix:rq1:00800:bed_paths}
     \end{minipage}
 
-    \caption{RQ1 example (scene TEEsavR23oF): object detection overlay and executed navigation trajectory for the target object \emph{bed}.}
+    \caption{RQ1 example (scene \texttt{00800-TEEsavR23oF}): object detection overlay and executed navigation trajectory for the target object \emph{bed}.}
     \label{fig:appendix:rq1:00800:bed_combined}
 \end{figure}
 
@@ -77,7 +110,7 @@
         \label{fig:appendix:rq1:00814:toilet_paths}
     \end{minipage}
 
-    \caption{RQ1 example (scene p53SfW6mjZe): object detection overlay and executed navigation trajectory for the target object \emph{toilet}.}
+    \caption{RQ1 example (scene \texttt{00814-p53SfW6mjZe}): object detection overlay and executed navigation trajectory for the target object \emph{toilet}.}
     \label{fig:appendix:rq1:00814:toilet_combined}
 \end{figure}
 
@@ -99,7 +132,7 @@
         \label{fig:appendix:rq1:00824:toilet_paths}
     \end{minipage}
 
-    \caption{RQ1 example (scene Dd4bFSTQ8gi): object detection overlay and executed navigation trajectory for the target object \emph{toilet}.}
+    \caption{RQ1 example (scene \texttt{00824-Dd4bFSTQ8gi}): object detection overlay and executed navigation trajectory for the target object \emph{toilet}.}
     \label{fig:appendix:rq1:00824:toilet_combined}
 \end{figure}
 
@@ -121,7 +154,7 @@
         \label{fig:appendix:rq1:00824:plant_paths}
     \end{minipage}
 
-    \caption{RQ1 example (scene Dd4bFSTQ8gi): object detection overlay and executed navigation trajectory for the target object \emph{plant}.}
+    \caption{RQ1 example (scene \texttt{00824-Dd4bFSTQ8gi}): object detection overlay and executed navigation trajectory for the target object \emph{plant}.}
     \label{fig:appendix:rq1:00824:plant_combined}
 \end{figure}
 
@@ -132,7 +165,7 @@
     \begin{minipage}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{Images/05_experimental_results/RQ1/00848-ziup5kvtCCR/tree.png}
-        \subcaption{Object detection overlay (tree)}
+        \subcaption{Object detection overlay (christmas tree)}
         \label{fig:appendix:rq1:00848:tree}
     \end{minipage}
     \hfill
@@ -143,7 +176,7 @@
         \label{fig:appendix:rq1:00848:tree_paths}
     \end{minipage}
 
-    \caption{RQ1 example (scene ziup5kvtCCR): object detection overlay and executed navigation trajectory for the target object \emph{tree}.}
+    \caption{RQ1 example (scene \texttt{00848-ziup5kvtCCR}): object detection overlay and executed navigation trajectory for the target object \emph{christmas tree}.}
     \label{fig:appendix:rq1:00848:tree_combined}
 \end{figure}
 
@@ -165,7 +198,7 @@
         \label{fig:appendix:rq1:00876:sofa_paths}
     \end{minipage}
 
-    \caption{RQ1 example (scene mv2HUxq3B53): object detection overlay and executed navigation trajectory for the target object \emph{sofa}.}
+    \caption{RQ1 example (scene \texttt{00876-mv2HUxq3B53}): object detection overlay and executed navigation trajectory for the target object \emph{sofa}.}
     \label{fig:appendix:rq1:00876:sofa_combined}
 \end{figure}
 
@@ -187,7 +220,7 @@
         \label{fig:appendix:rq1:00876:chair_paths}
     \end{minipage}
 
-    \caption{RQ1 failure example (scene mv2HUxq3B53): false positive detection caused by a visually correct but physically unreachable object. The chair is correctly detected in the image but is located behind a window outside the navigable space, leading the robot to navigate towards the window under the assumption that the object is reachable.}
+    \caption{RQ1 failure example (scene \texttt{00876-mv2HUxq3B53}): \ac{FP} detection caused by a visually correct but physically unreachable object. The chair is correctly detected in the image but is located behind a window outside the navigable space, leading the robot to navigate towards the window under the assumption that the object is reachable.}
     \label{fig:appendix:rq1:00876:chair_combined}
 \end{figure}
 

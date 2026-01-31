@@ -17,11 +17,11 @@ Allgemeine Punkte
 * Aufpassen bei Referenz zu Formeln. Verwendung im Satzbau ist unschön in Thesen, hat sich aber so wie das inoffizielle "we/our" in Engingeering Papern durchgesetzt. Ich würde das aber nicht machen. Bitte auch schauen, dass (see Equation x) und die Verwendung im Satzbau nicht vermischt sind (siehe FOrmel 7).
 * Aufpassen, es gibt Phrasen, die sehr nach LLM klingen. Die sind in der Regel sehr schwammig und sollten vermieden werden (egal ob durch LLM generiert oder nicht). Beispiele sind comprehensive, defining, essential, representative, powerful, framework, integrate x with y. Vor allem representative wird in der Arbeit sehr oft verwendet -> Das ist nicht quantifizierbar
 * Alle Abkürzungen einführen
-* Wenn der Name der Autor*innen angeschrieben wird, dann trotzdem nachher ein normales Zitat einfügen (damit Klarheit bei mehreren gleichen Erstautor*innen). Das ist manchmal so, manchmal so in der Arbeit
-* Tabellen/Abbildungen und Text so setzen, dass keine Leerstellen entstehen (z.B. S.26)
-* Abbildungen in Ch3 sind teilweise sehr groß -> Nur so groß wie möglich, sonst meinen Lesende, dass die Läng gestreckt wurde
+<!-- * Wenn der Name der Autor*innen angeschrieben wird, dann trotzdem nachher ein normales Zitat einfügen (damit Klarheit bei mehreren gleichen Erstautor*innen). Das ist manchmal so, manchmal so in der Arbeit -->
+<!-- * Tabellen/Abbildungen und Text so setzen, dass keine Leerstellen entstehen (z.B. S.26) -->
+<!-- * Abbildungen in Ch3 sind teilweise sehr groß -> Nur so groß wie möglich, sonst meinen Lesende, dass die Läng gestreckt wurde -->
 <!-- * Odometry in den Abb ausschreiben -->
-* Aufpassen in Literaturverzeichnis -> bereits veröffentlichte Beiträge nicht als Arxiv Preprint zitieren
+<!-- * Aufpassen in Literaturverzeichnis -> bereits veröffentlichte Beiträge nicht als Arxiv Preprint zitieren -->
 
 
 Nummerierte Punkte
