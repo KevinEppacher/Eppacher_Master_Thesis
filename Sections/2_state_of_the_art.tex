@@ -474,7 +474,7 @@ During object-goal exploration, DualMap does not directly search the entire map 
 object. Instead, the language query is embedded using CLIP and matched against the semantic
 representations of anchors and their associated volatile objects.
 Anchors with high semantic relevance are prioritized as navigation goals, and the robot
-navigates toward them using a classical \ac{A*} planner~\cite{kabirEnhancedRobotMotion2023} on the occupancy map. Once the target object is detected again in the local concrete map, exploration terminates.
+navigates toward them using a classical \ac{A*} planner~\cite{kabirEnhancedRobotMotionBlockAStar2024} on the occupancy map. Once the target object is detected again in the local concrete map, exploration terminates.
 
 By separating short-term perceptual memory from long-term semantic anchors, DualMap achieves more structured and interpretable language-guided navigation than dense feature-map approaches. However, semantic information in DualMap is primarily used for exploitation of previously observed anchors, while exploration itself remains purely geometry-driven. The framework does not provide a mechanism or hyperparameter to explicitly balance semantic exploration and exploitation, as semantic reasoning is only applied after anchors have been formed~\cite{jiangDualMapOnlineOpenVocabulary2025}. As a result, DualMap favors semantic exploitation over semantic exploration, which can limit its ability to actively search for objects that have not yet been associated with existing anchors.
 
@@ -518,7 +518,7 @@ In order to incorporate persistent semantic memory into exploration systems, to 
     & \cmark
     & \cmark \\
 
-    LERF~\cite{kerrLERFLanguageEmbedded2023}
+    LERF~\cite{kerrLERFICCV2023}
     & NeRF
     & OpenCLIP~\cite{chertiReproducibleScalingLaws2022}, DINOv2~\cite{oquabDINOv2LearningRobust2024}
     & \xmark
@@ -602,7 +602,7 @@ open-vocabulary mapping and by replacing costly inter-object merging with lightw
 intra-object consistency checks, enabling persistent semantic memory and more efficient
 online operation.
 
-\citeauthor{kerrLERFLanguageEmbedded2023}~\cite{kerrLERFLanguageEmbedded2023} introduced
+\citeauthor{kerrLERFICCV2023}~\cite{kerrLERFICCV2023} introduced
 \textit{LERF}, which builds upon \ac{NeRF}~\cite{mildenhallNeRFRepresentingScenes2020} to represent a
 scene as a continuous volumetric function that maps a 3D position $\mathbf{x}$ and viewing
 direction $\mathbf{d}$ to color and density,
