@@ -13,7 +13,7 @@ Simon
 Allgemeine Punkte
 
 * Aufpassen bei der Größe der Arbeit (hauptsächlich durch Abbildungen) -> CIS nimmt nur eine gewisse Größe (ich glaube 80Mb -> Bitte im Tool checken, ich habe da keinen Zugriff darauf)
-* Deutsches und Englisches Abstract vertauscht, Keywords auf englisch fehlen
+<!-- * Deutsches und Englisches Abstract vertauscht, Keywords auf englisch fehlen -->
 * Aufpassen bei Referenz zu Formeln. Verwendung im Satzbau ist unschön in Thesen, hat sich aber so wie das inoffizielle "we/our" in Engingeering Papern durchgesetzt. Ich würde das aber nicht machen. Bitte auch schauen, dass (see Equation x) und die Verwendung im Satzbau nicht vermischt sind (siehe FOrmel 7).
 * Aufpassen, es gibt Phrasen, die sehr nach LLM klingen. Die sind in der Regel sehr schwammig und sollten vermieden werden (egal ob durch LLM generiert oder nicht). Beispiele sind comprehensive, defining, essential, representative, powerful, framework, integrate x with y. Vor allem representative wird in der Arbeit sehr oft verwendet -> Das ist nicht quantifizierbar
 * Alle Abkürzungen einführen
