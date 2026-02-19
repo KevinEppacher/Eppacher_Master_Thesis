@@ -274,7 +274,7 @@ the detection evaluation and treated as neutral cases.
 
 Four fusion strategies are evaluated: (a) detector-only (YOLO-E), (b) detector + semantic similarity (BLIP-2), (c) detector + memory confidence, and (d) the full Noisy-OR fusion strategy combining all three sources. All fusion strategies must contain the detector source, as the other components are complementary and cannot independently trigger detections, only reinforce them. Across each fusion strategy, all experiments are executed using a fixed detection threshold of \( \tau = 0.8 \), which defines the robot’s online decision-making behaviour and serves as the basis for manual annotation. The resulting detection confidences are then reused in a post-hoc evaluation to compute confusion matrices and classification metrics for additional thresholds \( \tau = 0.5 \) and \( 0.6 \).
 
-Precision in this context measures the proportion of correct detections among all positive detections made by the robot and is defined in Equation~\ref{eq:evaluation:precision}:
+Precision in this context measures the proportion of correct detections among all positive detections made by the robot and is defined in Equation~\ref{eq:evaluation:precision},
 
 \begin{equation}
     \mathrm{Precision}

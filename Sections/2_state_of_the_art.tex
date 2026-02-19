@@ -293,61 +293,56 @@ open-vocabulary semantic perception with persistent, revisable semantic memory, 
 Table~\ref{tab:sota:persistent_mapping_exploration} summarizes recent approaches to persistent semantic mapping for exploration tasks. The table highlights how different methods store semantic information, update it over time, and whether they support belief revision, revealing a common lack of mechanisms for correcting erroneous semantic memories.
 
 \begin{table}[H]
-    \centering
-    \footnotesize
-    \renewcommand{\arraystretch}{1.2}
-    \begin{tabular}{
-    l |
-    p{3.2cm}
-    p{1.8cm}
-    p{2.4cm}
-    >{\centering\arraybackslash}p{1.4cm}
-    p{2.4cm}
-    }
-    \toprule
-    \textbf{Method}
-    & \textbf{Semantic Memory Type}
-    & \textbf{Spatial Representation}
-    & \textbf{Update Mechanism}
-    & \textbf{Belief Revision}
-    & \textbf{Primary Limitation} \\
-    \midrule
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
 
-    \textbf{OneMap~\cite{buschOneMapFind2025}}
-    & Open-vocabulary belief map (CLIP features)
-    & 2.5D top-down grid
-    & Uncertainty-weighted accumulative fusion
-    & \xmark
-    & Irreversible belief fusion leads to semantic drift \\
+\begin{tabular}{
+l |
+p{3.8cm}
+p{2.2cm}
+p{3.2cm}
+p{3.2cm}
+}
+\toprule
+\textbf{Method}
+& \textbf{Semantic Memory}
+& \textbf{Spatial Form}
+& \textbf{Update Strategy}
+& \textbf{Primary Limitation} \\
+\midrule
 
-    \textbf{VLMaps~\cite{huangVisualLanguageMaps2023}}
-    & Dense per-cell language embeddings (CLIP-based)
-    & 2.5D top-down grid
-    & Multi-view feature averaging
-    & \xmark
-    & Irreversible feature averaging causes semantic noise \\
+\textbf{OneMap}~\cite{buschOneMapFind2025}
+& Open-vocabulary belief map (CLIP features)
+& 2.5D grid
+& Uncertainty-weighted accumulative fusion
+& No belief revision; semantic drift over time \\
 
-    \textbf{PIGEON~\cite{pengPIGEONVLMDrivenObject2025}}
-    & Language-conditioned episodic visual memory (PoI snapshots)
-    & 2D exploration map + episodic memory
-    & Episodic accumulation (per episode)
-    & \xmark
-    & No persistent semantic belief state \\
+\textbf{VLMaps}~\cite{huangVisualLanguageMaps2023}
+& Dense per-cell language embeddings (CLIP-based)
+& 2.5D grid
+& Multi-view feature averaging
+& Accumulative fusion amplifies semantic noise \\
 
-    \textbf{DualMap~\cite{jiangDualMapOnlineOpenVocabulary2025}}
-    & Dual semantic maps (short-term + long-term)
-    & 2D grid maps
-    & Dual-stream accumulative fusion
-    & \xmark
-    & Long-term map cannot correct early semantic errors \\
+\textbf{PIGEON}~\cite{pengPIGEONVLMDrivenObject2025}
+& Episodic visual memory (PoI snapshots)
+& 2D exploration map + episodic memory
+& Per-episode accumulation
+& No persistent semantic belief state \\
 
-    \bottomrule
-    \end{tabular}
+\textbf{DualMap}~\cite{jiangDualMapOnlineOpenVocabulary2025}
+& Dual semantic maps (short-term + long-term)
+& 2D grids
+& Dual-stream accumulative fusion
+& Long-term map cannot correct early errors \\
 
-    \caption{Comparison of persistent semantic memory representations for exploration.
-    All listed approaches support open-vocabulary querying; the table focuses on how semantic
-    information is represented, updated over time, and whether belief revision is supported.}
-    \label{tab:sota:persistent_mapping_exploration}
+\bottomrule
+\end{tabular}
+
+\caption{Comparison of persistent semantic memory representations for exploration.
+All listed approaches support open-vocabulary querying; the table focuses on how semantic
+information is stored, updated, and whether erroneous beliefs can be corrected.}
+\label{tab:sota:persistent_mapping_exploration}
 \end{table}
 
 
@@ -423,7 +418,7 @@ For each segmented object, a visual embedding is computed from the cropped image
 CLIP’s image encoder~\cite{radfordLearningTransferableVisual2021}.
 If a textual label is available, an additional text embedding is obtained from CLIP’s text encoder.
 The final object-level semantic representation is computed as a weighted fusion of image and
-text embeddings:
+text embeddings, described by Equation~\ref{eq:feature_fusion},
 
 \begin{equation}
 \mathbf{f}_t
@@ -431,7 +426,7 @@ text embeddings:
 \alpha \, \mathbf{f}^{\text{img}}_t
 +
 (1 - \alpha) \, \mathbf{f}^{\text{text}}_t,
-\qquad \alpha = 0.7,
+\qquad \alpha = 0.7
 \label{eq:feature_fusion}
 \end{equation}
 

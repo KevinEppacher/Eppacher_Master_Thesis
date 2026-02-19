@@ -288,7 +288,7 @@ The projection matrices \( W_I \) and \( W_T \) are learned during pre-training 
 \ac{ITC} objective, which optimizes the cosine similarity between matching
 image-text pairs while pushing apart non-matching pairs~\cite{radfordLearningTransferableVisual2021,liBLIP2BootstrappingLanguageImage2023}. This training procedure aligns visual and textual representations in a shared semantic embedding space, enabling direct similarity comparison via cosine similarity. The projected embeddings are subsequently L2-normalized to unit length, which is required for cosine similarity computation.
 
-The cosine similarity score \( S \) between the normalized image embedding \( \hat{E}_I \) and text embedding \( \hat{E}_T \) is computed as:
+The cosine similarity score \( S \) between the normalized image embedding \( \hat{E}_I \) and text embedding \( \hat{E}_T \) is computed in Equation~\ref{eq:methods:value_map:cosine_similarity}.
 
 \begin{equation}
 S = \hat{E}_I \cdot \hat{E}_T
@@ -882,7 +882,7 @@ and stable exploration behavior. To this end, the Euclidean distance between a g
 node $n_i$ and the current robot position $\mathbf{x}_r = (x_r, y_r) \in \mathbb{R}^2$ is computed in Equation~\eqref{eq:graph_fusion:distance_to_robot}.
 
 \begin{equation}
-d_i = \lVert \mathbf{x}_i - \mathbf{x}_r \rVert_2 ,
+d_i = \lVert \mathbf{x}_i - \mathbf{x}_r \rVert_2 
 \label{eq:graph_fusion:distance_to_robot}
 \end{equation}
 
@@ -897,7 +897,7 @@ w_{\mathrm{prox}}(n_i)
 \left(
 \frac{d_i}{r_{\mathrm{prox}}}
 \right)^2
-\right),
+\right)
 \label{eq:graph_fusion:proximity_weight}
 \end{equation}
 
@@ -910,7 +910,7 @@ In addition to proximity, navigation feasibility is taken into account by penali
 \left\{
 \mathbf{x}_j \mid
 \lVert \mathbf{x}_j - \mathbf{x}_i \rVert_2 \le r_{\mathrm{cost}}
-\right\},
+\right\}
 \label{eq:graph_fusion:costmap_region}
 \end{equation}
 
@@ -931,7 +931,7 @@ c_j \,
 \exp\!\left(
 -\frac{\lVert \mathbf{x}_j - \mathbf{x}_i \rVert_2^2}{2\sigma_c^2}
 \right)
-},
+}
 \label{eq:graph_fusion:costmap_weighted_mean}
 \end{equation}
 
@@ -946,7 +946,7 @@ w_{\mathrm{cost}}(n_i)
 \max\!\left(
 0.3,\;
 1 - \lambda_{\mathrm{cost}} \hat{c}_i
-\right),
+\right)
 \label{eq:graph_fusion:costmap_penalty}
 \end{equation}
 
@@ -959,7 +959,7 @@ s_i^{\mathrm{explore}}
 =
 s_i \cdot \beta \cdot
 w_{\mathrm{prox}}(n_i) \cdot
-w_{\mathrm{cost}}(n_i),
+w_{\mathrm{cost}}(n_i)
 \label{eq:graph_fusion:exploration_score}
 \end{equation}
 
@@ -968,7 +968,7 @@ where $\beta \in [0,1]$ controls the trade-off between exploration and memory ex
 \begin{equation}
 s_i^{\mathrm{memory}}
 =
-(1 - \beta)\, s_i,
+(1 - \beta)\, s_i
 \label{eq:graph_fusion:memory_scaling}
 \end{equation}
 
